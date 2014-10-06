@@ -1,4 +1,4 @@
-package net.mschorn.eraseme;
+package eu.over9000.veya;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,24 +11,24 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.OpenGLException;
 
-public class Shader {
+public class Program {
 	public final int id;
 	public final Map<String, Integer> uniformLocations;
 	public final Map<String, Integer> attribLocations;
 	
-	public Shader(final String[] attribNames, final String[] uniformNames) {
-		final int vsID = Shader.loadShader(new File(Shader.class.getResource("vs_new.glsl").getFile()), GL20.GL_VERTEX_SHADER);
-		final int fsID = Shader.loadShader(new File(Shader.class.getResource("fs_new.glsl").getFile()), GL20.GL_FRAGMENT_SHADER);
+	public Program(final String[] attribNames, final String[] uniformNames) {
+		final int vsID = Program.loadShader(new File(Program.class.getResource("vertex.glsl").getFile()), GL20.GL_VERTEX_SHADER);
+		final int fsID = Program.loadShader(new File(Program.class.getResource("fragment.glsl").getFile()), GL20.GL_FRAGMENT_SHADER);
 		
 		this.id = GL20.glCreateProgram();
 		GL20.glAttachShader(this.id, vsID);
 		GL20.glAttachShader(this.id, fsID);
 		
 		GL20.glLinkProgram(this.id);
-		Shader.checkLinkage(this.id);
+		Program.checkLinkage(this.id);
 		
 		GL20.glValidateProgram(this.id);
-		Shader.checkValidation(this.id);
+		Program.checkValidation(this.id);
 		
 		GL20.glDetachShader(this.id, vsID);
 		GL20.glDetachShader(this.id, fsID);
@@ -97,7 +97,7 @@ public class Shader {
 		GL20.glShaderSource(shaderID, builder);
 		GL20.glCompileShader(shaderID);
 		
-		Shader.checkCompilation(shaderID);
+		Program.checkCompilation(shaderID);
 		
 		return shaderID;
 	}

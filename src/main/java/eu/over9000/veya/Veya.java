@@ -1,4 +1,4 @@
-package net.mschorn.eraseme;
+package eu.over9000.veya;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.ContextAttribs;
@@ -13,7 +13,7 @@ public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
 	
 	private static Camera camera;
-	private static Shader shader;
+	private static Program shader;
 	private static Scene scene;
 	
 	public static void main(final String[] args) throws LWJGLException {
@@ -30,7 +30,7 @@ public class Veya {
 		Display.setResizable(true);
 		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 2));
 		
-		Veya.shader = new Shader(new String[] { "vertexPosition", "vertexColor" }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix" });
+		Veya.shader = new Program(new String[] { "vertexPosition", "vertexColor" }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix" });
 		Veya.camera = new Camera(Veya.shader, Display.getHeight(), Display.getWidth());
 		Veya.scene = new Scene(Veya.shader);
 		
@@ -45,7 +45,6 @@ public class Veya {
 	private static void run() {
 		Veya.shader.use(true);
 		Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
-		Veya.camera.updateViewMatrix(5, 5, 5);
 		Veya.shader.use(false);
 		
 		while (!Display.isCloseRequested()) {

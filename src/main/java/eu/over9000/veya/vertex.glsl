@@ -10,6 +10,6 @@ in vec4 vertexColor;
 out vec4 passColor;
 
 void main() {
-    gl_Position =  projectionMatrix * viewMatrix * modelMatrix * vertexPosition;
+    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vertexPosition;
     passColor = vertexColor;
 }

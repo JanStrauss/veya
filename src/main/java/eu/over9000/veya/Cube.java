@@ -1,4 +1,4 @@
-package net.mschorn.eraseme;
+package eu.over9000.veya;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -41,11 +41,11 @@ public class Cube {
 		 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 	};
 	
-	Shader shader;
+	Program shader;
 	
 	//@formatter:on
 	
-	public Cube(final Shader shader) {
+	public Cube(final Program shader) {
 		this.shader = shader;
 		
 		// Fill buffer

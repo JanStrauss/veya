@@ -1,4 +1,4 @@
-package net.mschorn.eraseme;
+package eu.over9000.veya;
 
 import java.nio.FloatBuffer;
 
@@ -49,7 +49,7 @@ public class CubeInstance {
 		Matrix4f.scale(new Vector3f(sx, sy, sz), this.modelMatrix, this.modelMatrix);
 	}
 	
-	public void updateModelMatrix(final Shader shader) {
+	public void updateModelMatrix(final Program shader) {
 		this.modelMatrix.store(CubeInstance.matrixBuffer);
 		CubeInstance.matrixBuffer.flip();
 		GL20.glUniformMatrix4(shader.getUniformLocation("modelMatrix"), false, CubeInstance.matrixBuffer);

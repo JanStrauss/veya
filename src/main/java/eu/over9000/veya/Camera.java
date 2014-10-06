@@ -1,4 +1,4 @@
-package net.mschorn.eraseme;
+package eu.over9000.veya;
 
 import java.nio.FloatBuffer;
 
@@ -15,7 +15,7 @@ public class Camera {
 	private final int viewMatrixLocation;
 	private final int projectionMatrixLocation;
 	
-	public Camera(final Shader shader, final int width, final int height) {
+	public Camera(final Program shader, final int width, final int height) {
 		this.viewMatrixLocation = shader.getUniformLocation("viewMatrix");
 		this.projectionMatrixLocation = shader.getUniformLocation("projectionMatrix");
 		
