@@ -33,4 +33,8 @@ public class Scene {
 		}
 		
 	}
+	
+	public void dispose() {
+		this.cube.dispose();
+	}
 }

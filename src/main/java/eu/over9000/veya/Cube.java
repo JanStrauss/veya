@@ -5,6 +5,7 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -18,34 +19,61 @@ public class Cube {
 	int vao_handle;
 	int ibo_handle;
 	
-	//@formatter:off
-	 private static final int[] indexData = new int[] {
-		 
-		 0, 1, 2, 3, Veya.RESTART,
-		 5, 1, 4, 0, Veya.RESTART,
-		 0, 2, 4, 6, Veya.RESTART,
-		 4, 6, 5, 7, Veya.RESTART,
-		 1, 5, 3, 7, Veya.RESTART,
-		 2, 3, 6, 7
-	};
-		  
-	// x, y, z, r, g, b
-	private static final float[] vertexData = new float[] {
-		 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-		 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-	};
+	int texture_handle;
 	
+	//@formatter:off
+    private static final int[] indexData = new int[] {
+
+        0, 1, 2, 3, Veya.RESTART,
+        4, 5, 6, 7, Veya.RESTART,
+        8, 9, 10, 11, Veya.RESTART,
+        12, 13, 14, 15, Veya.RESTART,
+        16, 17, 18, 19, Veya.RESTART,
+        20, 21, 22, 23
+
+    };
+
+    // x, y, z, r, g, b
+    private static final Vertex[] vertexData = new Vertex[] {
+
+       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.0f),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 1.0f),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 0.0f),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 1.0f),
+
+       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 1.0f),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 1.0f),
+       
+       new Vertex( 1.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.0f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.0f, 1.0f),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	1.0f, 0.0f),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	1.0f, 1.0f),
+
+       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.0f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.0f, 1.0f),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	1.0f, 0.0f),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	1.0f, 1.0f),
+
+       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.0f, 0.0f),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.0f, 1.0f),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	1.0f, 0.0f),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	1.0f, 1.0f),
+
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.0f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.0f, 1.0f),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	1.0f, 0.0f),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	1.0f, 1.0f)
+
+    };
+	
+    //@formatter:on
 	Program shader;
 	
-	//@formatter:on
-	
 	public Cube(final Program shader) {
+		this.texture_handle = Util.loadPNGTexture("ROCK", Cube.class.getResourceAsStream("/textures/test_rock.png"), GL13.GL_TEXTURE0);
+		
 		this.shader = shader;
 		
 		// Fill buffer
@@ -54,8 +82,10 @@ public class Cube {
 		this.ibo_buffer.put(Cube.indexData);
 		this.ibo_buffer.flip();
 		
-		this.vbo_buffer = BufferUtils.createFloatBuffer(Cube.vertexData.length);
-		this.vbo_buffer.put(Cube.vertexData);
+		this.vbo_buffer = BufferUtils.createFloatBuffer(Cube.vertexData.length * Vertex.elementCount);
+		for (final Vertex element : Cube.vertexData) {
+			this.vbo_buffer.put(element.getElements());
+		}
 		this.vbo_buffer.flip();
 		
 		// create objects
@@ -74,9 +104,11 @@ public class Cube {
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle);
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexPosition"));
-		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexPosition"), 3, GL11.GL_FLOAT, false, 6 * 4, 0 * 4);
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexPosition"), 4, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexColor"));
-		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexColor"), 3, GL11.GL_FLOAT, false, 6 * 4, 3 * 4);
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexColor"), 4, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
+		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexTexturePosition"));
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexTexturePosition"), 2, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
 		
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle);
 		
@@ -84,6 +116,8 @@ public class Cube {
 	}
 	
 	void dispose() {
+		GL11.glDeleteTextures(this.texture_handle);
+		
 		GL30.glDeleteVertexArrays(this.vao_handle);
 		GL15.glDeleteBuffers(this.ibo_handle);
 		GL15.glDeleteBuffers(this.vbo_handle);
@@ -94,6 +128,8 @@ public class Cube {
 	}
 	
 	void render() {
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture_handle);
 		
 		GL30.glBindVertexArray(this.vao_handle);
 		this.shader.enableVAttributes();

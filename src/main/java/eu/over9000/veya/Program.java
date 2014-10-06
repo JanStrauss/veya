@@ -17,8 +17,8 @@ public class Program {
 	public final Map<String, Integer> attribLocations;
 	
 	public Program(final String[] attribNames, final String[] uniformNames) {
-		final int vsID = Program.loadShader(new File(Program.class.getResource("vertex.glsl").getFile()), GL20.GL_VERTEX_SHADER);
-		final int fsID = Program.loadShader(new File(Program.class.getResource("fragment.glsl").getFile()), GL20.GL_FRAGMENT_SHADER);
+		final int vsID = Program.loadShader(new File(Program.class.getResource("/shaders/vertex.glsl").getFile()), GL20.GL_VERTEX_SHADER);
+		final int fsID = Program.loadShader(new File(Program.class.getResource("/shaders/fragment.glsl").getFile()), GL20.GL_FRAGMENT_SHADER);
 		
 		this.id = GL20.glCreateProgram();
 		GL20.glAttachShader(this.id, vsID);
