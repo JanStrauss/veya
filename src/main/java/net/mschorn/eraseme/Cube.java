@@ -21,11 +21,11 @@ public class Cube {
 	//@formatter:off
 	 private static final int[] indexData = new int[] {
 		 
-		 0, 1, 2, 3, Test.RESTART,
-		 5, 1, 4, 0, Test.RESTART,
-		 0, 2, 4, 6, Test.RESTART,
-		 4, 6, 5, 7, Test.RESTART,
-		 1, 5, 3, 7, Test.RESTART,
+		 0, 1, 2, 3, Veya.RESTART,
+		 5, 1, 4, 0, Veya.RESTART,
+		 0, 2, 4, 6, Veya.RESTART,
+		 4, 6, 5, 7, Veya.RESTART,
+		 1, 5, 3, 7, Veya.RESTART,
 		 2, 3, 6, 7
 	};
 		  

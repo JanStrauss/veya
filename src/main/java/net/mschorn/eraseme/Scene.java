@@ -13,7 +13,10 @@ public class Scene {
 		this.objects = new ArrayList<>();
 		this.shader = shader;
 		
-		this.objects.add(new CubeInstance());
+		this.objects.add(new CubeInstance(0, 0, 0));
+		this.objects.add(new CubeInstance(-1, 0, -1));
+		this.objects.add(new CubeInstance(-1, 0, 0));
+		this.objects.add(new CubeInstance(0, 0, -1));
 	}
 	
 	public void render() {
