@@ -1,9 +1,9 @@
 package eu.over9000.veya;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +17,8 @@ public class Program {
 	public final Map<String, Integer> attribLocations;
 	
 	public Program(final String[] attribNames, final String[] uniformNames) {
-		final int vsID = Program.loadShader(new File(Program.class.getResource("/shaders/vertex.glsl").getFile()), GL20.GL_VERTEX_SHADER);
-		final int fsID = Program.loadShader(new File(Program.class.getResource("/shaders/fragment.glsl").getFile()), GL20.GL_FRAGMENT_SHADER);
+		final int vsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/vertex.glsl"), GL20.GL_VERTEX_SHADER);
+		final int fsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/fragment.glsl"), GL20.GL_FRAGMENT_SHADER);
 		
 		this.id = GL20.glCreateProgram();
 		GL20.glAttachShader(this.id, vsID);
@@ -79,10 +79,10 @@ public class Program {
 		}
 	}
 	
-	private static int loadShader(final File file, final int type) {
+	private static int loadShader(final InputStream inputStream, final int type) {
 		final StringBuilder builder = new StringBuilder();
 		
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				builder.append(line).append("\n");
