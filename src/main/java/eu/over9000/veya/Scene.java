@@ -32,12 +32,14 @@ public class Scene {
 		// this.objects.add(instance7);
 		// this.objects.add(instance8);
 		
-		final int num = 10;
+		final int num = 5;
 		for (int x = -num; x < num; x++) {
 			for (int z = -num; z < num; z++) {
-				this.objects.add(new CubeInstance(x, (float) (Math.sin(x / 2) - Math.sin(z / 2)) - 5, z));
+				this.objects.add(new CubeInstance(x, (int) (Math.sin(x / 2) - Math.sin(z / 2)), z));
 			}
 		}
+		
+		// this.objects.add(new CubeInstance(0, -2, 0, 3, 3, 3));
 	}
 	
 	public void render() {

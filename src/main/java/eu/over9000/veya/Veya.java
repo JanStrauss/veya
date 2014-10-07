@@ -68,9 +68,9 @@ public class Veya {
 			
 			Veya.program.use(true);
 			
-			final float posX = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 5f;
-			final float posY = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 2f + 2.5f;
-			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 5f;
+			final float posX = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 15f;
+			final float posY = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 7f;
+			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 15f;
 			
 			Veya.camera.updateViewMatrix(posX, posY, posZ);
 			

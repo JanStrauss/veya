@@ -32,39 +32,39 @@ public class Cube {
         20, 21, 22, 23
 
     };
-
+    
     // x, y, z, r, g, b
     private static final Vertex[] vertexData = new Vertex[] {
 
        new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.0f),
-       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 1.0f),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 0.0f),
-       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 1.0f),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.249f),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.25f, 0.0f),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.25f, 0.249f),
 
-       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 0.0f),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 1.0f),
-       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 0.0f),
-       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 1.0f),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.25f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.25f, 0.249f),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	0.5f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	0.5f, 0.249f),
        
-       new Vertex( 1.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.0f, 0.0f),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.0f, 1.0f),
-       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	1.0f, 0.0f),
-       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	1.0f, 1.0f),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.5f, 0.249f),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.5f, 0.0f),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.749f, 0.249f),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.749f, 0.0f),
 
-       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.0f, 0.0f),
-       new Vertex( 1.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.0f, 1.0f),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	1.0f, 0.0f),
-       new Vertex( 1.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	1.0f, 1.0f),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.5f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.749f, 0.0f),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.5f, 0.249f),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.749f, 0.249f),
 
-       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.0f, 0.0f),
-       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.0f, 1.0f),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	1.0f, 0.0f),
-       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	1.0f, 1.0f),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.5f, 0.249f),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.5f, 0.0f),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	0.749f, 0.249f),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	0.749f, 0.0f),
 
-       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.0f, 0.0f),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.0f, 1.0f),
-       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	1.0f, 0.0f),
-       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	1.0f, 1.0f)
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.5f, 0.0f),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.749f, 0.0f),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.5f, 0.249f),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.749f,0.249f),
 
     };
 	
@@ -72,7 +72,7 @@ public class Cube {
 	Program shader;
 	
 	public Cube(final Program shader) {
-		this.texture_handle = Util.loadPNGTexture("ROCK", Cube.class.getResourceAsStream("/textures/test_rock.png"), GL13.GL_TEXTURE0);
+		this.texture_handle = Util.loadPNGTexture("BLOCKS", Cube.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 		
 		this.shader = shader;
 		
