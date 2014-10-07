@@ -31,25 +31,41 @@ public class Veya {
 		Display.setResizable(true);
 		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 2));
 		
-		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition" }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix" });
+		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal" }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix",
+				"lightPosition", "lightColor" });
+		
+		Util.checkGLError();
+		
 		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth());
 		Veya.scene = new Scene(Veya.program);
+		
+		Util.checkGLError();
 		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		
+		Util.checkGLError();
+		
 		GL11.glEnable(GL31.GL_PRIMITIVE_RESTART);
 		GL31.glPrimitiveRestartIndex(0xFFFFFFFF & Veya.RESTART);
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		
 	}
 	
 	private static void run() {
+		Util.checkGLError();
+		
 		Veya.program.use(true);
 		Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
+		Veya.camera.updateViewMatrix(10, 10, 10);
+		Veya.scene.init();
 		Veya.program.use(false);
+		
+		Util.checkGLError();
 		
 		long start = System.currentTimeMillis();
 		long count = 0;
+		
 		while (!Display.isCloseRequested()) {
 			
 			// Util.checkGLError();
@@ -73,6 +89,7 @@ public class Veya {
 			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 15f;
 			
 			Veya.camera.updateViewMatrix(posX, posY, posZ);
+			// Veya.scene.updateLight(posX, posY, posZ);
 			
 			Veya.scene.render();
 			

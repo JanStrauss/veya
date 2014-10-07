@@ -10,6 +10,7 @@ import java.util.Map;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.Util;
 
 public class Program {
 	public final int id;
@@ -38,13 +39,19 @@ public class Program {
 		
 		this.attribLocations = new HashMap<>(attribNames.length + 1, 1);
 		for (final String name : attribNames) {
-			this.attribLocations.put(name, GL20.glGetAttribLocation(this.id, name));
+			final int loc = GL20.glGetAttribLocation(this.id, name);
+			this.attribLocations.put(name, loc);
+			System.out.println("AttributeLoc for " + name + "=" + loc);
 		}
 		
 		this.uniformLocations = new HashMap<>(uniformNames.length + 1, 1);
 		for (final String name : uniformNames) {
-			this.uniformLocations.put(name, GL20.glGetUniformLocation(this.id, name));
+			final int loc = GL20.glGetUniformLocation(this.id, name);
+			this.uniformLocations.put(name, loc);
+			System.out.println("UniformLoc for " + name + "=" + loc);
 		}
+		
+		Util.checkGLError();
 	}
 	
 	public void use(final boolean use) {

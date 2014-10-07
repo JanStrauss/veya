@@ -3,15 +3,23 @@ package eu.over9000.veya;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.opengl.Util;
+
 public class Scene {
 	private final Cube cube;
 	private final List<CubeInstance> objects;
-	private final Program shader;
+	private Light light;
+	private final Program program;
 	
 	public Scene(final Program shader) {
 		this.cube = new Cube(shader);
+		
+		Util.checkGLError();
+		
 		this.objects = new ArrayList<>();
-		this.shader = shader;
+		this.program = shader;
+		
+		this.light = new Light(10, 10, 10, 0.9f, 0.9f, 0.45f);
 		
 		// final CubeInstance instance1 = new CubeInstance(0, 0, 0);
 		// final CubeInstance instance2 = new CubeInstance(0, 0, 1);
@@ -42,10 +50,19 @@ public class Scene {
 		// this.objects.add(new CubeInstance(0, -2, 0, 3, 3, 3));
 	}
 	
+	public void init() {
+		this.light.init(this.program);
+	}
+	
+	public void updateLight(final float x, final float y, final float z) {
+		this.light = new Light(x, y, z, 0.9f, 0.9f, 0.45f);
+		this.light.init(this.program);
+	}
+	
 	public void render() {
 		for (final CubeInstance cubeInstance : this.objects) {
 			// update Model Matrix
-			cubeInstance.updateModelMatrix(this.shader);
+			cubeInstance.updateModelMatrix(this.program);
 			
 			this.cube.render();
 		}
