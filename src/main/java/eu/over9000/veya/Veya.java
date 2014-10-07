@@ -49,7 +49,7 @@ public class Veya {
 		GL11.glEnable(GL31.GL_PRIMITIVE_RESTART);
 		GL31.glPrimitiveRestartIndex(0xFFFFFFFF & Veya.RESTART);
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-		
+		GL11.glClearColor(124f / 255f, 169f / 255f, 255f / 255f, 1.0f);
 	}
 	
 	private static void run() {

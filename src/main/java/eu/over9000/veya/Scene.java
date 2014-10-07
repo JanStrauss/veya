@@ -43,12 +43,17 @@ public class Scene {
 		final int num = 8;
 		for (int x = -num; x < num; x++) {
 			for (int z = -num; z < num; z++) {
-				for (int y = -num; y < num; y++) {
+				for (int y = 0; y < num; y++) {
 					if (x * x + y * y + z * z <= num * num) {
 						this.objects.add(new CubeInstance(x, y, z));
 					}
 				}
 				
+			}
+		}
+		for (int x = -2 * num; x < 2 * num; x++) {
+			for (int z = -2 * num; z < 2 * num; z++) {
+				this.objects.add(new CubeInstance(x, 0, z));
 			}
 		}
 		
