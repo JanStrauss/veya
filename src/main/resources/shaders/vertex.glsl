@@ -26,7 +26,7 @@ void main() {
     passColor = vertexColor;
     passTexturePosition = vertexTexturePosition;
     
-    normal = vec3(modelInvTranspMatrix * vec4(vertexNormal,1.0));
+    normal = normalize(vec3(modelInvTranspMatrix * vec4(vertexNormal,1.0)));
     position = vec3(worldPosition);
-    cameraPosition = vec3 (viewInvMatrix * viewMatrix[3]);
+    cameraPosition = vec3(viewInvMatrix * viewMatrix[3]);
 }

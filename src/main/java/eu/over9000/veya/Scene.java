@@ -19,7 +19,7 @@ public class Scene {
 		this.objects = new ArrayList<>();
 		this.program = shader;
 		
-		this.light = new Light(10, 10, 10, 0.9f, 0.9f, 0.45f);
+		this.light = new Light(20, 20, 20, 0.9f, 0.9f, 0.45f);
 		
 		// final CubeInstance instance1 = new CubeInstance(0, 0, 0);
 		// final CubeInstance instance2 = new CubeInstance(0, 0, 1);
@@ -40,14 +40,22 @@ public class Scene {
 		// this.objects.add(instance7);
 		// this.objects.add(instance8);
 		
-		final int num = 5;
+		final int num = 8;
 		for (int x = -num; x < num; x++) {
 			for (int z = -num; z < num; z++) {
-				this.objects.add(new CubeInstance(x, (int) (Math.sin(x / 2) - Math.sin(z / 2)), z));
+				for (int y = -num; y < num; y++) {
+					if (x * x + y * y + z * z <= num * num) {
+						this.objects.add(new CubeInstance(x, y, z));
+					}
+				}
+				
 			}
 		}
 		
-		// this.objects.add(new CubeInstance(0, -2, 0, 3, 3, 3));
+		// final CubeInstance c = new CubeInstance(-1.5f, -1.5f, -1.5f, 3, 3, 3);
+		// // c.rotateX(45);
+		// // c.rotateZ(45);
+		// this.objects.add(c);
 	}
 	
 	public void init() {

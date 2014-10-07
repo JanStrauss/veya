@@ -5,7 +5,7 @@ public class Vertex {
 	private float[] xyzw = new float[] { 0f, 0f, 0f, 1f };
 	private float[] rgba = new float[] { 1f, 1f, 1f, 1f };
 	private float[] st = new float[] { 0f, 0f };
-	private float[] n = new float[] { 0f, 1f, 0f };
+	private float[] n = new float[] { 0f, 0f, 0f };
 	
 	Vertex(final float x, final float y, final float z, final float r, final float g, final float b, final float s, final float t, final float nx, final float ny, final float nz) {
 		this.setXYZ(x, y, z);

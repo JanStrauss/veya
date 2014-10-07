@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.Util;
 
 public class Cube {
 	
@@ -73,7 +72,7 @@ public class Cube {
 	Program shader;
 	
 	public Cube(final Program shader) {
-		this.texture_handle = eu.over9000.veya.Util.loadPNGTexture("BLOCKS", Cube.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
+		this.texture_handle = Util.loadPNGTexture("BLOCKS", Cube.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 		
 		this.shader = shader;
 		
@@ -113,12 +112,8 @@ public class Cube {
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexTexturePosition"));
 		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexTexturePosition"), 2, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
 		
-		Util.checkGLError();
-		
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexNormal"));
 		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexNormal"), 3, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
-		
-		Util.checkGLError();
 		
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle);
 		

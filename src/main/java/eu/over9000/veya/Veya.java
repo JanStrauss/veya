@@ -57,7 +57,7 @@ public class Veya {
 		
 		Veya.program.use(true);
 		Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
-		Veya.camera.updateViewMatrix(10, 10, 10);
+		Veya.camera.updateViewMatrix(10, 0, 0);
 		Veya.scene.init();
 		Veya.program.use(false);
 		
@@ -84,12 +84,12 @@ public class Veya {
 			
 			Veya.program.use(true);
 			
-			final float posX = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 15f;
+			final float posX = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 20f;
 			final float posY = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 7f;
-			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 15f;
+			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 			
 			Veya.camera.updateViewMatrix(posX, posY, posZ);
-			// Veya.scene.updateLight(posX, posY, posZ);
+			Veya.scene.updateLight(posX, 20, posZ);
 			
 			Veya.scene.render();
 			
