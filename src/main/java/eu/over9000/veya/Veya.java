@@ -1,6 +1,7 @@
 package eu.over9000.veya;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -50,6 +51,8 @@ public class Veya {
 		GL31.glPrimitiveRestartIndex(0xFFFFFFFF & Veya.RESTART);
 		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 		GL11.glClearColor(124f / 255f, 169f / 255f, 255f / 255f, 1.0f);
+		
+		Mouse.setGrabbed(true);
 	}
 	
 	private static void run() {
@@ -57,7 +60,7 @@ public class Veya {
 		
 		Veya.program.use(true);
 		Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
-		Veya.camera.updateViewMatrix(10, 0, 0);
+		Veya.camera.updateViewMatrix(10, 0, 0, 0, 0);
 		Veya.scene.init();
 		Veya.program.use(false);
 		
@@ -68,15 +71,16 @@ public class Veya {
 		
 		while (!Display.isCloseRequested()) {
 			
+			final float dx = Mouse.getDX();
+			final float dy = Mouse.getDY();
+			
 			// Util.checkGLError();
 			
 			if (Display.wasResized()) {
-				final int width = Display.getWidth();
-				final int height = Display.getHeight();
 				Veya.program.use(true);
-				Veya.camera.updateProjectionMatrix(60, width, height, 0.1f, 100.0f); // TODO
+				Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
 				Veya.program.use(false);
-				GL11.glViewport(0, 0, width, height);
+				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 				System.out.println("resized");
 			}
 			
@@ -88,7 +92,8 @@ public class Veya {
 			final float posY = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 7f;
 			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 			
-			Veya.camera.updateViewMatrix(posX, posY, posZ);
+			Veya.camera.updateViewMatrix(10, 10, 10, dx, dy);
+			// Veya.camera.updateViewMatrix(posX, posY, posZ, dx, dy);
 			Veya.scene.updateLight(posX, 20, posZ);
 			
 			Veya.scene.render();
