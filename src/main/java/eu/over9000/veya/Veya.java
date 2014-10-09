@@ -1,6 +1,8 @@
 package eu.over9000.veya;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
@@ -16,6 +18,9 @@ public class Veya {
 	private static Camera camera;
 	private static Program program;
 	private static Scene scene;
+	
+	private static final float mouseSensitivity = 0.005f;
+	private static final float movementSpeed = 10.0f; // move 10 units per second
 	
 	public static void main(final String[] args) throws LWJGLException {
 		
@@ -60,19 +65,47 @@ public class Veya {
 		
 		Veya.program.use(true);
 		Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
-		Veya.camera.updateViewMatrix(10, 0, 0, 0, 0);
+		Veya.camera.updateViewMatrix();
 		Veya.scene.init();
 		Veya.program.use(false);
 		
 		Util.checkGLError();
 		
-		long start = System.currentTimeMillis();
-		long count = 0;
+		float start = Sys.getTime();
+		float lastTime = 0.0f;
+		float count = 0;
 		
 		while (!Display.isCloseRequested()) {
+			final float time = Sys.getTime();
+			final float dt = (time - lastTime) / 1000.0f;
+			lastTime = time;
+			
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				Veya.camera.walkForward(Veya.movementSpeed * dt);
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				Veya.camera.walkBackwards(Veya.movementSpeed * dt);
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				Veya.camera.strafeLeft(Veya.movementSpeed * dt);
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				Veya.camera.strafeRight(Veya.movementSpeed * dt);
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+				Veya.camera.moveUp(Veya.movementSpeed * dt);
+			}
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+				Veya.camera.moveDown(Veya.movementSpeed * dt);
+			}
 			
 			final float dx = Mouse.getDX();
 			final float dy = Mouse.getDY();
+			
+			// controll camera yaw from x movement fromt the mouse
+			Veya.camera.yaw(dx * Veya.mouseSensitivity);
+			// controll camera pitch from y movement fromt the mouse
+			Veya.camera.pitch(dy * Veya.mouseSensitivity);
 			
 			// Util.checkGLError();
 			
@@ -92,7 +125,7 @@ public class Veya {
 			final float posY = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 7f;
 			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 			
-			Veya.camera.updateViewMatrix(10, 10, 10, dx, dy);
+			Veya.camera.updateViewMatrix();
 			// Veya.camera.updateViewMatrix(posX, posY, posZ, dx, dy);
 			Veya.scene.updateLight(posX, 20, posZ);
 			
@@ -103,14 +136,15 @@ public class Veya {
 			Display.update();
 			Util.checkGLError();
 			
-			final long end = System.currentTimeMillis();
+			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				System.out.println("fps: " + count);
+				System.out.println("fps: " + count + " | pos: " + Veya.camera.getPosition());
 				count = 0;
 			} else {
 				count++;
 			}
+			
 		}
 		
 	}
