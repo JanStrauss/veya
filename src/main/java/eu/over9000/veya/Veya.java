@@ -48,7 +48,7 @@ public class Veya {
 		
 		Util.checkGLError();
 		
-		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth(), 10, 2.8f, 10);
+		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth(), 15, 15, 15);
 		Veya.scene = new Scene(Veya.program);
 		
 		Util.checkGLError();
