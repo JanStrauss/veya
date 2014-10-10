@@ -11,7 +11,7 @@ public class Camera {
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f viewMatrix = new Matrix4f();
 	
-	private final Vector3f position = new Vector3f(10, 10, 10);
+	private final Vector3f position;
 	private float yaw = 0;
 	private float pitch = 0;
 	
@@ -19,31 +19,13 @@ public class Camera {
 	private final int viewMatrixLocation;
 	private final int projectionMatrixLocation;
 	
-	public Camera(final Program shader, final int width, final int height) {
+	public Camera(final Program shader, final int width, final int height, final float posX, final float posY, final float posZ) {
 		this.viewMatrixLocation = shader.getUniformLocation("viewMatrix");
 		this.projectionMatrixLocation = shader.getUniformLocation("projectionMatrix");
-		
-		// this.updateProjectionMatrix(60, width, height, 0.1f, 100.0f);
-		// this.updateViewMatrix(5, 5, 5);
-	}
-	
-	private void setProjectionMatrix(final float fieldOfView, final int width, final int height, final float nearPlane, final float farPlane) {
-		this.projectionMatrix = new Matrix4f();
-		final float aspectRatio = (float) width / (float) height;
-		
-		final float y_scale = (float) (1.0f / Math.tan(Math.toRadians(fieldOfView / 2.0f)));
-		final float x_scale = y_scale / aspectRatio;
-		final float frustum_length = farPlane - nearPlane;
-		this.projectionMatrix.m00 = x_scale;
-		this.projectionMatrix.m11 = y_scale;
-		this.projectionMatrix.m22 = -((farPlane + nearPlane) / frustum_length);
-		this.projectionMatrix.m23 = -1;
-		this.projectionMatrix.m32 = -(2 * nearPlane * farPlane / frustum_length);
-		this.projectionMatrix.m33 = 0;
+		this.position = new Vector3f(posX, posY, posZ);
 	}
 	
 	public void updateViewMatrix() {
-		
 		this.viewMatrix = new Matrix4f();
 		
 		this.viewMatrix.rotate(this.pitch, new Vector3f(1, 0, 0), this.viewMatrix);
@@ -57,7 +39,18 @@ public class Camera {
 	}
 	
 	public void updateProjectionMatrix(final float fieldOfView, final int width, final int height, final float nearPlane, final float farPlane) {
-		this.setProjectionMatrix(fieldOfView, width, height, nearPlane, farPlane);
+		this.projectionMatrix = new Matrix4f();
+		final float aspectRatio = (float) width / (float) height;
+		
+		final float y_scale = (float) (1.0f / Math.tan(Math.toRadians(fieldOfView / 2.0f)));
+		final float x_scale = y_scale / aspectRatio;
+		final float frustum_length = farPlane - nearPlane;
+		this.projectionMatrix.m00 = x_scale;
+		this.projectionMatrix.m11 = y_scale;
+		this.projectionMatrix.m22 = -((farPlane + nearPlane) / frustum_length);
+		this.projectionMatrix.m23 = -1;
+		this.projectionMatrix.m32 = -(2 * nearPlane * farPlane / frustum_length);
+		this.projectionMatrix.m33 = 0;
 		
 		this.projectionMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();

@@ -19,12 +19,18 @@ public class Veya {
 	private static Program program;
 	private static Scene scene;
 	
-	private static final float mouseSensitivity = 0.005f;
+	private static final float mouseSensitivity = 0.01f;
 	private static final float movementSpeed = 10.0f; // move 10 units per second
+	
+	private static final float fieldOfView = 60.0f;
+	private static final float nearClippingPlane = 0.1f;
+	private static final float farClippingPlane = 100.0f;
 	
 	public static void main(final String[] args) throws LWJGLException {
 		
 		System.setProperty("org.lwjgl.util.Debug", "true");
+		
+		System.out.println(Float.MAX_VALUE);
 		
 		Veya.init();
 		Veya.run();
@@ -42,7 +48,7 @@ public class Veya {
 		
 		Util.checkGLError();
 		
-		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth());
+		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth(), 10, 2.8f, 10);
 		Veya.scene = new Scene(Veya.program);
 		
 		Util.checkGLError();
@@ -64,7 +70,7 @@ public class Veya {
 		Util.checkGLError();
 		
 		Veya.program.use(true);
-		Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
+		Veya.camera.updateProjectionMatrix(Veya.fieldOfView, Display.getWidth(), Display.getHeight(), Veya.nearClippingPlane, Veya.farClippingPlane);
 		Veya.camera.updateViewMatrix();
 		Veya.scene.init();
 		Veya.program.use(false);
@@ -107,11 +113,11 @@ public class Veya {
 			// controll camera pitch from y movement fromt the mouse
 			Veya.camera.pitch(dy * Veya.mouseSensitivity);
 			
-			// Util.checkGLError();
+			Util.checkGLError();
 			
 			if (Display.wasResized()) {
 				Veya.program.use(true);
-				Veya.camera.updateProjectionMatrix(60, Display.getWidth(), Display.getHeight(), 0.1f, 100f);
+				Veya.camera.updateProjectionMatrix(Veya.fieldOfView, Display.getWidth(), Display.getHeight(), Veya.nearClippingPlane, Veya.farClippingPlane);
 				Veya.program.use(false);
 				GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 				System.out.println("resized");

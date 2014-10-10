@@ -40,27 +40,29 @@ public class Scene {
 		// this.objects.add(instance7);
 		// this.objects.add(instance8);
 		
-		final int num = 8;
-		for (int x = -num; x < num; x++) {
-			for (int z = -num; z < num; z++) {
-				for (int y = 0; y < num; y++) {
-					if (x * x + y * y + z * z <= num * num) {
-						this.objects.add(new CubeInstance(x, y, z));
-					}
-				}
-				
-			}
-		}
-		for (int x = -2 * num; x < 2 * num; x++) {
-			for (int z = -2 * num; z < 2 * num; z++) {
-				this.objects.add(new CubeInstance(x, 0, z));
-			}
-		}
+		// final int num = 8;
+		// for (int x = -num; x < num; x++) {
+		// for (int z = -num; z < num; z++) {
+		// for (int y = 0; y < num; y++) {
+		// if (x * x + y * y + z * z <= num * num) {
+		// this.objects.add(new CubeInstance(x, y, z));
+		// }
+		// }
+		//
+		// }
+		// }
+		// for (int x = -2 * num; x < 2 * num; x++) {
+		// for (int z = -2 * num; z < 2 * num; z++) {
+		// this.objects.add(new CubeInstance(x, 0, z));
+		// }
+		// }
 		
-		// final CubeInstance c = new CubeInstance(-1.5f, -1.5f, -1.5f, 3, 3, 3);
-		// // c.rotateX(45);
-		// // c.rotateZ(45);
-		// this.objects.add(c);
+		final CubeInstance c = new CubeInstance(BlockType.GRASS, 0, 0, 0, 5, 5, 5);
+		// final CubeInstance d = new CubeInstance(BlockType.STONE, 0, 0, 0);
+		// c.rotateX(45);
+		// c.rotateZ(45);
+		this.objects.add(c);
+		// this.objects.add(d);
 	}
 	
 	public void init() {
@@ -77,9 +79,10 @@ public class Scene {
 			// update Model Matrix
 			cubeInstance.updateModelMatrix(this.program);
 			
+			org.lwjgl.opengl.Util.checkGLError();
+			
 			this.cube.render();
 		}
-		
 	}
 	
 	public void dispose() {

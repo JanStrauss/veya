@@ -17,14 +17,14 @@ public class CubeInstance {
 	private final Matrix4f modelMatrix = new Matrix4f();
 	private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	
-	public CubeInstance() {
+	public CubeInstance(final BlockType type) {
 	}
 	
-	public CubeInstance(final float tx, final float ty, final float tz) {
+	public CubeInstance(final BlockType type, final float tx, final float ty, final float tz) {
 		this.translate(tx, ty, tz);
 	}
 	
-	public CubeInstance(final float tx, final float ty, final float tz, final float sx, final float sy, final float sz) {
+	public CubeInstance(final BlockType type, final float tx, final float ty, final float tz, final float sx, final float sy, final float sz) {
 		this.translate(tx, ty, tz);
 		this.scale(sx, sy, sz);
 	}

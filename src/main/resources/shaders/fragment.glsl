@@ -1,6 +1,6 @@
 #version 150 core
 
-uniform sampler2D textureData;
+uniform sampler2DArray textureData;
 
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
@@ -19,7 +19,7 @@ vec3 BlinnPhong(vec3 V, vec3 N, vec3 L, vec3 color, vec3 lightColor)
   vec3 h = normalize(V + L);
   float ka = 0.33; 									// ambient
   float kd = max(0.0, dot(L, N)); 					// diffuse
-  float ks = 0.25 * pow(max(dot(N, h), 0.0), 33.0); // specular
+  float ks = 0.0 * pow(max(dot(N, h), 0.0), 33.0); // specular
 
   return vec3(ka) * color + vec3(kd) * color + ks * lightColor;
 }
@@ -29,7 +29,7 @@ void main() {
 	vec3 N = normal;
 	vec3 L = normalize(lightPosition - position);
 	
-	vec3 baseColor = vec3(texture(textureData, passTexturePosition));
+	vec3 baseColor = vec3(texture(textureData, vec3(passTexturePosition, 2)));
 
 	
 	// fragColor = passColor;

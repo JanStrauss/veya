@@ -36,15 +36,15 @@ public class Cube {
     // x, y, z,		r, g, b,	,s, t,		nx, ny, nz
     private static final Vertex[] vertexData = new Vertex[] {
 
-       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.0f,			0,-1,0),
-       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.249f,		0,-1,0),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.25f, 0.0f,		0,-1,0),
-       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.25f, 0.249f,		0,-1,0),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.0f,		0,-1,0),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 1.0f,		0,-1,0),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 0.0f,		0,-1,0),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 1.0f,		0,-1,0),
 
-       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.25f, 0.0f,		0,1,0),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.25f, 0.249f,		0,1,0),
-       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	0.5f, 0.0f,			0,1,0),
-       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	0.5f, 0.249f,		0,1,0),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 0.0f,		0,1,0),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 1.0f,		0,1,0),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 0.0f,		0,1,0),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 1.0f,		0,1,0),
        
        new Vertex( 1.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.5f, 0.249f,		0,0,1),
        new Vertex( 1.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.5f, 0.0f,			0,0,1),
@@ -134,7 +134,7 @@ public class Cube {
 	
 	void render() {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture_handle);
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
 		
 		GL30.glBindVertexArray(this.vao_handle);
 		this.shader.enableVAttributes();

@@ -13,25 +13,35 @@ import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
 public class Util {
+	
+	private static final int TEXTURE_WIDTH = 64;
+	private static final int TEXTURE_HEIGHT = 64;
+	
 	public static int loadPNGTexture(final String name, final InputStream in, final int textureUnit) {
-		ByteBuffer buf = null;
-		int tWidth = 0;
-		int tHeight = 0;
+		ByteBuffer convertedBuffer = null;
+		int sourceTexWidth = 0;
+		int sourceTexHeight = 0;
+		int texCount = 0;
 		
 		try {
 			// Link the PNG decoder to this stream
 			final PNGDecoder decoder = new PNGDecoder(in);
 			
 			// Get the width and height of the texture
-			tWidth = decoder.getWidth();
-			tHeight = decoder.getHeight();
+			sourceTexWidth = decoder.getWidth();
+			sourceTexHeight = decoder.getHeight();
+			
+			texCount = sourceTexWidth / Util.TEXTURE_WIDTH * (sourceTexHeight / Util.TEXTURE_WIDTH);
 			
 			// Decode the PNG file in a ByteBuffer
-			buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+			final ByteBuffer buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
 			decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
 			buf.flip();
 			
+			convertedBuffer = Util.convertBuffer(buf, sourceTexWidth, sourceTexHeight);
+			
 			in.close();
+			
 		} catch (final IOException e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -40,26 +50,95 @@ public class Util {
 		// Create a new texture object in memory and bind it
 		final int texId = GL11.glGenTextures();
 		GL13.glActiveTexture(textureUnit);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, texId);
 		
 		// All RGB bytes are aligned to each other and each component is 1 byte
 		GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 		
 		// Upload the texture data and generate mip maps (for scaling)
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, tWidth, tHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
-		GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+		// GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, tWidth, tHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
+		GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGB, Util.TEXTURE_WIDTH, Util.TEXTURE_HEIGHT, texCount, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, convertedBuffer);
+		GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
 		
 		// Setup the ST coordinate system
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 		
 		// Setup what to do when the texture has to be scaled
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
 		
 		org.lwjgl.opengl.Util.checkGLError();
-		System.out.println("loading texture " + name + ", id=" + texId + ", w=" + tWidth + ", h=" + tHeight);
+		
+		System.out.println("loading texture " + name + ", id=" + texId + ", w=" + sourceTexWidth + ", h=" + sourceTexHeight);
 		
 		return texId;
+	}
+	
+	private static ByteBuffer convertBuffer(final ByteBuffer orig, final int sourceWidth, final int sourceHeight) {
+		final ByteBuffer result = ByteBuffer.allocateDirect(sourceWidth * sourceHeight * 4);
+		
+		final int cellWidth = sourceWidth / Util.TEXTURE_WIDTH;
+		final int cellHeight = sourceHeight / Util.TEXTURE_HEIGHT;
+		
+		int i = 0;
+		for (int y_cell = 0; y_cell < cellHeight; y_cell++) {
+			for (int x_cell = 0; x_cell < cellWidth; x_cell++) {
+				for (int y = 0; y < Util.TEXTURE_HEIGHT; y++) {
+					for (int x = 0; x < Util.TEXTURE_WIDTH; x++) {
+						final int coordOrig = 4 * ((y + y_cell * Util.TEXTURE_HEIGHT) * sourceWidth + x + x_cell * Util.TEXTURE_WIDTH);
+						
+						final byte r = orig.get(coordOrig + 0);
+						final byte g = orig.get(coordOrig + 1);
+						final byte b = orig.get(coordOrig + 2);
+						final byte a = orig.get(coordOrig + 3);
+						
+						result.put(r);
+						result.put(g);
+						result.put(b);
+						result.put(a);
+						
+						// System.out.println("i=" + i + " cO=" + coordOrig + " | r=" + r + " g=" + g + " b= " + b + " a=" + a);
+						i++;
+					}
+				}
+			}
+		}
+		result.flip();
+		return result;
+	}
+	
+	public static void main(final String[] args) {
+		
+		ByteBuffer buf = null;
+		int sourceTexWidth = 0;
+		int sourceTexHeight = 0;
+		int texCount = 0;
+		
+		try {
+			// Link the PNG decoder to this stream
+			final InputStream in = Util.class.getResourceAsStream("/textures/blocks.png");
+			
+			final PNGDecoder decoder = new PNGDecoder(in);
+			
+			// Get the width and height of the texture
+			sourceTexWidth = decoder.getWidth();
+			sourceTexHeight = decoder.getHeight();
+			
+			texCount = sourceTexWidth / Util.TEXTURE_WIDTH * (sourceTexHeight / Util.TEXTURE_WIDTH);
+			
+			// Decode the PNG file in a ByteBuffer
+			buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+			decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
+			buf.flip();
+			
+			Util.convertBuffer(buf, sourceTexWidth, sourceTexHeight);
+			
+			in.close();
+			
+		} catch (final IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
 	}
 }
