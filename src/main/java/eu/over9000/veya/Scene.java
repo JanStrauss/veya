@@ -57,12 +57,16 @@ public class Scene {
 		// }
 		// }
 		
-		final CubeInstance c = new CubeInstance(BlockType.GRASS, 0, 0, 0, 5, 5, 5);
-		// final CubeInstance d = new CubeInstance(BlockType.STONE, 0, 0, 0);
+		final CubeInstance c = new CubeInstance(BlockType.GRASS, 0, 0, 0);
+		final CubeInstance d = new CubeInstance(BlockType.STONE, 2, 0, 2);
+		final CubeInstance e = new CubeInstance(BlockType.DIRT, 0, 0, 2);
+		final CubeInstance f = new CubeInstance(BlockType.TEST, 2, 0, 0);
 		// c.rotateX(45);
 		// c.rotateZ(45);
 		this.objects.add(c);
-		// this.objects.add(d);
+		this.objects.add(d);
+		this.objects.add(e);
+		this.objects.add(f);
 	}
 	
 	public void init() {
@@ -78,6 +82,7 @@ public class Scene {
 		for (final CubeInstance cubeInstance : this.objects) {
 			// update Model Matrix
 			cubeInstance.updateModelMatrix(this.program);
+			cubeInstance.updateTextureLookupTable(this.program);
 			
 			org.lwjgl.opengl.Util.checkGLError();
 			

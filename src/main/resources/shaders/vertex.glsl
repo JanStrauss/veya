@@ -6,15 +6,16 @@ uniform mat4 projectionMatrix;
 
 in vec4 vertexPosition;
 in vec4 vertexColor;
-in vec2 vertexTexturePosition;
+in vec3 vertexTexturePosition;
 in vec3 vertexNormal;
 
 out vec4 passColor;
-out vec2 passTexturePosition;
+out vec3 passTexturePosition;
 
 out vec3 normal;
 out vec3 position;
 out vec3 cameraPosition;
+
 
 void main() {
 	mat4 modelInvTranspMatrix = transpose(inverse(modelMatrix));

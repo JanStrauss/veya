@@ -33,38 +33,38 @@ public class Cube {
 
     };
     
-    // x, y, z,		r, g, b,	,s, t,		nx, ny, nz
+    // x, y, z,		r, g, b,	,s, t,		v,		nx, ny, nz
     private static final Vertex[] vertexData = new Vertex[] {
 
-       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.0f,		0,-1,0),
-       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 1.0f,		0,-1,0),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 0.0f,		0,-1,0),
-       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 1.0f,		0,-1,0),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 0.0f,	0,		0,-1,0),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	0.0f, 1.0f,	0,		0,-1,0),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 0.0f,	0,		0,-1,0),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 0.0f, 	1.0f, 1.0f,	0,		0,-1,0),
 
-       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 0.0f,		0,1,0),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 1.0f,		0,1,0),
-       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 0.0f,		0,1,0),
-       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 1.0f,		0,1,0),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 0.0f,	1,		0,1,0),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 1.0f, 0.0f, 	0.0f, 1.0f,	1,		0,1,0),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 0.0f,	1,		0,1,0),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 1.0f, 0.0f, 	1.0f, 1.0f,	1,		0,1,0),
        
-       new Vertex( 1.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.5f, 0.249f,		0,0,1),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.5f, 0.0f,			0,0,1),
-       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.749f, 0.249f,		0,0,1),
-       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.749f, 0.0f,		0,0,1),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.0f, 0.0f,	2,		0,0,1),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	0.0f, 1.0f,	2,		0,0,1),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	1.0f, 0.0f,	2,		0,0,1),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 1.0f, 0.0f, 	1.0f, 1.0f,	2,		0,0,1),
 
-       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.5f, 0.0f,			0,0,-1),
-       new Vertex( 1.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.749f, 0.0f,		0,0,-1),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.5f, 0.249f,		0,0,-1),
-       new Vertex( 1.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.749f, 0.249f,		0,0,-1),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.0f, 0.0f,	3,		0,0,-1),
+       new Vertex( 1.0f, 1.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	0.0f, 1.0f,	3,		0,0,-1),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	1.0f, 0.0f,	3,		0,0,-1),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	0.0f, 1.0f, 1.0f, 	1.0f, 1.0f,	3,		0,0,-1),
 
-       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.5f, 0.249f,		-1,0,0),
-       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.5f, 0.0f,			-1,0,0),
-       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	0.749f, 0.249f,		-1,0,0),
-       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	0.749f, 0.0f,		-1,0,0),
+       new Vertex( 0.0f, 0.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.0f, 0.0f,	4,		-1,0,0),
+       new Vertex( 0.0f, 1.0f, 1.0f, 	0.0f, 0.0f, 1.0f, 	0.0f, 1.0f,	4,		-1,0,0),
+       new Vertex( 0.0f, 0.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	1.0f, 0.0f,	4,		-1,0,0),
+       new Vertex( 0.0f, 1.0f, 0.0f, 	0.0f, 0.0f, 1.0f, 	1.0f, 1.0f,	4,		-1,0,0),
 
-       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.5f, 0.0f,			1,0,0),
-       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.749f, 0.0f,		1,0,0),
-       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.5f, 0.249f,		1,0,0),
-       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.749f,0.249f,		1,0,0)
+       new Vertex( 1.0f, 1.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	0.0f, 0.0f,	5,		1,0,0),
+       new Vertex( 1.0f, 1.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	0.0f, 1.0f,	5,		1,0,0),
+       new Vertex( 1.0f, 0.0f, 0.0f, 	1.0f, 0.0f, 1.0f, 	1.0f, 0.0f,	5,		1,0,0),
+       new Vertex( 1.0f, 0.0f, 1.0f, 	1.0f, 0.0f, 1.0f, 	1.0f, 1.0f,	5,		1,0,0)
 
     };
 	
@@ -83,8 +83,8 @@ public class Cube {
 		this.ibo_buffer.flip();
 		
 		this.vbo_buffer = BufferUtils.createFloatBuffer(Cube.vertexData.length * Vertex.elementCount);
-		for (final Vertex element : Cube.vertexData) {
-			this.vbo_buffer.put(element.getElements());
+		for (final Vertex vertex : Cube.vertexData) {
+			this.vbo_buffer.put(vertex.getElements());
 		}
 		this.vbo_buffer.flip();
 		
@@ -104,16 +104,16 @@ public class Cube {
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle);
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexPosition"));
-		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexPosition"), 4, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexPosition"), Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
 		
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexColor"));
-		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexColor"), 4, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexColor"), Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
 		
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexTexturePosition"));
-		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexTexturePosition"), 2, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexTexturePosition"), Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
 		
 		GL20.glEnableVertexAttribArray(shader.getAttribLocation("vertexNormal"));
-		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexNormal"), 3, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
+		GL20.glVertexAttribPointer(shader.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
 		
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle);
 		

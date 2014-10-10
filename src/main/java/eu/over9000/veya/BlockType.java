@@ -2,64 +2,44 @@ package eu.over9000.veya;
 
 public enum BlockType {
 	
-	STONE(BlockFace.gen(3, 0)), DIRT(BlockFace.gen(0, 0)), GRASS(BlockFace.gen(1, 0), BlockFace.gen(0, 0), BlockFace.gen(2, 0));
+	STONE(3), DIRT(0), GRASS(0, 1, 2), TEST(5, 4, 6, 7, 8, 9);
 	
-	private BlockType(final BlockFace all) {
-		this.top = all;
-		this.bottom = all;
-		this.north = all;
-		this.east = all;
-		this.south = all;
-		this.west = all;
+	private final int textureIDBottom;
+	private final int textureIDTop;
+	private final int textureIDNorth;
+	private final int textureIDEast;
+	private final int textureIDSouth;
+	private final int textureIDWest;
+	
+	private BlockType(final int textureIDAll) {
+		this.textureIDBottom = textureIDAll;
+		this.textureIDTop = textureIDAll;
+		this.textureIDNorth = textureIDAll;
+		this.textureIDEast = textureIDAll;
+		this.textureIDSouth = textureIDAll;
+		this.textureIDWest = textureIDAll;
 	}
 	
-	private BlockType(final BlockFace top, final BlockFace bottom, final BlockFace sides) {
-		this.top = top;
-		this.bottom = bottom;
-		this.north = sides;
-		this.east = sides;
-		this.south = sides;
-		this.west = sides;
+	private BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDAll) {
+		this.textureIDBottom = textureIDBottom;
+		this.textureIDTop = textureIDTop;
+		this.textureIDNorth = textureIDAll;
+		this.textureIDEast = textureIDAll;
+		this.textureIDSouth = textureIDAll;
+		this.textureIDWest = textureIDAll;
 	}
 	
-	private BlockType(final BlockFace top, final BlockFace bottom, final BlockFace north, final BlockFace east, final BlockFace south, final BlockFace west) {
-		this.top = top;
-		this.bottom = bottom;
-		this.north = north;
-		this.east = east;
-		this.south = south;
-		this.west = west;
+	private BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDNorth, final int textureIDEast, final int textureIDSouth, final int textureIDWest) {
+		this.textureIDBottom = textureIDBottom;
+		this.textureIDTop = textureIDTop;
+		this.textureIDNorth = textureIDNorth;
+		this.textureIDEast = textureIDEast;
+		this.textureIDSouth = textureIDSouth;
+		this.textureIDWest = textureIDWest;
 	}
 	
-	private final BlockFace top;
-	private final BlockFace bottom;
-	private final BlockFace north;
-	private final BlockFace east;
-	private final BlockFace south;
-	private final BlockFace west;
-	
-	public BlockFace getTop() {
-		return this.top;
-	}
-	
-	public BlockFace getBottom() {
-		return this.bottom;
-	}
-	
-	public BlockFace getNorth() {
-		return this.north;
-	}
-	
-	public BlockFace getEast() {
-		return this.east;
-	}
-	
-	public BlockFace getSouth() {
-		return this.south;
-	}
-	
-	public BlockFace getWest() {
-		return this.west;
+	public int[] getTextureLookupArray() {
+		return new int[] { this.textureIDBottom, this.textureIDTop, this.textureIDNorth, this.textureIDEast, this.textureIDSouth, this.textureIDWest };
 	}
 	
 }

@@ -7,10 +7,10 @@ public class Vertex {
 	private float[] st = new float[] { 0f, 0f };
 	private float[] n = new float[] { 0f, 0f, 0f };
 	
-	Vertex(final float x, final float y, final float z, final float r, final float g, final float b, final float s, final float t, final float nx, final float ny, final float nz) {
+	Vertex(final float x, final float y, final float z, final float r, final float g, final float b, final float s, final float t, final float u, final float nx, final float ny, final float nz) {
 		this.setXYZ(x, y, z);
 		this.setRGB(r, g, b);
-		this.setST(s, t);
+		this.setSTU(s, t, u);
 		this.setN(nx, ny, nz);
 	}
 	
@@ -20,7 +20,7 @@ public class Vertex {
 	// Elements per parameter
 	public static final int positionElementCount = 4;
 	public static final int colorElementCount = 4;
-	public static final int textureElementCount = 2;
+	public static final int textureElementCount = 3;
 	public static final int normalElementCount = 3;
 	
 	// Bytes per parameter
@@ -53,8 +53,8 @@ public class Vertex {
 		this.n = new float[] { nx, ny, nz };
 	}
 	
-	public void setST(final float s, final float t) {
-		this.st = new float[] { s, t };
+	public void setSTU(final float s, final float t, final float u) {
+		this.st = new float[] { s, t, u };
 	}
 	
 	// Getters
@@ -72,30 +72,15 @@ public class Vertex {
 		out[i++] = this.rgba[1];
 		out[i++] = this.rgba[2];
 		out[i++] = this.rgba[3];
-		// Insert ST elements
+		// Insert STU elements
 		out[i++] = this.st[0];
 		out[i++] = this.st[1];
+		out[i++] = this.st[2];
 		// Insert N elements
 		out[i++] = this.n[0];
 		out[i++] = this.n[1];
 		out[i++] = this.n[2];
 		
 		return out;
-	}
-	
-	public float[] getXYZW() {
-		return new float[] { this.xyzw[0], this.xyzw[1], this.xyzw[2], this.xyzw[3] };
-	}
-	
-	public float[] getRGBA() {
-		return new float[] { this.rgba[0], this.rgba[1], this.rgba[2], this.rgba[3] };
-	}
-	
-	public float[] getST() {
-		return new float[] { this.st[0], this.st[1] };
-	}
-	
-	public float[] getN() {
-		return new float[] { this.n[0], this.n[1], this.n[2] };
 	}
 }

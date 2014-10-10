@@ -1,6 +1,7 @@
 package eu.over9000.veya;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
@@ -16,15 +17,21 @@ public class CubeInstance {
 	
 	private final Matrix4f modelMatrix = new Matrix4f();
 	private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+	private static final IntBuffer texLookupBuffer = BufferUtils.createIntBuffer(6);
+	
+	private final BlockType type;
 	
 	public CubeInstance(final BlockType type) {
+		this.type = type;
 	}
 	
 	public CubeInstance(final BlockType type, final float tx, final float ty, final float tz) {
+		this.type = type;
 		this.translate(tx, ty, tz);
 	}
 	
 	public CubeInstance(final BlockType type, final float tx, final float ty, final float tz, final float sx, final float sy, final float sz) {
+		this.type = type;
 		this.translate(tx, ty, tz);
 		this.scale(sx, sy, sz);
 	}
@@ -54,7 +61,11 @@ public class CubeInstance {
 		CubeInstance.matrixBuffer.flip();
 		GL20.glUniformMatrix4(shader.getUniformLocation("modelMatrix"), false, CubeInstance.matrixBuffer);
 		
-		// System.out.println("updated model matrix:");
-		// System.out.println(this.modelMatrix);
+	}
+	
+	public void updateTextureLookupTable(final Program shader) {
+		CubeInstance.texLookupBuffer.put(this.type.getTextureLookupArray());
+		CubeInstance.texLookupBuffer.flip();
+		GL20.glUniform1(shader.getUniformLocation("textureLookup"), CubeInstance.texLookupBuffer);
 	}
 }

@@ -44,7 +44,7 @@ public class Veya {
 		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 2));
 		
 		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal" }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix",
-				"lightPosition", "lightColor" });
+				"lightPosition", "lightColor", "textureLookup" });
 		
 		Util.checkGLError();
 		

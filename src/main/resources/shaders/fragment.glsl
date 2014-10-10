@@ -5,8 +5,10 @@ uniform sampler2DArray textureData;
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
 
+uniform int textureLookup[6];
+
 in vec4 passColor;
-in vec2 passTexturePosition;
+in vec3 passTexturePosition;
 
 in vec3 normal;
 in vec3 position;
@@ -29,7 +31,7 @@ void main() {
 	vec3 N = normal;
 	vec3 L = normalize(lightPosition - position);
 	
-	vec3 baseColor = vec3(texture(textureData, vec3(passTexturePosition, 2)));
+	vec3 baseColor = vec3(texture(textureData, vec3(passTexturePosition.xy, textureLookup[int(passTexturePosition.z)])));
 
 	
 	// fragColor = passColor;
