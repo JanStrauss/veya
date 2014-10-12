@@ -147,7 +147,7 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				System.out.println("fps: " + count + " | pos: " + Veya.camera.getPosition());
+				Display.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z);
 				count = 0;
 			} else {
 				count++;

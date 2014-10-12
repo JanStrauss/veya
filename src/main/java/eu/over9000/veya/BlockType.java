@@ -2,7 +2,7 @@ package eu.over9000.veya;
 
 public enum BlockType {
 	
-	STONE(3), DIRT(0), GRASS(0, 1, 2), TEST(5, 4, 6, 7, 8, 9);
+	STONE(3), DIRT(0), GRASS(0, 1, 2), TEST(5, 4, 6, 7, 8, 9), WOOD(10, 10, 11), WATER(12), LEAVES(13), SAND(14), IRON_ORE(15);
 	
 	private final int textureIDBottom;
 	private final int textureIDTop;

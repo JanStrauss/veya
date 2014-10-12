@@ -21,31 +21,14 @@ public class Scene {
 		this.objects = new ArrayList<>();
 		this.program = shader;
 		
-		this.light = new Light(20, 20, 20, 0.9f, 0.9f, 0.45f);
+		this.light = new Light(30, 30, 30, 0.9f, 0.9f, 0.45f);
 		
-		// final CubeInstance instance1 = new CubeInstance(0, 0, 0);
-		// final CubeInstance instance2 = new CubeInstance(0, 0, 1);
-		// final CubeInstance instance3 = new CubeInstance(1, 0, 0);
-		// final CubeInstance instance4 = new CubeInstance(1, 0, 1);
-		//
-		// final CubeInstance instance5 = new CubeInstance(0, 1, 0);
-		// final CubeInstance instance6 = new CubeInstance(0, 1, 1);
-		// final CubeInstance instance7 = new CubeInstance(1, 1, 0);
-		// final CubeInstance instance8 = new CubeInstance(1, 1, 1);
-		//
-		// this.objects.add(instance1);
-		// this.objects.add(instance2);
-		// this.objects.add(instance3);
-		// this.objects.add(instance4);
-		// this.objects.add(instance5);
-		// this.objects.add(instance6);
-		// this.objects.add(instance7);
-		// this.objects.add(instance8);
+		// GROUND
 		
 		final int num = 64;
 		
-		for (int x = 0; x < num; x++) {
-			for (int z = 0; z < num; z++) {
+		for (int x = -num; x < num; x++) {
+			for (int z = -num; z < num; z++) {
 				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f) * 1 + 5;
 				
 				for (int i = 0; i < height; i++) {
@@ -57,18 +40,50 @@ public class Scene {
 			}
 		}
 		
-		final CubeInstance c = new CubeInstance(BlockType.GRASS, 0, 20, 0);
-		final CubeInstance d = new CubeInstance(BlockType.STONE, 2, 20, 2);
-		final CubeInstance e = new CubeInstance(BlockType.DIRT, 0, 20, 2);
-		final CubeInstance f = new CubeInstance(BlockType.TEST, 2, 20, 0);
-		// c.rotateX(45);
-		// c.rotateZ(45);
-		this.objects.add(c);
-		this.objects.add(d);
-		this.objects.add(e);
-		this.objects.add(f);
+		// TEST BLOCKS
+		
+		this.objects.add(new CubeInstance(BlockType.GRASS, 0, 20, 0));
+		this.objects.add(new CubeInstance(BlockType.STONE, 2, 20, 2));
+		this.objects.add(new CubeInstance(BlockType.DIRT, 0, 20, 2));
+		this.objects.add(new CubeInstance(BlockType.TEST, 2, 20, 0));
+		this.objects.add(new CubeInstance(BlockType.WATER, 4, 20, 0));
+		this.objects.add(new CubeInstance(BlockType.WOOD, 0, 20, 4));
+		this.objects.add(new CubeInstance(BlockType.LEAVES, 4, 20, 4));
+		this.objects.add(new CubeInstance(BlockType.SAND, 2, 20, 4));
+		this.objects.add(new CubeInstance(BlockType.IRON_ORE, 4, 20, 2));
+		
+		// TREE
+		this.plantTree(35, 10, 35);
 		
 		System.out.println("SCENE HAS " + this.objects.size() + " BLOCKS");
+	}
+	
+	private void plantTree(final int xRoot, final int yRoot, final int zRoot) {
+		for (int i = 0; i < 5; i++) {
+			this.objects.add(new CubeInstance(BlockType.WOOD, xRoot, yRoot + i, zRoot));
+		}
+		for (int l = 0; l < 2; l++) {
+			for (int x = xRoot - 2; x <= xRoot + 2; x++) {
+				for (int z = zRoot - 2; z <= zRoot + 2; z++) {
+					if (x != xRoot || z != zRoot) {
+						this.objects.add(new CubeInstance(BlockType.LEAVES, x, yRoot + 2 + l, z));
+					}
+				}
+			}
+		}
+		for (int x = xRoot - 1; x <= xRoot + 1; x++) {
+			for (int z = zRoot - 1; z <= zRoot + 1; z++) {
+				if (x != xRoot || z != zRoot) {
+					this.objects.add(new CubeInstance(BlockType.LEAVES, x, yRoot + 4, z));
+				}
+			}
+		}
+		this.objects.add(new CubeInstance(BlockType.LEAVES, xRoot, yRoot + 5, zRoot));
+		this.objects.add(new CubeInstance(BlockType.LEAVES, xRoot - 1, yRoot + 5, zRoot));
+		this.objects.add(new CubeInstance(BlockType.LEAVES, xRoot + 1, yRoot + 5, zRoot));
+		this.objects.add(new CubeInstance(BlockType.LEAVES, xRoot, yRoot + 5, zRoot - 1));
+		this.objects.add(new CubeInstance(BlockType.LEAVES, xRoot, yRoot + 5, zRoot + 1));
+		
 	}
 	
 	public void init() {
@@ -81,22 +96,10 @@ public class Scene {
 		this.light.init(this.program);
 	}
 	
-	public void render() {
-		for (final CubeInstance cubeInstance : this.objects) {
-			// update Model Matrix
-			cubeInstance.updateModelMatrix(this.program);
-			CubeInstance.updateTextureLookupTable(this.program);
-			
-			org.lwjgl.opengl.Util.checkGLError();
-			
-			this.cube.render();
-		}
-	}
-	
 	public void renderInstanced() {
 		this.objects.get(0);
 		CubeInstance.updateTextureLookupTable(this.program);
-		this.objects.get(0).updateModelMatrix(this.program);
+		CubeInstance.updateModelMatrix(this.program);
 		this.cube.renderInstanced(this.objects);
 		
 	}

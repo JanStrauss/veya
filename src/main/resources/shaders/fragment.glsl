@@ -1,11 +1,13 @@
 #version 150 core
 
-const int BLOCK_COUNT = 4;
+const int BLOCK_COUNT = 9;
 
 uniform sampler2DArray textureData;
 
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
+
+uniform bool colorSwitch;
 
 uniform int textureLookup[6 * BLOCK_COUNT];
 
@@ -31,11 +33,16 @@ vec3 BlinnPhong(vec3 V, vec3 N, vec3 L, vec3 color, vec3 lightColor)
 }
 
 void main() {
-	vec3 V = normalize(cameraPosition - position);
-	vec3 N = normal;
-	vec3 L = normalize(lightPosition - position);
-	
-	vec3 baseColor = vec3(texture(textureData, vec3(passTexturePosition.xy, textureLookup[texOffset * 6 + int(passTexturePosition.z)])));
-	
-    fragColor = 0.00001 * passColor + vec4(BlinnPhong(V, N, L, baseColor, lightColor), 1.0);
+	if(colorSwitch){
+		fragColor = passColor;
+	} else{
+		vec3 V = normalize(cameraPosition - position);
+		vec3 N = normal;
+		vec3 L = normalize(lightPosition - position);
+		
+		vec4 texColor = texture(textureData, vec3(passTexturePosition.xy, textureLookup[texOffset * 6 + int(passTexturePosition.z)]));
+		
+		vec3 baseColor = vec3(texColor.rgb);
+		fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor), texColor.a);
+	}
 }

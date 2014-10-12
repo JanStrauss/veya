@@ -65,11 +65,10 @@ public class CubeInstance {
 		return this.type;
 	}
 	
-	public void updateModelMatrix(final Program shader) {
-		this.modelMatrix.store(CubeInstance.matrixBuffer);
+	public static void updateModelMatrix(final Program shader) {
+		new Matrix4f().store(CubeInstance.matrixBuffer);
 		CubeInstance.matrixBuffer.flip();
 		GL20.glUniformMatrix4(shader.getUniformLocation("modelMatrix"), false, CubeInstance.matrixBuffer);
-		
 	}
 	
 	public static void updateTextureLookupTable(final Program shader) {
