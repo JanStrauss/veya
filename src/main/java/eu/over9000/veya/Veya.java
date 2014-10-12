@@ -24,7 +24,7 @@ public class Veya {
 	
 	private static final float fieldOfView = 60.0f;
 	private static final float nearClippingPlane = 0.1f;
-	private static final float farClippingPlane = 100.0f;
+	private static final float farClippingPlane = 1000.0f;
 	
 	public static void main(final String[] args) throws LWJGLException {
 		
@@ -43,8 +43,8 @@ public class Veya {
 		Display.setResizable(true);
 		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 3));
 		
-		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "instancedPosition", }, new String[] { "modelMatrix", "viewMatrix",
-				"projectionMatrix", "lightPosition", "lightColor", "textureLookup" });
+		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "instancedPosition", "instancedTexOffset" }, new String[] { "modelMatrix",
+				"viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "textureLookup" });
 		
 		Util.checkGLError();
 		
@@ -133,7 +133,7 @@ public class Veya {
 			
 			Veya.camera.updateViewMatrix();
 			// Veya.camera.updateViewMatrix(posX, posY, posZ, dx, dy);
-			Veya.scene.updateLight(posX, 20, posZ);
+			// Veya.scene.updateLight(posX, 20, posZ);
 			
 			Veya.scene.renderInstanced();
 			

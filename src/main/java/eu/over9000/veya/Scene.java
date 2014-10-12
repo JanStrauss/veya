@@ -11,7 +11,7 @@ public class Scene {
 	private Light light;
 	private final Program program;
 	
-	public static final int CHUNK_BLOCK_COUNT = 16 * 16 * 256;
+	public static final int CHUNK_BLOCK_COUNT = 128 * 128 * 256;
 	
 	public Scene(final Program shader) {
 		this.cube = new Cube(shader);
@@ -42,11 +42,11 @@ public class Scene {
 		// this.objects.add(instance7);
 		// this.objects.add(instance8);
 		
-		final int num = 16;
+		final int num = 64;
 		
 		for (int x = 0; x < num; x++) {
 			for (int z = 0; z < num; z++) {
-				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f) * 1 + 200;
+				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f) * 1 + 5;
 				
 				for (int i = 0; i < height; i++) {
 					this.objects.add(new CubeInstance(BlockType.STONE, x, i, z));
@@ -67,6 +67,8 @@ public class Scene {
 		this.objects.add(d);
 		this.objects.add(e);
 		this.objects.add(f);
+		
+		System.out.println("SCENE HAS " + this.objects.size() + " BLOCKS");
 	}
 	
 	public void init() {
@@ -83,7 +85,7 @@ public class Scene {
 		for (final CubeInstance cubeInstance : this.objects) {
 			// update Model Matrix
 			cubeInstance.updateModelMatrix(this.program);
-			cubeInstance.updateTextureLookupTable(this.program);
+			CubeInstance.updateTextureLookupTable(this.program);
 			
 			org.lwjgl.opengl.Util.checkGLError();
 			
@@ -92,7 +94,8 @@ public class Scene {
 	}
 	
 	public void renderInstanced() {
-		this.objects.get(0).updateTextureLookupTable(this.program);
+		this.objects.get(0);
+		CubeInstance.updateTextureLookupTable(this.program);
 		this.objects.get(0).updateModelMatrix(this.program);
 		this.cube.renderInstanced(this.objects);
 		

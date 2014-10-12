@@ -20,7 +20,7 @@ public class Cube {
 	private final FloatBuffer vbo_buffer;
 	
 	private final FloatBuffer modelPositionBuffer;
-	// private final IntBuffer textureIndexBuffer;
+	private final IntBuffer textureOffsetBuffer;
 	
 	int vbo_handle;
 	int vao_handle;
@@ -29,7 +29,7 @@ public class Cube {
 	int texture_handle;
 	
 	int modPos_handle;
-	// int texTable_handle;
+	int texOffset_handle;
 	
 	//@formatter:off
     private static final int[] indexData = new int[] {
@@ -105,7 +105,7 @@ public class Cube {
 		this.vbo_buffer.flip();
 		
 		this.modelPositionBuffer = BufferUtils.createFloatBuffer(4 * Scene.CHUNK_BLOCK_COUNT);
-		// this.textureIndexBuffer = BufferUtils.createIntBuffer(6 * Scene.CHUNK_BLOCK_COUNT);
+		this.textureOffsetBuffer = BufferUtils.createIntBuffer(Scene.CHUNK_BLOCK_COUNT);
 		
 		// create objects
 		this.ibo_handle = GL15.glGenBuffers();
@@ -122,7 +122,7 @@ public class Cube {
 		GL30.glBindVertexArray(this.vao_handle);
 		
 		this.modPos_handle = GL15.glGenBuffers();
-		// this.texTable_handle = GL15.glGenBuffers();
+		this.texOffset_handle = GL15.glGenBuffers();
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle);
 		GL20.glEnableVertexAttribArray(program.getAttribLocation("vertexPosition"));
@@ -146,11 +146,11 @@ public class Cube {
 		
 		for (final CubeInstance cubeInstance : instances) {
 			cubeInstance.getModelPosition().store(this.modelPositionBuffer);
-			// this.textureIndexBuffer.put(cubeInstance.getBlockType().getTextureLookupArray());
+			this.textureOffsetBuffer.put(cubeInstance.getBlockType().ordinal());
 		}
 		
 		this.modelPositionBuffer.flip();
-		// this.textureIndexBuffer.flip();
+		this.textureOffsetBuffer.flip();
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.modPos_handle);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.modelPositionBuffer, GL15.GL_STATIC_DRAW);
@@ -158,11 +158,11 @@ public class Cube {
 		
 		org.lwjgl.opengl.Util.checkGLError();
 		
-		// GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.texTable_handle);
-		// GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.textureIndexBuffer, GL15.GL_STATIC_DRAW);
-		// GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		//
-		// org.lwjgl.opengl.Util.checkGLError();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.texOffset_handle);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.textureOffsetBuffer, GL15.GL_STATIC_DRAW);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		
+		org.lwjgl.opengl.Util.checkGLError();
 		
 		GL30.glBindVertexArray(this.vao_handle);
 		
@@ -173,13 +173,13 @@ public class Cube {
 		
 		org.lwjgl.opengl.Util.checkGLError();
 		
-		// GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.texTable_handle);
-		// org.lwjgl.opengl.Util.checkGLError();
-		// GL20.glEnableVertexAttribArray(this.program.getAttribLocation("instancedTextureTable"));
-		// org.lwjgl.opengl.Util.checkGLError();
-		// GL20.glVertexAttribPointer(this.program.getAttribLocation("instancedTextureTable"), 1, GL11.GL_INT, false, 1 * 4, 0);
-		// org.lwjgl.opengl.Util.checkGLError();
-		// GL33.glVertexAttribDivisor(this.program.getAttribLocation("instancedTextureTable"), 1);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.texOffset_handle);
+		org.lwjgl.opengl.Util.checkGLError();
+		GL20.glEnableVertexAttribArray(this.program.getAttribLocation("instancedTexOffset"));
+		org.lwjgl.opengl.Util.checkGLError();
+		GL30.glVertexAttribIPointer(this.program.getAttribLocation("instancedTexOffset"), 1, GL11.GL_INT, 1 * 4, 0);
+		org.lwjgl.opengl.Util.checkGLError();
+		GL33.glVertexAttribDivisor(this.program.getAttribLocation("instancedTexOffset"), 1);
 		
 		GL30.glBindVertexArray(0);
 	}

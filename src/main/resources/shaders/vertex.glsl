@@ -10,9 +10,11 @@ in vec3 vertexTexturePosition;
 in vec3 vertexNormal;
 
 in vec4 instancedPosition;
+in int instancedTexOffset;
 
 out vec4 passColor;
 out vec3 passTexturePosition;
+out int texOffset;
 
 out vec3 normal;
 out vec3 position;
@@ -28,7 +30,7 @@ void main() {
     
     passColor = vertexColor;
     passTexturePosition = vertexTexturePosition;
-    
+    texOffset = instancedTexOffset;
     
     normal = normalize(vec3(modelInvTranspMatrix * vec4(vertexNormal,1.0)));
     position = vec3(worldPosition);

@@ -38,8 +38,19 @@ public enum BlockType {
 		this.textureIDWest = textureIDWest;
 	}
 	
-	public int[] getTextureLookupArray() {
-		return new int[] { this.textureIDBottom, this.textureIDTop, this.textureIDNorth, this.textureIDEast, this.textureIDSouth, this.textureIDWest };
+	public static int[] getTextureLookupArray() {
+		final int[] table = new int[6 * BlockType.values().length];
+		
+		for (int i = 0; i < BlockType.values().length; i++) {
+			final BlockType type = BlockType.values()[i];
+			table[i * 6 + 0] = type.textureIDBottom;
+			table[i * 6 + 1] = type.textureIDTop;
+			table[i * 6 + 2] = type.textureIDNorth;
+			table[i * 6 + 3] = type.textureIDEast;
+			table[i * 6 + 4] = type.textureIDSouth;
+			table[i * 6 + 5] = type.textureIDWest;
+		}
+		return table;
 	}
 	
 }

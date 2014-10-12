@@ -18,7 +18,7 @@ public class CubeInstance {
 	
 	private final Matrix4f modelMatrix = new Matrix4f();
 	private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-	private static final IntBuffer texLookupBuffer = BufferUtils.createIntBuffer(6);
+	private static final IntBuffer texLookupBuffer = BufferUtils.createIntBuffer(6 * BlockType.values().length);
 	
 	private final BlockType type;
 	
@@ -72,8 +72,8 @@ public class CubeInstance {
 		
 	}
 	
-	public void updateTextureLookupTable(final Program shader) {
-		CubeInstance.texLookupBuffer.put(this.type.getTextureLookupArray());
+	public static void updateTextureLookupTable(final Program shader) {
+		CubeInstance.texLookupBuffer.put(BlockType.getTextureLookupArray());
 		CubeInstance.texLookupBuffer.flip();
 		GL20.glUniform1(shader.getUniformLocation("textureLookup"), CubeInstance.texLookupBuffer);
 	}
