@@ -7,6 +7,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public class CubeInstance {
 	
@@ -56,6 +57,14 @@ public class CubeInstance {
 		Matrix4f.scale(new Vector3f(sx, sy, sz), this.modelMatrix, this.modelMatrix);
 	}
 	
+	public Matrix4f getModelMatrix() {
+		return this.modelMatrix;
+	}
+	
+	public BlockType getBlockType() {
+		return this.type;
+	}
+	
 	public void updateModelMatrix(final Program shader) {
 		this.modelMatrix.store(CubeInstance.matrixBuffer);
 		CubeInstance.matrixBuffer.flip();
@@ -67,5 +76,9 @@ public class CubeInstance {
 		CubeInstance.texLookupBuffer.put(this.type.getTextureLookupArray());
 		CubeInstance.texLookupBuffer.flip();
 		GL20.glUniform1(shader.getUniformLocation("textureLookup"), CubeInstance.texLookupBuffer);
+	}
+	
+	public Vector4f getModelPosition() {
+		return new Vector4f(this.modelMatrix.m30, this.modelMatrix.m31, this.modelMatrix.m32, this.modelMatrix.m33);
 	}
 }

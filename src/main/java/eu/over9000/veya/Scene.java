@@ -11,6 +11,8 @@ public class Scene {
 	private Light light;
 	private final Program program;
 	
+	public static final int CHUNK_BLOCK_COUNT = 16 * 16 * 256;
+	
 	public Scene(final Program shader) {
 		this.cube = new Cube(shader);
 		
@@ -40,11 +42,11 @@ public class Scene {
 		// this.objects.add(instance7);
 		// this.objects.add(instance8);
 		
-		final int num = 8;
+		final int num = 16;
 		
-		for (int x = -2 * num; x < 2 * num; x++) {
-			for (int z = -2 * num; z < 2 * num; z++) {
-				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f) * 4;
+		for (int x = 0; x < num; x++) {
+			for (int z = 0; z < num; z++) {
+				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f) * 1 + 200;
 				
 				for (int i = 0; i < height; i++) {
 					this.objects.add(new CubeInstance(BlockType.STONE, x, i, z));
@@ -69,6 +71,7 @@ public class Scene {
 	
 	public void init() {
 		this.light.init(this.program);
+		this.cube.initInstanced(this.objects);
 	}
 	
 	public void updateLight(final float x, final float y, final float z) {
@@ -86,6 +89,13 @@ public class Scene {
 			
 			this.cube.render();
 		}
+	}
+	
+	public void renderInstanced() {
+		this.objects.get(0).updateTextureLookupTable(this.program);
+		this.objects.get(0).updateModelMatrix(this.program);
+		this.cube.renderInstanced(this.objects);
+		
 	}
 	
 	public void dispose() {

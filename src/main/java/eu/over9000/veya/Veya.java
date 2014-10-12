@@ -41,10 +41,10 @@ public class Veya {
 		Display.setDisplayMode(new DisplayMode(1280, 720));
 		Display.setTitle("Veya");
 		Display.setResizable(true);
-		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 2));
+		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 3));
 		
-		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal" }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix",
-				"lightPosition", "lightColor", "textureLookup" });
+		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "instancedPosition", }, new String[] { "modelMatrix", "viewMatrix",
+				"projectionMatrix", "lightPosition", "lightColor", "textureLookup" });
 		
 		Util.checkGLError();
 		
@@ -135,7 +135,9 @@ public class Veya {
 			// Veya.camera.updateViewMatrix(posX, posY, posZ, dx, dy);
 			Veya.scene.updateLight(posX, 20, posZ);
 			
-			Veya.scene.render();
+			Veya.scene.renderInstanced();
+			
+			Util.checkGLError();
 			
 			Veya.program.use(false);
 			

@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL30;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
-public class Util {
+public class TextureUtil {
 	
 	private static final int TEXTURE_WIDTH = 64;
 	private static final int TEXTURE_HEIGHT = 64;
@@ -31,14 +31,14 @@ public class Util {
 			sourceTexWidth = decoder.getWidth();
 			sourceTexHeight = decoder.getHeight();
 			
-			texCount = sourceTexWidth / Util.TEXTURE_WIDTH * (sourceTexHeight / Util.TEXTURE_WIDTH);
+			texCount = sourceTexWidth / TextureUtil.TEXTURE_WIDTH * (sourceTexHeight / TextureUtil.TEXTURE_WIDTH);
 			
 			// Decode the PNG file in a ByteBuffer
 			final ByteBuffer buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
 			decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
 			buf.flip();
 			
-			convertedBuffer = Util.convertBuffer(buf, sourceTexWidth, sourceTexHeight);
+			convertedBuffer = TextureUtil.convertBuffer(buf, sourceTexWidth, sourceTexHeight);
 			
 			in.close();
 			
@@ -57,7 +57,7 @@ public class Util {
 		
 		// Upload the texture data and generate mip maps (for scaling)
 		// GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, tWidth, tHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
-		GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGB, Util.TEXTURE_WIDTH, Util.TEXTURE_HEIGHT, texCount, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, convertedBuffer);
+		GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGB, TextureUtil.TEXTURE_WIDTH, TextureUtil.TEXTURE_HEIGHT, texCount, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, convertedBuffer);
 		GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
 		
 		// Setup the ST coordinate system
@@ -78,15 +78,15 @@ public class Util {
 	private static ByteBuffer convertBuffer(final ByteBuffer orig, final int sourceWidth, final int sourceHeight) {
 		final ByteBuffer result = ByteBuffer.allocateDirect(sourceWidth * sourceHeight * 4);
 		
-		final int cellWidth = sourceWidth / Util.TEXTURE_WIDTH;
-		final int cellHeight = sourceHeight / Util.TEXTURE_HEIGHT;
+		final int cellWidth = sourceWidth / TextureUtil.TEXTURE_WIDTH;
+		final int cellHeight = sourceHeight / TextureUtil.TEXTURE_HEIGHT;
 		
 		int i = 0;
 		for (int y_cell = 0; y_cell < cellHeight; y_cell++) {
 			for (int x_cell = 0; x_cell < cellWidth; x_cell++) {
-				for (int y = 0; y < Util.TEXTURE_HEIGHT; y++) {
-					for (int x = 0; x < Util.TEXTURE_WIDTH; x++) {
-						final int coordOrig = 4 * ((y + y_cell * Util.TEXTURE_HEIGHT) * sourceWidth + x + x_cell * Util.TEXTURE_WIDTH);
+				for (int y = 0; y < TextureUtil.TEXTURE_HEIGHT; y++) {
+					for (int x = 0; x < TextureUtil.TEXTURE_WIDTH; x++) {
+						final int coordOrig = 4 * ((y + y_cell * TextureUtil.TEXTURE_HEIGHT) * sourceWidth + x + x_cell * TextureUtil.TEXTURE_WIDTH);
 						
 						final byte r = orig.get(coordOrig + 0);
 						final byte g = orig.get(coordOrig + 1);
@@ -108,37 +108,4 @@ public class Util {
 		return result;
 	}
 	
-	public static void main(final String[] args) {
-		
-		ByteBuffer buf = null;
-		int sourceTexWidth = 0;
-		int sourceTexHeight = 0;
-		int texCount = 0;
-		
-		try {
-			// Link the PNG decoder to this stream
-			final InputStream in = Util.class.getResourceAsStream("/textures/blocks.png");
-			
-			final PNGDecoder decoder = new PNGDecoder(in);
-			
-			// Get the width and height of the texture
-			sourceTexWidth = decoder.getWidth();
-			sourceTexHeight = decoder.getHeight();
-			
-			texCount = sourceTexWidth / Util.TEXTURE_WIDTH * (sourceTexHeight / Util.TEXTURE_WIDTH);
-			
-			// Decode the PNG file in a ByteBuffer
-			buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
-			decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
-			buf.flip();
-			
-			Util.convertBuffer(buf, sourceTexWidth, sourceTexHeight);
-			
-			in.close();
-			
-		} catch (final IOException e) {
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	}
 }

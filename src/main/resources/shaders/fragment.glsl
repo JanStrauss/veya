@@ -32,8 +32,6 @@ void main() {
 	vec3 L = normalize(lightPosition - position);
 	
 	vec3 baseColor = vec3(texture(textureData, vec3(passTexturePosition.xy, textureLookup[int(passTexturePosition.z)])));
-
 	
-	// fragColor = passColor;
-    fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor), 1.0);
+    fragColor = 0.00001 * passColor + vec4(BlinnPhong(V, N, L, baseColor, lightColor), 1.0);
 }
