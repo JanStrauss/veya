@@ -33,12 +33,22 @@ public class Cube {
 	
 	//@formatter:off
     private static final int[] indexData = new int[] {
-
+    	// BOTTOM
         0, 1, 2, 3, Veya.RESTART,
+        
+        // TOP
         4, 5, 6, 7, Veya.RESTART,
+        
+        // SOUTH
         8, 9, 10, 11, Veya.RESTART,
+        
+        // NORTH
         12, 13, 14, 15, Veya.RESTART,
+        
+        // WEST
         16, 17, 18, 19, Veya.RESTART,
+        
+        // EAST
         20, 21, 22, 23
 
     };

@@ -8,6 +8,7 @@ import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.Util;
@@ -25,6 +26,8 @@ public class Veya {
 	private static final float fieldOfView = 60.0f;
 	private static final float nearClippingPlane = 0.1f;
 	private static final float farClippingPlane = 1000.0f;
+	
+	private static boolean colorSwitch = false;
 	
 	public static void main(final String[] args) throws LWJGLException {
 		
@@ -44,7 +47,7 @@ public class Veya {
 		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 3));
 		
 		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "instancedPosition", "instancedTexOffset" }, new String[] { "modelMatrix",
-				"viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "textureLookup" });
+				"viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "textureLookup", "colorSwitch" });
 		
 		Util.checkGLError();
 		
@@ -73,6 +76,7 @@ public class Veya {
 		Veya.camera.updateProjectionMatrix(Veya.fieldOfView, Display.getWidth(), Display.getHeight(), Veya.nearClippingPlane, Veya.farClippingPlane);
 		Veya.camera.updateViewMatrix();
 		Veya.scene.init();
+		
 		Veya.program.use(false);
 		
 		Util.checkGLError();
@@ -127,13 +131,23 @@ public class Veya {
 			
 			Veya.program.use(true);
 			
-			final float posX = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 20f;
-			final float posY = (float) Math.sin(System.currentTimeMillis() / 1500.0) * 7f;
-			final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
+			while (Keyboard.next()) {
+				if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.getEventKeyState() == true) {
+					GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
+					Veya.colorSwitch = !Veya.colorSwitch;
+				}
+			}
+			
+			final float posX = (float) Math.sin(System.currentTimeMillis() / 5000.0) * 255f;
+			final float posY = (float) Math.cos(System.currentTimeMillis() / 5000.0) * 255f;
+			// final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
+			
+			// final float kek = (posY / 255f + 1) / 2;
+			
+			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 			
 			Veya.camera.updateViewMatrix();
-			// Veya.camera.updateViewMatrix(posX, posY, posZ, dx, dy);
-			// Veya.scene.updateLight(posX, 20, posZ);
+			// Veya.scene.updateLight(posX, posY, 0);
 			
 			Veya.scene.renderInstanced();
 			

@@ -25,13 +25,13 @@ public class Scene {
 		
 		// GROUND
 		
-		final int num = 64;
+		final int num = 32;
 		
-		for (int x = -num; x < num; x++) {
-			for (int z = -num; z < num; z++) {
-				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f) * 1 + 5;
+		for (int x = -num; x <= num; x++) {
+			for (int z = -num; z <= num; z++) {
+				final int height = (int) (Math.sin(x / 10f) + Math.sin(z / 10f) + 3.33f * 1 + 5);
 				
-				for (int i = 0; i < height; i++) {
+				for (int i = 0; i <= height; i++) {
 					this.objects.add(new CubeInstance(BlockType.STONE, x, i, z));
 				}
 				this.objects.add(new CubeInstance(BlockType.DIRT, x, height, z));
@@ -53,7 +53,7 @@ public class Scene {
 		this.objects.add(new CubeInstance(BlockType.IRON_ORE, 4, 20, 2));
 		
 		// TREE
-		this.plantTree(35, 10, 35);
+		this.plantTree(25, 12, 25);
 		
 		System.out.println("SCENE HAS " + this.objects.size() + " BLOCKS");
 	}
