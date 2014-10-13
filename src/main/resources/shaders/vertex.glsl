@@ -14,7 +14,7 @@ in int instancedTexOffset;
 
 out vec4 passColor;
 out vec3 passTexturePosition;
-out int texOffset;
+flat out int texOffset;
 
 out vec3 normal;
 out vec3 position;

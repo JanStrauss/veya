@@ -14,7 +14,7 @@ uniform int textureLookup[6 * BLOCK_COUNT];
 in vec4 passColor;
 in vec3 passTexturePosition;
 
-in flat int texOffset;
+flat in int texOffset;
 
 in vec3 normal;
 in vec3 position;

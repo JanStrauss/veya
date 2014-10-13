@@ -81,14 +81,15 @@ public class Veya {
 		
 		Util.checkGLError();
 		
-		float start = Sys.getTime();
-		float lastTime = 0.0f;
-		float count = 0;
+		long start = Sys.getTime();
+		long lastTime = start;
+		long count = 0;
 		
 		while (!Display.isCloseRequested()) {
-			final float time = Sys.getTime();
+			final long time = Sys.getTime();
 			final float dt = (time - lastTime) / 1000.0f;
 			lastTime = time;
+			
 			
 			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 				Veya.camera.walkForward(Veya.movementSpeed * dt);
@@ -133,8 +134,8 @@ public class Veya {
 			
 			while (Keyboard.next()) {
 				if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.getEventKeyState() == true) {
-					GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
 					Veya.colorSwitch = !Veya.colorSwitch;
+					GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
 				}
 			}
 			
@@ -162,6 +163,7 @@ public class Veya {
 			if (end - start > 1000) {
 				start = end;
 				Display.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z);
+				System.out.println(count);
 				count = 0;
 			} else {
 				count++;
