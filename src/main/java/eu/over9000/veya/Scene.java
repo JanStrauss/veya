@@ -36,11 +36,11 @@ public class Scene {
 		
 		this.light = new Light(30, 30, 30, 0.9f, 0.9f, 0.45f);
 		
-		final int size = 128;
+		final int size = 256;
 		for (int x = -size; x <= size; x++) {
 			for (int z = -size; z <= size; z++) {
 				
-				final int height = (int) ((Math.sin(x / 10f) + Math.sin(z / 10f)) * 10f + 20);
+				final int height = (int) ((Math.sin(x / 15f) + Math.sin(z / 15f)) * 10f + 20);
 				for (int y = 0; y <= height; y++) {
 					this.world.setBlockAt(x, y, z, BlockType.STONE);
 				}
@@ -48,6 +48,7 @@ public class Scene {
 				this.world.setBlockAt(x, height + 2, z, BlockType.DIRT);
 				this.world.setBlockAt(x, height + 3, z, BlockType.GRASS);
 			}
+			System.out.println(x + "/" + size);
 		}
 		
 		for (final Chunk chunk : this.world.getLoadedChunks()) {

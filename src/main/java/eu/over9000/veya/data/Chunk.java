@@ -1,7 +1,9 @@
 package eu.over9000.veya.data;
 
+import java.util.Objects;
+
 public class Chunk {
-	public static final int CHUNK_SIZE = 16;
+	public static final int CHUNK_SIZE = 32;
 	
 	private final World world;
 	
@@ -89,5 +91,38 @@ public class Chunk {
 	
 	public void blockChanged() {
 		this.changed = true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.world, this.chunkX, this.chunkY, this.chunkZ);
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Chunk)) {
+			return false;
+		}
+		final Chunk other = (Chunk) obj;
+		if (!this.world.equals(other.world)) {
+			return false;
+		}
+		
+		if (this.chunkX != other.chunkX) {
+			return false;
+		}
+		
+		if (this.chunkY != other.chunkY) {
+			return false;
+		}
+		
+		if (this.chunkZ != other.chunkZ) {
+			return false;
+		}
+		
+		return true;
 	}
 }

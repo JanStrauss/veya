@@ -1,23 +1,24 @@
 package eu.over9000.veya.data;
 
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.google.common.math.IntMath;
+
+import eu.over9000.veya.util.ChunkMap;
 
 public class World {
 	private final long seed;
 	private final String name;
-	private final List<Chunk> loadedChunks = new ArrayList<>();
+	private final ChunkMap chunks = new ChunkMap();
 	
 	public World(final long seed, final String name) {
 		this.seed = seed;
 		this.name = name;
 	}
 	
-	public List<Chunk> getLoadedChunks() {
-		return this.loadedChunks;
+	public Collection<Chunk> getLoadedChunks() {
+		return this.chunks.getChunks();
 	}
 	
 	public Block getBlockAt(final int x, final int y, final int z) {
@@ -63,17 +64,18 @@ public class World {
 		
 		// TODO load real world stuffs
 		
-		this.loadedChunks.add(chunk);
+		this.chunks.setChunkAt(chunkX, chunkY, chunkZ, chunk);
 		return chunk;
 	}
 	
-	private Chunk getOrLoadChunkAt(final int x, final int y, final int z) {
-		for (final Chunk chunk : this.loadedChunks) {
-			if (chunk.getChunkX() == x && chunk.getChunkY() == y && chunk.getChunkZ() == z) {
-				return chunk;
-			}
+	private Chunk getOrLoadChunkAt(final int chunkX, final int chunkY, final int chunkZ) {
+		final Chunk chunk = this.chunks.getChunkAt(chunkX, chunkY, chunkZ);
+		if (chunk == null) {
+			return this.loadChunk(chunkX, chunkY, chunkZ);
+		} else {
+			return chunk;
 		}
-		return this.loadChunk(x, y, z);
+		
 	}
 	
 	public long getSeed() {
@@ -99,6 +101,10 @@ public class World {
 	
 	private static int chunkToWorldCoordinate(final int coord, final int chunk) {
 		return chunk * Chunk.CHUNK_SIZE + coord;
+	}
+	
+	public static void main(final String[] args) {
+		
 	}
 	
 }

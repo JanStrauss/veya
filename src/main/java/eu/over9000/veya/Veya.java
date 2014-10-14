@@ -159,7 +159,7 @@ public class Veya {
 			Veya.program.use(false);
 			
 			Display.update();
-			Display.sync(60);
+			// Display.sync(60);
 			Util.checkGLError();
 			
 			final long end = Sys.getTime();
