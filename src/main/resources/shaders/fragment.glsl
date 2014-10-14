@@ -18,8 +18,8 @@ out vec4 fragColor;
 
 vec3 BlinnPhong(vec3 V, vec3 N, vec3 L, vec3 color, vec3 lightColor){
 	vec3 h = normalize(V + L);
-	float ka = 0.66;										// ambient
-	float kd = 0.33 * max(0.0, dot(L, N));					// diffuse
+	float ka = 0.50;										// ambient
+	float kd = 0.50 * max(0.0, dot(L, N));					// diffuse
 	float ks = 0.00 * pow(max(dot(N, h), 0.0), 33.0);		// specular
 
 	return vec3(ka) * color + vec3(kd) * color + ks * lightColor;

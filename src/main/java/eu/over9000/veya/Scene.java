@@ -32,7 +32,6 @@ public class Scene {
 	private Matrix4f modelMatrix = new Matrix4f();
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	
-	public static final int CHUNK_BLOCK_COUNT = 128 * 128 * 256;
 	private static final int SEALEVEL = 64;
 	
 	public Scene(final Program shader) {
@@ -40,13 +39,13 @@ public class Scene {
 		this.world = new World(1337, "Keaysea");
 		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 		
-		this.light = new Light(30, 360, 30, 0.9f, 0.9f, 0.45f);
+		this.light = new Light(60, 200, 60, 0.9f, 0.9f, 0.45f);
 		
 		System.out.println("generating world..");
 		
 		final Random random = new Random(this.world.getSeed());
 		
-		final int size = 128;
+		final int size = 256;
 		for (int x = -size; x <= size; x++) {
 			for (int z = -size; z <= size; z++) {
 				final List<Integer> topBlocks = new ArrayList<>();
@@ -71,7 +70,7 @@ public class Scene {
 				}
 				for (final Integer top : topBlocks) {
 					
-					this.fillTopWithDirtAndGrass(random, this.world, Scene.SEALEVEL, x, z, top);
+					this.fillTopWithDirtAndGrass(random, this.world, x, z, top);
 					
 				}
 				
@@ -88,8 +87,8 @@ public class Scene {
 		System.out.println("VAOs created.");
 	}
 	
-	private void fillTopWithDirtAndGrass(final Random random, final World world, final int SEALEVEL, final int x, final int z, final Integer top) {
-		if (top >= SEALEVEL) {
+	private void fillTopWithDirtAndGrass(final Random random, final World world, final int x, final int z, final Integer top) {
+		if (top >= Scene.SEALEVEL) {
 			world.setBlockAt(x, top, z, BlockType.GRASS);
 		} else {
 			world.setBlockAt(x, top, z, BlockType.DIRT);

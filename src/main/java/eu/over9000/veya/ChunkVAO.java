@@ -17,16 +17,17 @@ import eu.over9000.veya.data.Block;
 import eu.over9000.veya.data.Chunk;
 
 public class ChunkVAO {
-	private final IntBuffer ibo_buffer;
-	private final FloatBuffer vbo_buffer;
+	
 	int vbo_handle;
 	int vao_handle;
 	int ibo_handle;
 	
-	private final int[] indexData;
-	private final Vertex[] vertexData;
+	private final int indexData_length;
 	
 	public ChunkVAO(final Chunk chunk, final Program program) {
+		final int[] indexData;
+		final Vertex[] vertexData;
+		
 		final List<Integer> indexDataList = new ArrayList<>();
 		final List<Vertex> vertexDataList = new ArrayList<>();
 		
@@ -65,28 +66,32 @@ public class ChunkVAO {
 			}
 		}
 		
-		this.indexData = Ints.toArray(indexDataList);
-		this.vertexData = vertexDataList.toArray(new Vertex[0]);
+		indexData = Ints.toArray(indexDataList);
+		vertexData = vertexDataList.toArray(new Vertex[0]);
+		this.indexData_length = indexData.length;
 		
-		this.ibo_buffer = BufferUtils.createIntBuffer(this.indexData.length);
-		this.ibo_buffer.put(this.indexData);
-		this.ibo_buffer.flip();
+		final IntBuffer ibo_buffer;
+		final FloatBuffer vbo_buffer;
 		
-		this.vbo_buffer = BufferUtils.createFloatBuffer(this.vertexData.length * Vertex.elementCount);
-		for (final Vertex vertex : this.vertexData) {
-			this.vbo_buffer.put(vertex.getElements());
+		ibo_buffer = BufferUtils.createIntBuffer(indexData.length);
+		ibo_buffer.put(indexData);
+		ibo_buffer.flip();
+		
+		vbo_buffer = BufferUtils.createFloatBuffer(vertexData.length * Vertex.elementCount);
+		for (final Vertex vertex : vertexData) {
+			vbo_buffer.put(vertex.getElements());
 		}
-		this.vbo_buffer.flip();
+		vbo_buffer.flip();
 		
 		// create objects
 		this.ibo_handle = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle);
-		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_buffer, GL15.GL_STATIC_DRAW);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo_buffer, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		this.vbo_handle = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.vbo_buffer, GL15.GL_STATIC_DRAW);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo_buffer, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		
 		this.vao_handle = GL30.glGenVertexArrays();
@@ -110,12 +115,13 @@ public class ChunkVAO {
 		GL30.glBindVertexArray(0);
 		
 		// System.out.println("created ChunkVAO with " + this.vertexData.length + " vertices");
+		
 	}
 	
 	public void render() {
 		
 		GL30.glBindVertexArray(this.vao_handle);
-		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.indexData.length, GL11.GL_UNSIGNED_INT, 0);
+		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.indexData_length, GL11.GL_UNSIGNED_INT, 0);
 		GL30.glBindVertexArray(0);
 	}
 	
