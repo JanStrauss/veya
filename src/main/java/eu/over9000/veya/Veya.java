@@ -51,7 +51,7 @@ public class Veya {
 		
 		Util.checkGLError();
 		
-		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth(), 15, 15, 15);
+		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth(), 15, 250, 15);
 		Veya.scene = new Scene(Veya.program);
 		
 		Util.checkGLError();
@@ -150,7 +150,7 @@ public class Veya {
 			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 			
 			Veya.camera.updateViewMatrix();
-			Veya.scene.updateLight(posX, posY, 0);
+			// Veya.scene.updateLight(posX, posY, 0);
 			
 			Veya.scene.render();
 			
