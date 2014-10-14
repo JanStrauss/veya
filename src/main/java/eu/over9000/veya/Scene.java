@@ -1,21 +1,34 @@
 package eu.over9000.veya;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.Util;
 
 import eu.over9000.veya.data.BlockType;
+import eu.over9000.veya.data.Chunk;
+import eu.over9000.veya.data.World;
 
 public class Scene {
 	private final Cube cube;
 	private final List<CubeInstance> objects;
+	private final World world;
+	private final Map<Chunk, ChunkVAO> chunks = new HashMap<>();
 	private Light light;
 	private final Program program;
+	private final int texture_handle;
 	
 	public static final int CHUNK_BLOCK_COUNT = 128 * 128 * 256;
 	
 	public Scene(final Program shader) {
+		this.world = new World(1337, "Keaysea");
+		this.texture_handle = TextureUtil.loadPNGTexture("BLOCKS", Cube.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
+		
 		this.cube = new Cube(shader);
 		
 		Util.checkGLError();
@@ -102,6 +115,10 @@ public class Scene {
 		this.objects.get(0);
 		CubeInstance.updateTextureLookupTable(this.program);
 		CubeInstance.updateModelMatrix(this.program);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
+		
 		this.cube.renderInstanced(this.objects);
 		
 	}

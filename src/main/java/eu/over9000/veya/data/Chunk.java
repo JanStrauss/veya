@@ -29,7 +29,12 @@ public class Chunk {
 	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
 		Chunk.checkParameters(x, y, z);
 		
-		this.blocks[x][y][z].setType(type);
+		Block block = this.blocks[x][y][z];
+		if (block == null) {
+			block = new Block(x, y, z, type, this);
+		} else {
+			block.setType(type);
+		}
 	}
 	
 	public boolean getAndResetChangedFlag() {

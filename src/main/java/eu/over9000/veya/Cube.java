@@ -218,14 +218,8 @@ public class Cube {
 		
 		org.lwjgl.opengl.Util.checkGLError();
 		
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		Util.checkGLError();
-		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
-		Util.checkGLError();
 		GL30.glBindVertexArray(this.vao_handle);
-		Util.checkGLError();
 		this.program.enableVAttributes();
-		Util.checkGLError();
 		GL31.glDrawElementsInstanced(GL11.GL_TRIANGLE_STRIP, Cube.indexData.length, GL11.GL_UNSIGNED_INT, 0, instances.size());
 		Util.checkGLError();
 		
@@ -234,8 +228,6 @@ public class Cube {
 	}
 	
 	void render() {
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
 		
 		GL30.glBindVertexArray(this.vao_handle);
 		this.program.enableVAttributes();

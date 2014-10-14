@@ -53,4 +53,27 @@ public enum BlockType {
 		return table;
 	}
 	
+	public int getTextureIDBottom() {
+		return this.textureIDBottom;
+	}
+	
+	public int getTextureIDTop() {
+		return this.textureIDTop;
+	}
+	
+	public int getTextureIDNorth() {
+		return this.textureIDNorth;
+	}
+	
+	public int getTextureIDEast() {
+		return this.textureIDEast;
+	}
+	
+	public int getTextureIDSouth() {
+		return this.textureIDSouth;
+	}
+	
+	public int getTextureIDWest() {
+		return this.textureIDWest;
+	}
 }

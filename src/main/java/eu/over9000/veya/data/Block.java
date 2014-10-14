@@ -50,4 +50,52 @@ public class Block {
 		return this.changed;
 	}
 	
+	public Block getNeighborBottom() {
+		try {
+			return this.chunk.getBlockAt(this.x, this.y - 1, this.z);
+		} catch (final IllegalArgumentException e) {
+			return null;
+		}
+	}
+	
+	public Block getNeighborTop() {
+		try {
+			return this.chunk.getBlockAt(this.x, this.y + 1, this.z);
+		} catch (final IllegalArgumentException e) {
+			return null;
+		}
+	}
+	
+	public Block getNeighborNorth() {
+		try {
+			return this.chunk.getBlockAt(this.x, this.y, this.z - 1);
+		} catch (final IllegalArgumentException e) {
+			return null;
+		}
+	}
+	
+	public Block getNeighborSouth() {
+		try {
+			return this.chunk.getBlockAt(this.x, this.y, this.z + 1);
+		} catch (final IllegalArgumentException e) {
+			return null;
+		}
+	}
+	
+	public Block getNeighborWest() {
+		try {
+			return this.chunk.getBlockAt(this.x - 1, this.y, this.z);
+		} catch (final IllegalArgumentException e) {
+			return null;
+		}
+	}
+	
+	public Block getNeighborEast() {
+		try {
+			return this.chunk.getBlockAt(this.x + 1, this.y, this.z);
+		} catch (final IllegalArgumentException e) {
+			return null;
+		}
+	}
+	
 }
