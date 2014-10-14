@@ -1,7 +1,10 @@
 package eu.over9000.veya.data;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.math.IntMath;
 
 public class World {
 	private final long seed;
@@ -11,6 +14,10 @@ public class World {
 	public World(final long seed, final String name) {
 		this.seed = seed;
 		this.name = name;
+	}
+	
+	public List<Chunk> getLoadedChunks() {
+		return this.loadedChunks;
 	}
 	
 	public Block getBlockAt(final int x, final int y, final int z) {
@@ -51,20 +58,10 @@ public class World {
 	}
 	
 	private Chunk loadChunk(final int chunkX, final int chunkY, final int chunkZ) {
-		System.out.println("loaded chunk: " + chunkX + ", " + chunkY + ", " + chunkZ);
+		// System.out.println("loaded chunk: " + chunkX + ", " + chunkY + ", " + chunkZ);
 		final Chunk chunk = new Chunk(this, chunkX, chunkY, chunkZ);
 		
 		// TODO load real world stuffs
-		for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
-			for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
-				for (int y = 0; y < 11; y++) {
-					chunk.setBlockAt(x, y, z, BlockType.STONE);
-				}
-				chunk.setBlockAt(x, 11, z, BlockType.DIRT);
-				chunk.setBlockAt(x, 12, z, BlockType.DIRT);
-				chunk.setBlockAt(x, 13, z, BlockType.GRASS);
-			}
-		}
 		
 		this.loadedChunks.add(chunk);
 		return chunk;
@@ -88,11 +85,20 @@ public class World {
 	}
 	
 	private static int worldToChunkCoordinate(final int coord) {
-		return coord / Chunk.CHUNK_SIZE;
+		// return coord / Chunk.CHUNK_SIZE;
+		return IntMath.divide(coord, Chunk.CHUNK_SIZE, RoundingMode.FLOOR);
 	}
 	
 	private static int worldToBlockInChunkCoordinate(final int coord) {
-		return coord % Chunk.CHUNK_SIZE;
+		int val = coord % Chunk.CHUNK_SIZE;
+		if (val < 0) {
+			val = val + Chunk.CHUNK_SIZE;
+		}
+		return val;
+	}
+	
+	private static int chunkToWorldCoordinate(final int coord, final int chunk) {
+		return chunk * Chunk.CHUNK_SIZE + coord;
 	}
 	
 }

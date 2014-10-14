@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import eu.over9000.veya.data.BlockType;
 import eu.over9000.veya.data.Chunk;
 import eu.over9000.veya.data.World;
 
@@ -35,9 +36,24 @@ public class Scene {
 		
 		this.light = new Light(30, 30, 30, 0.9f, 0.9f, 0.45f);
 		
-		final Chunk chunk = this.world.getChunkAt(0, 0, 0);
+		final int size = 128;
+		for (int x = -size; x <= size; x++) {
+			for (int z = -size; z <= size; z++) {
+				
+				final int height = (int) ((Math.sin(x / 10f) + Math.sin(z / 10f)) * 10f + 20);
+				for (int y = 0; y <= height; y++) {
+					this.world.setBlockAt(x, y, z, BlockType.STONE);
+				}
+				this.world.setBlockAt(x, height + 1, z, BlockType.DIRT);
+				this.world.setBlockAt(x, height + 2, z, BlockType.DIRT);
+				this.world.setBlockAt(x, height + 3, z, BlockType.GRASS);
+			}
+		}
 		
-		this.chunks.put(chunk, new ChunkVAO(chunk, this.program));
+		for (final Chunk chunk : this.world.getLoadedChunks()) {
+			this.chunks.put(chunk, new ChunkVAO(chunk, this.program));
+		}
+		
 	}
 	
 	// private void plantTree(final int xRoot, final int yRoot, final int zRoot) {
@@ -93,7 +109,7 @@ public class Scene {
 	
 	private void updateModelMatrix(final Chunk chunk) {
 		this.modelMatrix = new Matrix4f();
-		this.modelMatrix.translate(new Vector3f(chunk.getChunkX(), chunk.getChunkY(), chunk.getChunkZ()));
+		this.modelMatrix.translate(new Vector3f(chunk.getChunkX() * Chunk.CHUNK_SIZE, chunk.getChunkY() * Chunk.CHUNK_SIZE, chunk.getChunkZ() * Chunk.CHUNK_SIZE));
 		this.modelMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(this.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);

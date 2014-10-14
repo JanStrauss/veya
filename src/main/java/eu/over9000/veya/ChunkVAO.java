@@ -36,7 +36,6 @@ public class ChunkVAO {
 					final Block block = chunk.getBlockAt(x, y, z);
 					
 					if (block != null) {
-						System.out.println("block != null");
 						if (block.getNeighborBottom() == null) {
 							ChunkVAO.addBottomOfBlock(indexDataList, vertexDataList, block);
 						}
@@ -110,7 +109,7 @@ public class ChunkVAO {
 		
 		GL30.glBindVertexArray(0);
 		
-		System.out.println("created ChunkVAO with " + this.vertexData.length + " vertices");
+		// System.out.println("created ChunkVAO with " + this.vertexData.length + " vertices");
 	}
 	
 	public void render() {
