@@ -9,6 +9,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
+import eu.over9000.veya.data.BlockType;
+
 public class CubeInstance {
 	
 	private static final float calcRadConst = (float) (Math.PI / 180);

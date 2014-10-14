@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.Util;
 
+import eu.over9000.veya.data.BlockType;
+
 public class Scene {
 	private final Cube cube;
 	private final List<CubeInstance> objects;

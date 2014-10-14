@@ -90,7 +90,6 @@ public class Veya {
 			final float dt = (time - lastTime) / 1000.0f;
 			lastTime = time;
 			
-			
 			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 				Veya.camera.walkForward(Veya.movementSpeed * dt);
 			}
@@ -110,13 +109,13 @@ public class Veya {
 				Veya.camera.moveDown(Veya.movementSpeed * dt);
 			}
 			
-			final float dx = Mouse.getDX();
-			final float dy = Mouse.getDY();
-			
-			// controll camera yaw from x movement fromt the mouse
-			Veya.camera.yaw(dx * Veya.mouseSensitivity);
-			// controll camera pitch from y movement fromt the mouse
-			Veya.camera.pitch(dy * Veya.mouseSensitivity);
+			if (!Keyboard.isKeyDown(Keyboard.KEY_X)) {
+				final float dx = Mouse.getDX();
+				final float dy = Mouse.getDY();
+				
+				Veya.camera.yaw(dx * Veya.mouseSensitivity);
+				Veya.camera.pitch(dy * Veya.mouseSensitivity);
+			}
 			
 			Util.checkGLError();
 			
@@ -151,7 +150,7 @@ public class Veya {
 			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 			
 			Veya.camera.updateViewMatrix();
-			// Veya.scene.updateLight(posX, posY, 0);
+			Veya.scene.updateLight(posX, posY, 0);
 			
 			Veya.scene.renderInstanced();
 			

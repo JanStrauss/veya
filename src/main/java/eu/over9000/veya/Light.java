@@ -11,7 +11,7 @@ public class Light {
 	private final float g;
 	private final float b;
 	
-	Light(final float posX, final float posY, final float posZ, final float r, final float g, final float b) {
+	public Light(final float posX, final float posY, final float posZ, final float r, final float g, final float b) {
 		this.x = posX;
 		this.y = posY;
 		this.z = posZ;
