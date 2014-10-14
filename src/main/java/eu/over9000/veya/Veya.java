@@ -137,6 +137,9 @@ public class Veya {
 					Veya.colorSwitch = !Veya.colorSwitch;
 					GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
 				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_X) {
+					Mouse.setGrabbed(!Keyboard.getEventKeyState());
+				}
 			}
 			
 			final float posX = (float) Math.sin(System.currentTimeMillis() / 5000.0) * 255f;
@@ -157,13 +160,13 @@ public class Veya {
 			Veya.program.use(false);
 			
 			Display.update();
+			Display.sync(60);
 			Util.checkGLError();
 			
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
 				Display.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z);
-				System.out.println(count);
 				count = 0;
 			} else {
 				count++;
