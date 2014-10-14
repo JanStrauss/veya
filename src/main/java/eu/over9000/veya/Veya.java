@@ -21,7 +21,7 @@ public class Veya {
 	private static Scene scene;
 	
 	private static final float mouseSensitivity = 0.01f;
-	private static final float movementSpeed = 10.0f; // move 10 units per second
+	private static final float movementSpeed = 25.0f; // move 10 units per second
 	
 	private static final float fieldOfView = 60.0f;
 	private static final float nearClippingPlane = 0.1f;

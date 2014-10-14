@@ -93,6 +93,30 @@ public class Chunk {
 		this.changed = true;
 	}
 	
+	public Chunk getNeighborBottom() {
+		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY - 1, this.chunkZ);
+	}
+	
+	public Chunk getNeighborTop() {
+		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY + 1, this.chunkZ);
+	}
+	
+	public Chunk getNeighborNorth() {
+		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY, this.chunkZ - 1);
+	}
+	
+	public Chunk getNeighborSouth() {
+		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY, this.chunkZ + 1);
+	}
+	
+	public Chunk getNeighborWest() {
+		return this.world.getChunkNoGenAt(this.chunkX - 1, this.chunkY, this.chunkZ);
+	}
+	
+	public Chunk getNeighborEast() {
+		return this.world.getChunkNoGenAt(this.chunkX + 1, this.chunkY, this.chunkZ);
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.world, this.chunkX, this.chunkY, this.chunkZ);

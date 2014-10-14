@@ -31,16 +31,28 @@ public class Block {
 		this.chunk.blockChanged();
 	}
 	
-	public int getX() {
+	public int getInChunkX() {
 		return this.x;
 	}
 	
-	public int getY() {
+	public int getInChunkY() {
 		return this.y;
 	}
 	
-	public int getZ() {
+	public int getInChunkZ() {
 		return this.z;
+	}
+	
+	public int getWorldX() {
+		return this.chunk.getChunkX() * Chunk.CHUNK_SIZE + this.x;
+	}
+	
+	public int getWorldY() {
+		return this.chunk.getChunkY() * Chunk.CHUNK_SIZE + this.y;
+	}
+	
+	public int getWorldZ() {
+		return this.chunk.getChunkZ() * Chunk.CHUNK_SIZE + this.z;
 	}
 	
 	public Chunk getChunk() {
@@ -55,7 +67,12 @@ public class Block {
 		try {
 			return this.chunk.getBlockAt(this.x, this.y - 1, this.z);
 		} catch (final IllegalArgumentException e) {
-			return null;
+			final Chunk neighbor = this.chunk.getNeighborBottom();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(this.x, Chunk.CHUNK_SIZE - 1, this.z);
+			}
 		}
 	}
 	
@@ -63,7 +80,12 @@ public class Block {
 		try {
 			return this.chunk.getBlockAt(this.x, this.y + 1, this.z);
 		} catch (final IllegalArgumentException e) {
-			return null;
+			final Chunk neighbor = this.chunk.getNeighborTop();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(this.x, 0, this.z);
+			}
 		}
 	}
 	
@@ -71,7 +93,12 @@ public class Block {
 		try {
 			return this.chunk.getBlockAt(this.x, this.y, this.z - 1);
 		} catch (final IllegalArgumentException e) {
-			return null;
+			final Chunk neighbor = this.chunk.getNeighborNorth();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(this.x, this.y, Chunk.CHUNK_SIZE - 1);
+			}
 		}
 	}
 	
@@ -79,7 +106,12 @@ public class Block {
 		try {
 			return this.chunk.getBlockAt(this.x, this.y, this.z + 1);
 		} catch (final IllegalArgumentException e) {
-			return null;
+			final Chunk neighbor = this.chunk.getNeighborSouth();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(this.x, this.y, 0);
+			}
 		}
 	}
 	
@@ -87,7 +119,12 @@ public class Block {
 		try {
 			return this.chunk.getBlockAt(this.x - 1, this.y, this.z);
 		} catch (final IllegalArgumentException e) {
-			return null;
+			final Chunk neighbor = this.chunk.getNeighborWest();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(Chunk.CHUNK_SIZE - 1, this.y, this.z);
+			}
 		}
 	}
 	
@@ -95,7 +132,12 @@ public class Block {
 		try {
 			return this.chunk.getBlockAt(this.x + 1, this.y, this.z);
 		} catch (final IllegalArgumentException e) {
-			return null;
+			final Chunk neighbor = this.chunk.getNeighborEast();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(0, this.y, this.z);
+			}
 		}
 	}
 	

@@ -58,6 +58,10 @@ public class World {
 		return this.getOrLoadChunkAt(chunkX, chunkY, chunkZ);
 	}
 	
+	public Chunk getChunkNoGenAt(final int chunkX, final int chunkY, final int chunkZ) {
+		return this.chunks.getChunkAt(chunkX, chunkY, chunkZ);
+	}
+	
 	private Chunk loadChunk(final int chunkX, final int chunkY, final int chunkZ) {
 		// System.out.println("loaded chunk: " + chunkX + ", " + chunkY + ", " + chunkZ);
 		final Chunk chunk = new Chunk(this, chunkX, chunkY, chunkZ);

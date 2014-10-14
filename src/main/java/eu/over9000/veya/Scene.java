@@ -14,7 +14,6 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.data.BlockType;
 import eu.over9000.veya.data.Chunk;
@@ -107,6 +106,7 @@ public class Scene {
 	
 	public void init() {
 		this.light.init(this.program);
+		this.updateModelMatrix();
 	}
 	
 	public void updateLight(final float x, final float y, final float z) {
@@ -121,16 +121,15 @@ public class Scene {
 		this.program.enableVAttributes();
 		for (final Entry<Chunk, ChunkVAO> entry : this.chunks.entrySet()) {
 			if (entry.getValue() != null) {
-				this.updateModelMatrix(entry.getKey());
+				
 				entry.getValue().render();
 			}
 		}
 		this.program.disableVAttributes();
 	}
 	
-	private void updateModelMatrix(final Chunk chunk) {
+	private void updateModelMatrix() {
 		this.modelMatrix = new Matrix4f();
-		this.modelMatrix.translate(new Vector3f(chunk.getChunkX() * Chunk.CHUNK_SIZE, chunk.getChunkY() * Chunk.CHUNK_SIZE, chunk.getChunkZ() * Chunk.CHUNK_SIZE));
 		this.modelMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(this.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);
