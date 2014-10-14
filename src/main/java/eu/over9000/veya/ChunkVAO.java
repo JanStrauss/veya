@@ -35,28 +35,31 @@ public class ChunkVAO {
 				for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
 					final Block block = chunk.getBlockAt(x, y, z);
 					
-					if (block.getNeighborBottom() == null) {
-						ChunkVAO.addBottomOfBlock(indexDataList, vertexDataList, block);
-					}
-					
-					if (block.getNeighborTop() == null) {
-						ChunkVAO.addTopOfBlock(indexDataList, vertexDataList, block);
-					}
-					
-					if (block.getNeighborNorth() == null) {
-						ChunkVAO.addNorthOfBlock(indexDataList, vertexDataList, block);
-					}
-					
-					if (block.getNeighborSouth() == null) {
-						ChunkVAO.addSouthOfBlock(indexDataList, vertexDataList, block);
-					}
-					
-					if (block.getNeighborWest() == null) {
-						ChunkVAO.addWestOfBlock(indexDataList, vertexDataList, block);
-					}
-					
-					if (block.getNeighborEast() == null) {
-						ChunkVAO.addEastOfBlock(indexDataList, vertexDataList, block);
+					if (block != null) {
+						System.out.println("block != null");
+						if (block.getNeighborBottom() == null) {
+							ChunkVAO.addBottomOfBlock(indexDataList, vertexDataList, block);
+						}
+						
+						if (block.getNeighborTop() == null) {
+							ChunkVAO.addTopOfBlock(indexDataList, vertexDataList, block);
+						}
+						
+						if (block.getNeighborNorth() == null) {
+							ChunkVAO.addNorthOfBlock(indexDataList, vertexDataList, block);
+						}
+						
+						if (block.getNeighborSouth() == null) {
+							ChunkVAO.addSouthOfBlock(indexDataList, vertexDataList, block);
+						}
+						
+						if (block.getNeighborWest() == null) {
+							ChunkVAO.addWestOfBlock(indexDataList, vertexDataList, block);
+						}
+						
+						if (block.getNeighborEast() == null) {
+							ChunkVAO.addEastOfBlock(indexDataList, vertexDataList, block);
+						}
 					}
 					
 				}
@@ -107,6 +110,24 @@ public class ChunkVAO {
 		
 		GL30.glBindVertexArray(0);
 		
+		System.out.println("created ChunkVAO with " + this.vertexData.length + " vertices");
+	}
+	
+	public void render() {
+		
+		GL30.glBindVertexArray(this.vao_handle);
+		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.indexData.length, GL11.GL_UNSIGNED_INT, 0);
+		GL30.glBindVertexArray(0);
+	}
+	
+	public void dispose() {
+		GL30.glDeleteVertexArrays(this.vao_handle);
+		GL15.glDeleteBuffers(this.ibo_handle);
+		GL15.glDeleteBuffers(this.vbo_handle);
+		
+		this.vao_handle = -1;
+		this.vbo_handle = -1;
+		this.ibo_handle = -1;
 	}
 	
 	private static void addBottomOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final Block block) {

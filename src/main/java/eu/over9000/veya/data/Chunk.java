@@ -32,6 +32,7 @@ public class Chunk {
 		Block block = this.blocks[x][y][z];
 		if (block == null) {
 			block = new Block(x, y, z, type, this);
+			this.blocks[x][y][z] = block;
 		} else {
 			block.setType(type);
 		}
@@ -73,16 +74,16 @@ public class Chunk {
 	}
 	
 	private static void checkParameters(final int x, final int y, final int z) {
-		if (0 < x || x >= Chunk.CHUNK_SIZE) {
-			throw new IllegalArgumentException("x value is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
+		if (0 > x || x >= Chunk.CHUNK_SIZE) {
+			throw new IllegalArgumentException("x value (" + x + ") is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
 		}
 		
-		if (0 < y || y >= Chunk.CHUNK_SIZE) {
-			throw new IllegalArgumentException("y value is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
+		if (0 > y || y >= Chunk.CHUNK_SIZE) {
+			throw new IllegalArgumentException("y value (" + y + ") is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
 		}
 		
-		if (0 < z || z >= Chunk.CHUNK_SIZE) {
-			throw new IllegalArgumentException("z value is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
+		if (0 > z || z >= Chunk.CHUNK_SIZE) {
+			throw new IllegalArgumentException("z value (" + z + ")  is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
 		}
 	}
 	

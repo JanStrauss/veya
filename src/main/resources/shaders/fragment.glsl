@@ -1,7 +1,5 @@
 #version 150 core
 
-const int BLOCK_COUNT = 9;
-
 uniform sampler2DArray textureData;
 
 uniform vec3 lightPosition;
@@ -9,12 +7,8 @@ uniform vec3 lightColor;
 
 uniform bool colorSwitch;
 
-uniform int textureLookup[6 * BLOCK_COUNT];
-
 in vec4 passColor;
 in vec3 passTexturePosition;
-
-flat in int texOffset;
 
 in vec3 normal;
 in vec3 position;
@@ -39,7 +33,7 @@ void main() {
 		vec3 N = normal;
 		vec3 L = normalize(lightPosition - position);
 		
-		vec4 texColor = texture(textureData, vec3(passTexturePosition.xy, textureLookup[texOffset * 6 + int(passTexturePosition.z)]));
+		vec4 texColor = texture(textureData, vec3(passTexturePosition.xy, int(passTexturePosition.z)));
 		
 		vec3 baseColor = vec3(texColor.rgb);
 		fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor), texColor.a);

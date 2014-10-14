@@ -18,6 +18,8 @@ public class Block {
 		this.type = type;
 		this.chunk = chunk;
 		this.changed = 0;
+		
+		System.out.println("block created: " + x + ", " + y + ", " + z);
 	}
 	
 	public BlockType getType() {

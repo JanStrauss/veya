@@ -51,6 +51,7 @@ public class World {
 	}
 	
 	private Chunk loadChunk(final int chunkX, final int chunkY, final int chunkZ) {
+		System.out.println("loaded chunk: " + chunkX + ", " + chunkY + ", " + chunkZ);
 		final Chunk chunk = new Chunk(this, chunkX, chunkY, chunkZ);
 		
 		// TODO load real world stuffs
