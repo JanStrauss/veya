@@ -21,7 +21,7 @@ public class World {
 		return this.chunks.getChunks();
 	}
 	
-	public Block getBlockAt(final int x, final int y, final int z) {
+	public BlockType getBlockAt(final int x, final int y, final int z) {
 		final int chunkX = World.worldToChunkCoordinate(x);
 		final int chunkY = World.worldToChunkCoordinate(y);
 		final int chunkZ = World.worldToChunkCoordinate(z);
@@ -50,7 +50,7 @@ public class World {
 		chunk.setBlockAt(blockX, blockY, blockZ, type);
 	}
 	
-	public Block getHighestBlockAt(final int x, final int z) {
+	public BlockType getHighestBlockAt(final int x, final int z) {
 		return null; // TODO
 	}
 	

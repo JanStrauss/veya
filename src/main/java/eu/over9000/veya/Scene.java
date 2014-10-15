@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -81,13 +82,20 @@ public class Scene {
 					this.plantTree(x, highest + 1, z);
 				}
 			}
-			// System.out.println(x + "/" + size);
+			System.out.println(x + "/" + size);
+			Display.setTitle("VEYA | gen world: " + x + "/" + size);
 		}
 		
 		System.out.println("generation done, creating VAOs");
 		
+		int i = 0;
+		final int max = this.world.getLoadedChunks().size();
 		for (final Chunk chunk : this.world.getLoadedChunks()) {
 			this.chunks.put(chunk, new ChunkVAO(chunk, this.program));
+			
+			System.out.println(i + "/" + max);
+			Display.setTitle("VEYA | gen chunkVAO: " + i + "/" + max);
+			i++;
 		}
 		
 		System.out.println("VAOs created.");
@@ -104,7 +112,7 @@ public class Scene {
 		final int dirtLimit = top - dirtHeight;
 		for (int y = top; y > dirtLimit; y--) {
 			if (world.getBlockAt(x, y, z) != null) {
-				if (world.getBlockAt(x, y, z).getType() == BlockType.STONE) {
+				if (world.getBlockAt(x, y, z) == BlockType.STONE) {
 					world.setBlockAt(x, y, z, BlockType.DIRT);
 				}
 			}

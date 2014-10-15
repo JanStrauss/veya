@@ -11,7 +11,7 @@ public class Chunk {
 	private final int chunkY;
 	private final int chunkZ;
 	
-	private final Block[][][] blocks = new Block[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+	private final BlockType[][][] blocks = new BlockType[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
 	
 	private boolean changed = true;
 	
@@ -22,7 +22,7 @@ public class Chunk {
 		this.chunkZ = chunkZ;
 	}
 	
-	public Block getBlockAt(final int x, final int y, final int z) {
+	public BlockType getBlockAt(final int x, final int y, final int z) {
 		Chunk.checkParameters(x, y, z);
 		
 		return this.blocks[x][y][z];
@@ -31,14 +31,7 @@ public class Chunk {
 	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
 		Chunk.checkParameters(x, y, z);
 		
-		Block block = this.blocks[x][y][z];
-		if (block == null) {
-			block = new Block(x, y, z, type, this);
-			this.blocks[x][y][z] = block;
-			this.blockChanged();
-		} else {
-			block.setType(type);
-		}
+		this.blocks[x][y][z] = type;
 	}
 	
 	public boolean getAndResetChangedFlag() {
@@ -94,27 +87,27 @@ public class Chunk {
 		this.changed = true;
 	}
 	
-	public Chunk getNeighborBottom() {
+	public Chunk getNeighborChunkBottom() {
 		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY - 1, this.chunkZ);
 	}
 	
-	public Chunk getNeighborTop() {
+	public Chunk getNeighborChunkTop() {
 		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY + 1, this.chunkZ);
 	}
 	
-	public Chunk getNeighborNorth() {
+	public Chunk getNeighborChunkNorth() {
 		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY, this.chunkZ - 1);
 	}
 	
-	public Chunk getNeighborSouth() {
+	public Chunk getNeighborChunkSouth() {
 		return this.world.getChunkNoGenAt(this.chunkX, this.chunkY, this.chunkZ + 1);
 	}
 	
-	public Chunk getNeighborWest() {
+	public Chunk getNeighborChunkWest() {
 		return this.world.getChunkNoGenAt(this.chunkX - 1, this.chunkY, this.chunkZ);
 	}
 	
-	public Chunk getNeighborEast() {
+	public Chunk getNeighborChunkEast() {
 		return this.world.getChunkNoGenAt(this.chunkX + 1, this.chunkY, this.chunkZ);
 	}
 	
@@ -149,6 +142,84 @@ public class Chunk {
 		}
 		
 		return true;
+	}
+	
+	public BlockType getNeighborBlockBottom(final int x, final int y, final int z) {
+		try {
+			return this.getBlockAt(x, y - 1, z);
+		} catch (final IllegalArgumentException e) {
+			final Chunk neighbor = this.getNeighborChunkBottom();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(x, Chunk.CHUNK_SIZE - 1, z);
+			}
+		}
+	}
+	
+	public BlockType getNeighborBlockTop(final int x, final int y, final int z) {
+		try {
+			return this.getBlockAt(x, y + 1, z);
+		} catch (final IllegalArgumentException e) {
+			final Chunk neighbor = this.getNeighborChunkTop();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(x, 0, z);
+			}
+		}
+	}
+	
+	public BlockType getNeighborBlockNorth(final int x, final int y, final int z) {
+		try {
+			return this.getBlockAt(x, y, z - 1);
+		} catch (final IllegalArgumentException e) {
+			final Chunk neighbor = this.getNeighborChunkNorth();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(x, y, Chunk.CHUNK_SIZE - 1);
+			}
+		}
+	}
+	
+	public BlockType getNeighborBlockSouth(final int x, final int y, final int z) {
+		try {
+			return this.getBlockAt(x, y, z + 1);
+		} catch (final IllegalArgumentException e) {
+			final Chunk neighbor = this.getNeighborChunkSouth();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(x, y, 0);
+			}
+		}
+	}
+	
+	public BlockType getNeighborBlockWest(final int x, final int y, final int z) {
+		try {
+			return this.getBlockAt(x - 1, y, z);
+		} catch (final IllegalArgumentException e) {
+			final Chunk neighbor = this.getNeighborChunkWest();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(Chunk.CHUNK_SIZE - 1, y, z);
+			}
+		}
+	}
+	
+	public BlockType getNeighborBlockEast(final int x, final int y, final int z) {
+		try {
+			return this.getBlockAt(x + 1, y, z);
+		} catch (final IllegalArgumentException e) {
+			final Chunk neighbor = this.getNeighborChunkEast();
+			if (neighbor == null) {
+				return null;
+			} else {
+				return neighbor.getBlockAt(0, y, z);
+			}
+		}
 	}
 	
 	public void clearBlockAt(final int x, final int y, final int z) {
