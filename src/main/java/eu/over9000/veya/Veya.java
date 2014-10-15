@@ -21,9 +21,9 @@ public class Veya {
 	private static Scene scene;
 	
 	private static final float mouseSensitivity = 0.01f;
-	private static final float movementSpeed = 25.0f; // move 10 units per second
+	private static final float movementSpeed = 25.0f;
 	
-	private static final float fieldOfView = 60.0f;
+	private static final float fieldOfView = 80.0f;
 	private static final float nearClippingPlane = 0.1f;
 	private static final float farClippingPlane = 1000.0f;
 	
@@ -141,16 +141,16 @@ public class Veya {
 				}
 			}
 			
-			final float posX = (float) Math.sin(System.currentTimeMillis() / 5000.0) * 255f;
-			final float posY = (float) Math.cos(System.currentTimeMillis() / 5000.0) * 255f;
+			final float posX = (float) Math.sin(System.currentTimeMillis() / 5000.0) * 1024f;
+			final float posY = (float) Math.cos(System.currentTimeMillis() / 5000.0) * 1024f;
 			// final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 			
-			final float kek = (posY / 255f + 1) / 2;
+			final float kek = (posY / 1024f + 1) / 2;
 			
-			GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
+			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 			
 			Veya.camera.updateViewMatrix();
-			Veya.scene.updateLight(posX, posY, 0);
+			// Veya.scene.updateLight(posX, posY, 0);
 			
 			Veya.scene.render();
 			

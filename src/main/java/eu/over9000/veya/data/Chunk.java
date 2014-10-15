@@ -35,6 +35,7 @@ public class Chunk {
 		if (block == null) {
 			block = new Block(x, y, z, type, this);
 			this.blocks[x][y][z] = block;
+			this.blockChanged();
 		} else {
 			block.setType(type);
 		}
@@ -148,5 +149,12 @@ public class Chunk {
 		}
 		
 		return true;
+	}
+	
+	public void clearBlockAt(final int x, final int y, final int z) {
+		Chunk.checkParameters(x, y, z);
+		
+		this.blocks[x][y][z] = null;
+		this.blockChanged();
 	}
 }

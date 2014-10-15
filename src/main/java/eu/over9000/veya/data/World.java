@@ -111,4 +111,11 @@ public class World {
 		
 	}
 	
+	public void setBlockAtIfAir(final int x, final int y, final int z, final BlockType type) {
+		if (this.getBlockAt(x, y, z) == null) {
+			this.setBlockAt(x, y, z, type);
+		}
+		
+	}
+	
 }

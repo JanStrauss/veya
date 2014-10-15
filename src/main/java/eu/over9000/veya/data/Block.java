@@ -31,6 +31,10 @@ public class Block {
 		this.chunk.blockChanged();
 	}
 	
+	public void clear() {
+		this.chunk.clearBlockAt(this.x, this.y, this.z);
+	}
+	
 	public int getInChunkX() {
 		return this.x;
 	}

@@ -38,7 +38,7 @@ public class Scene {
 		this.world = new World(1337, "Keaysea");
 		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 		
-		this.light = new Light(60, 200, 60, 0.9f, 0.9f, 0.45f);
+		this.light = new Light(60, 250, 60, 0.9f, 0.9f, 0.45f);
 		
 		System.out.println("generating world..");
 		
@@ -67,12 +67,19 @@ public class Scene {
 						createPre = false;
 					}
 				}
+				Integer highest = 0;
+				
 				for (final Integer top : topBlocks) {
 					
 					this.fillTopWithDirtAndGrass(random, this.world, x, z, top);
-					
+					if (top > highest) {
+						highest = top;
+					}
 				}
 				
+				if (highest > Scene.SEALEVEL && random.nextInt(100) > 97) {
+					this.plantTree(x, highest + 1, z);
+				}
 			}
 			// System.out.println(x + "/" + size);
 		}
@@ -102,6 +109,34 @@ public class Scene {
 				}
 			}
 		}
+	}
+	
+	private void plantTree(final int xRoot, final int yRoot, final int zRoot) {
+		for (int i = 0; i < 5; i++) {
+			this.world.setBlockAtIfAir(xRoot, yRoot + i, zRoot, BlockType.WOOD);
+		}
+		for (int l = 0; l < 2; l++) {
+			for (int x = xRoot - 2; x <= xRoot + 2; x++) {
+				for (int z = zRoot - 2; z <= zRoot + 2; z++) {
+					if (x != xRoot || z != zRoot) {
+						this.world.setBlockAtIfAir(x, yRoot + 2 + l, z, BlockType.LEAVES);
+					}
+				}
+			}
+		}
+		for (int x = xRoot - 1; x <= xRoot + 1; x++) {
+			for (int z = zRoot - 1; z <= zRoot + 1; z++) {
+				if (x != xRoot || z != zRoot) {
+					this.world.setBlockAtIfAir(x, yRoot + 4, z, BlockType.LEAVES);
+				}
+			}
+		}
+		this.world.setBlockAtIfAir(xRoot, yRoot + 5, zRoot, BlockType.LEAVES);
+		this.world.setBlockAtIfAir(xRoot - 1, yRoot + 5, zRoot, BlockType.LEAVES);
+		this.world.setBlockAtIfAir(xRoot + 1, yRoot + 5, zRoot, BlockType.LEAVES);
+		this.world.setBlockAtIfAir(xRoot, yRoot + 5, zRoot - 1, BlockType.LEAVES);
+		this.world.setBlockAtIfAir(xRoot, yRoot + 5, zRoot + 1, BlockType.LEAVES);
+		
 	}
 	
 	public void init() {
