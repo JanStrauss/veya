@@ -23,7 +23,7 @@ public class Veya {
 	private static final float mouseSensitivity = 0.01f;
 	private static final float movementSpeed = 25.0f;
 	
-	private static final float fieldOfView = 80.0f;
+	private static final float fieldOfView = 60.0f;
 	private static final float nearClippingPlane = 0.1f;
 	private static final float farClippingPlane = 1000.0f;
 	
@@ -32,8 +32,6 @@ public class Veya {
 	public static void main(final String[] args) throws LWJGLException {
 		
 		System.setProperty("org.lwjgl.util.Debug", "true");
-		
-		System.out.println(Float.MAX_VALUE);
 		
 		Veya.init();
 		Veya.run();
@@ -45,6 +43,9 @@ public class Veya {
 		Display.setTitle("Veya");
 		Display.setResizable(true);
 		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 3));
+		
+		System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
+		System.out.println("Java version: " + System.getProperty("java.version"));
 		
 		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix",
 				"lightPosition", "lightColor", "colorSwitch" });
@@ -67,6 +68,7 @@ public class Veya {
 		GL11.glClearColor(124f / 255f, 169f / 255f, 255f / 255f, 1.0f);
 		
 		Mouse.setGrabbed(true);
+		
 	}
 	
 	private static void run() {
