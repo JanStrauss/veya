@@ -115,7 +115,20 @@ public class World {
 		if (this.getBlockAt(x, y, z) == null) {
 			this.setBlockAt(x, y, z, type);
 		}
+	}
+	
+	public void clearBlockAt(final int x, final int y, final int z) {
+		final int chunkX = World.worldToChunkCoordinate(x);
+		final int chunkY = World.worldToChunkCoordinate(y);
+		final int chunkZ = World.worldToChunkCoordinate(z);
 		
+		final Chunk chunk = this.getChunkAt(chunkX, chunkY, chunkZ);
+		
+		final int blockX = World.worldToBlockInChunkCoordinate(x);
+		final int blockY = World.worldToBlockInChunkCoordinate(y);
+		final int blockZ = World.worldToBlockInChunkCoordinate(z);
+		
+		chunk.clearBlockAt(blockX, blockY, blockZ);
 	}
 	
 }
