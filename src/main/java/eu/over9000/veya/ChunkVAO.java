@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.OpenGLException;
 
 import com.google.common.primitives.Ints;
 
@@ -18,13 +19,20 @@ import eu.over9000.veya.data.Chunk;
 
 public class ChunkVAO {
 	
-	int vbo_handle;
-	int vao_handle;
-	int ibo_handle;
+	private int vbo_handle;
+	private int vao_handle;
+	private int ibo_handle;
 	
 	private final int indexData_length;
 	
+	private final IntBuffer ibo_buffer;
+	private final FloatBuffer vbo_buffer;
+	
+	private final Program program;
+	
 	public ChunkVAO(final Chunk chunk, final Program program) {
+		this.program = program;
+		
 		final int[] indexData;
 		final Vertex[] vertexData;
 		
@@ -74,59 +82,68 @@ public class ChunkVAO {
 		vertexData = vertexDataList.toArray(new Vertex[0]);
 		this.indexData_length = indexData.length;
 		
-		final IntBuffer ibo_buffer;
-		final FloatBuffer vbo_buffer;
+		this.ibo_buffer = BufferUtils.createIntBuffer(indexData.length);
+		this.ibo_buffer.put(indexData);
+		this.ibo_buffer.flip();
 		
-		ibo_buffer = BufferUtils.createIntBuffer(indexData.length);
-		ibo_buffer.put(indexData);
-		ibo_buffer.flip();
-		
-		vbo_buffer = BufferUtils.createFloatBuffer(vertexData.length * Vertex.elementCount);
+		this.vbo_buffer = BufferUtils.createFloatBuffer(vertexData.length * Vertex.elementCount);
 		for (final Vertex vertex : vertexData) {
-			vbo_buffer.put(vertex.getElements());
+			this.vbo_buffer.put(vertex.getElements());
 		}
-		vbo_buffer.flip();
-		
+		this.vbo_buffer.flip();
+	}
+	
+	/**
+	 * @param program
+	 * @param ibo_buffer
+	 * @param vbo_buffer
+	 */
+	public void create() {
 		// create objects
 		this.ibo_handle = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle);
-		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo_buffer, GL15.GL_STATIC_DRAW);
+		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_buffer, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 		
 		this.vbo_handle = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vbo_buffer, GL15.GL_STATIC_DRAW);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.vbo_buffer, GL15.GL_STATIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		
 		this.vao_handle = GL30.glGenVertexArrays();
 		GL30.glBindVertexArray(this.vao_handle);
 		
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle);
-		GL20.glEnableVertexAttribArray(program.getAttribLocation("vertexPosition"));
-		GL20.glVertexAttribPointer(program.getAttribLocation("vertexPosition"), Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
+		GL20.glEnableVertexAttribArray(this.program.getAttribLocation("vertexPosition"));
+		GL20.glVertexAttribPointer(this.program.getAttribLocation("vertexPosition"), Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
 		
-		GL20.glEnableVertexAttribArray(program.getAttribLocation("vertexColor"));
-		GL20.glVertexAttribPointer(program.getAttribLocation("vertexColor"), Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
+		GL20.glEnableVertexAttribArray(this.program.getAttribLocation("vertexColor"));
+		GL20.glVertexAttribPointer(this.program.getAttribLocation("vertexColor"), Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
 		
-		GL20.glEnableVertexAttribArray(program.getAttribLocation("vertexTexturePosition"));
-		GL20.glVertexAttribPointer(program.getAttribLocation("vertexTexturePosition"), Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
+		GL20.glEnableVertexAttribArray(this.program.getAttribLocation("vertexTexturePosition"));
+		GL20.glVertexAttribPointer(this.program.getAttribLocation("vertexTexturePosition"), Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
 		
-		GL20.glEnableVertexAttribArray(program.getAttribLocation("vertexNormal"));
-		GL20.glVertexAttribPointer(program.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
+		GL20.glEnableVertexAttribArray(this.program.getAttribLocation("vertexNormal"));
+		GL20.glVertexAttribPointer(this.program.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
 		
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle);
 		
 		GL30.glBindVertexArray(0);
 		
 		// System.out.println("created ChunkVAO with " + this.vertexData.length + " vertices");
-		
 	}
 	
 	public void render() {
 		
-		GL30.glBindVertexArray(this.vao_handle);
-		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.indexData_length, GL11.GL_UNSIGNED_INT, 0);
-		GL30.glBindVertexArray(0);
+		try {
+			GL30.glBindVertexArray(this.vao_handle);
+			GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.indexData_length, GL11.GL_UNSIGNED_INT, 0);
+			GL30.glBindVertexArray(0);
+		} catch (final OpenGLException e) {
+			System.out.println("vao_handle: " + this.vao_handle);
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void dispose() {
@@ -233,4 +250,39 @@ public class ChunkVAO {
 		
 		indexDataList.add(Veya.RESTART);
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.ibo_handle;
+		result = prime * result + this.vao_handle;
+		result = prime * result + this.vbo_handle;
+		return result;
+	}
+	
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof ChunkVAO)) {
+			return false;
+		}
+		final ChunkVAO other = (ChunkVAO) obj;
+		if (this.ibo_handle != other.ibo_handle) {
+			return false;
+		}
+		if (this.vao_handle != other.vao_handle) {
+			return false;
+		}
+		if (this.vbo_handle != other.vbo_handle) {
+			return false;
+		}
+		return true;
+	}
+	
 }

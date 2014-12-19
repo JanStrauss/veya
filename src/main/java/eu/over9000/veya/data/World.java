@@ -3,18 +3,26 @@ package eu.over9000.veya.data;
 import java.math.RoundingMode;
 import java.util.Collection;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import com.google.common.math.IntMath;
 
 import eu.over9000.veya.util.ChunkMap;
+import eu.over9000.veya.util.WorldGen;
 
 public class World {
+	public static final int MAX_WORLD_HEIGHT = 256;
+	public static final int MAX_WORLD_HEIGHT_IN_CHUNKS = World.MAX_WORLD_HEIGHT / Chunk.CHUNK_SIZE;
+	
 	private final long seed;
 	private final String name;
 	private final ChunkMap chunks = new ChunkMap();
+	private final WorldGen generator;
 	
 	public World(final long seed, final String name) {
 		this.seed = seed;
 		this.name = name;
+		this.generator = new WorldGen(this);
 	}
 	
 	public Collection<Chunk> getLoadedChunks() {
@@ -51,7 +59,7 @@ public class World {
 	}
 	
 	public BlockType getHighestBlockAt(final int x, final int z) {
-		return null; // TODO
+		throw new NotImplementedException(); // TODO
 	}
 	
 	public Chunk getChunkAt(final int chunkX, final int chunkY, final int chunkZ) {
@@ -62,12 +70,18 @@ public class World {
 		return this.chunks.getChunkAt(chunkX, chunkY, chunkZ);
 	}
 	
+	public Chunk getChunkWithGenAt(final int chunkX, final int chunkY, final int chunkZ) {
+		if (this.chunks.isGenerated(chunkX, chunkZ)) {
+			return this.getChunkNoGenAt(chunkX, chunkY, chunkZ);
+		} else {
+			this.generator.genChunksAt(chunkX, chunkZ);
+			this.chunks.markAsGenerated(chunkX, chunkZ);
+			return this.getChunkNoGenAt(chunkX, chunkY, chunkZ);
+		}
+	}
+	
 	private Chunk loadChunk(final int chunkX, final int chunkY, final int chunkZ) {
-		// System.out.println("loaded chunk: " + chunkX + ", " + chunkY + ", " + chunkZ);
 		final Chunk chunk = new Chunk(this, chunkX, chunkY, chunkZ);
-		
-		// TODO load real world stuffs
-		
 		this.chunks.setChunkAt(chunkX, chunkY, chunkZ, chunk);
 		return chunk;
 	}
@@ -79,7 +93,6 @@ public class World {
 		} else {
 			return chunk;
 		}
-		
 	}
 	
 	public long getSeed() {
@@ -90,12 +103,11 @@ public class World {
 		return this.name;
 	}
 	
-	private static int worldToChunkCoordinate(final int coord) {
-		// return coord / Chunk.CHUNK_SIZE;
+	public static int worldToChunkCoordinate(final int coord) {
 		return IntMath.divide(coord, Chunk.CHUNK_SIZE, RoundingMode.FLOOR);
 	}
 	
-	private static int worldToBlockInChunkCoordinate(final int coord) {
+	public static int worldToBlockInChunkCoordinate(final int coord) {
 		int val = coord % Chunk.CHUNK_SIZE;
 		if (val < 0) {
 			val = val + Chunk.CHUNK_SIZE;
@@ -103,7 +115,7 @@ public class World {
 		return val;
 	}
 	
-	private static int chunkToWorldCoordinate(final int coord, final int chunk) {
+	public static int chunkToWorldCoordinate(final int coord, final int chunk) {
 		return chunk * Chunk.CHUNK_SIZE + coord;
 	}
 	
@@ -129,6 +141,17 @@ public class World {
 		final int blockZ = World.worldToBlockInChunkCoordinate(z);
 		
 		chunk.clearBlockAt(blockX, blockY, blockZ);
+	}
+	
+	public void genStartChunks(final int size) {
+		for (int x = -size; x <= size; x++) {
+			for (int z = -size; z <= size; z++) {
+				
+				this.generator.genChunksAt(x, z);
+				this.chunks.markAsGenerated(x, z);
+				
+			}
+		}
 	}
 	
 }

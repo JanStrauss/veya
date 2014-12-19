@@ -2,148 +2,110 @@ package eu.over9000.veya;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
-import eu.over9000.veya.data.BlockType;
 import eu.over9000.veya.data.Chunk;
 import eu.over9000.veya.data.World;
+import eu.over9000.veya.util.ChunkLocation;
+import eu.over9000.veya.util.CoordinatesUtil;
 import eu.over9000.veya.util.TextureLoader;
-import eu.over9000.veya.util.WorldGen;
 
 public class Scene {
+	private final static int SCENE_CHUNKS_RANGE = 12;
+	
+	private final Object lock = new Object();
+	private boolean camPosChanged = false;
+	
 	private final World world;
-	private final Map<Chunk, ChunkVAO> chunks = new HashMap<>();
+	private final Map<Chunk, ChunkVAO> displayed_chunks = new ConcurrentHashMap<>();
 	private Light light;
 	private final Program program;
 	private final int texture_handle;
+	private final Camera camera;
 	
 	private Matrix4f modelMatrix = new Matrix4f();
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	
-	private static final int SEALEVEL = 64;
+	private final ConcurrentLinkedQueue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
+	private final ConcurrentLinkedQueue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
+	protected boolean alive;
 	
-	public Scene(final Program shader) {
+	private int last_cam_x = 0;
+	private int last_cam_y = 0;
+	private int last_cam_z = 0;
+	
+	private ChunkLocation centerChunk;
+	
+	private final Runnable displayedChunkUpdater = new Runnable() {
+		
+		@Override
+		public void run() {
+			while (Scene.this.alive) {
+				synchronized (Scene.this.lock) {
+					try {
+						while (!Scene.this.camPosChanged) {
+							Scene.this.lock.wait();
+						}
+					} catch (final InterruptedException e) {
+						if (!Scene.this.alive) {
+							return;
+						}
+						e.printStackTrace();
+					}
+					Scene.this.camPosChanged = false;
+				}
+				
+				Scene.this.updateDisplayedChunks();
+			}
+			
+		}
+	};
+	
+	private final Thread displayedChunkUpdaterThread;
+	
+	public Scene(final Program shader, final Camera camera) {
+		this.alive = true;
+		this.camera = camera;
 		this.program = shader;
 		this.world = new World(1337, "Keaysea");
 		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 		
 		this.light = new Light(60, 250, 60, 0.9f, 0.9f, 0.45f);
 		
-		System.out.println("generating world..");
+		// System.out.println("generating world..");
+		//
+		// this.world.genStartChunks(8);
+		//
+		// System.out.println("generation done, creating VAOs");
+		//
+		// int i = 0;
+		// final int max = this.world.getLoadedChunks().size();
+		// for (final Chunk chunk : this.world.getLoadedChunks()) {
+		// final ChunkVAO vao = new ChunkVAO(chunk, this.program);
+		// vao.create();
+		// this.displayed_chunks.put(chunk, vao);
+		//
+		// System.out.println(i + "/" + max);
+		// Display.setTitle("VEYA | gen chunkVAO: " + i + "/" + max);
+		// i++;
+		// }
+		//
+		// System.out.println("VAOs created.");
 		
-		final Random random = new Random(this.world.getSeed());
-		
-		final int size = 256;
-		for (int x = -size; x <= size; x++) {
-			for (int z = -size; z <= size; z++) {
-				final List<Integer> topBlocks = new ArrayList<>();
-				boolean createPre = false;
-				
-				for (int y = 0; y < 256; y++) {
-					
-					if (WorldGen.genElevation(x, y, z)) {
-						this.world.setBlockAt(x, y, z, BlockType.STONE);
-						createPre = true;
-					} else {
-						if (y <= Scene.SEALEVEL) {
-							this.world.setBlockAt(x, y, z, BlockType.WATER);
-						}
-						if (createPre) {
-							
-							topBlocks.add(y - 1);
-							
-						}
-						createPre = false;
-					}
-				}
-				Integer highest = 0;
-				
-				for (final Integer top : topBlocks) {
-					
-					this.fillTopWithDirtAndGrass(random, this.world, x, z, top);
-					if (top > highest) {
-						highest = top;
-					}
-				}
-				
-				if (highest > Scene.SEALEVEL && random.nextInt(100) > 97) {
-					this.plantTree(x, highest + 1, z);
-				}
-			}
-			System.out.println(x + "/" + size);
-			Display.setTitle("VEYA | gen world: " + x + "/" + size);
-		}
-		
-		System.out.println("generation done, creating VAOs");
-		
-		int i = 0;
-		final int max = this.world.getLoadedChunks().size();
-		for (final Chunk chunk : this.world.getLoadedChunks()) {
-			this.chunks.put(chunk, new ChunkVAO(chunk, this.program));
-			
-			System.out.println(i + "/" + max);
-			Display.setTitle("VEYA | gen chunkVAO: " + i + "/" + max);
-			i++;
-		}
-		
-		System.out.println("VAOs created.");
-	}
-	
-	private void fillTopWithDirtAndGrass(final Random random, final World world, final int x, final int z, final Integer top) {
-		if (top >= Scene.SEALEVEL) {
-			world.setBlockAt(x, top, z, BlockType.GRASS);
-		} else {
-			world.setBlockAt(x, top, z, BlockType.DIRT);
-		}
-		
-		final int dirtHeight = 3 + random.nextInt(3);
-		final int dirtLimit = top - dirtHeight;
-		for (int y = top; y > dirtLimit; y--) {
-			if (world.getBlockAt(x, y, z) != null) {
-				if (world.getBlockAt(x, y, z) == BlockType.STONE) {
-					world.setBlockAt(x, y, z, BlockType.DIRT);
-				}
-			}
-		}
-	}
-	
-	private void plantTree(final int xRoot, final int yRoot, final int zRoot) {
-		for (int i = 0; i < 5; i++) {
-			this.world.setBlockAtIfAir(xRoot, yRoot + i, zRoot, BlockType.WOOD);
-		}
-		for (int l = 0; l < 2; l++) {
-			for (int x = xRoot - 2; x <= xRoot + 2; x++) {
-				for (int z = zRoot - 2; z <= zRoot + 2; z++) {
-					if (x != xRoot || z != zRoot) {
-						this.world.setBlockAtIfAir(x, yRoot + 2 + l, z, BlockType.LEAVES);
-					}
-				}
-			}
-		}
-		for (int x = xRoot - 1; x <= xRoot + 1; x++) {
-			for (int z = zRoot - 1; z <= zRoot + 1; z++) {
-				if (x != xRoot || z != zRoot) {
-					this.world.setBlockAtIfAir(x, yRoot + 4, z, BlockType.LEAVES);
-				}
-			}
-		}
-		this.world.setBlockAtIfAir(xRoot, yRoot + 5, zRoot, BlockType.LEAVES);
-		this.world.setBlockAtIfAir(xRoot - 1, yRoot + 5, zRoot, BlockType.LEAVES);
-		this.world.setBlockAtIfAir(xRoot + 1, yRoot + 5, zRoot, BlockType.LEAVES);
-		this.world.setBlockAtIfAir(xRoot, yRoot + 5, zRoot - 1, BlockType.LEAVES);
-		this.world.setBlockAtIfAir(xRoot, yRoot + 5, zRoot + 1, BlockType.LEAVES);
+		this.displayedChunkUpdaterThread = new Thread(this.displayedChunkUpdater, "DisplayedChunkUpdater");
+		this.displayedChunkUpdaterThread.start();
 		
 	}
 	
@@ -157,18 +119,98 @@ public class Scene {
 		this.light.init(this.program);
 	}
 	
+	private void updateDisplayedChunks() {
+		
+		this.centerChunk = new ChunkLocation(this.last_cam_x, this.last_cam_y, this.last_cam_z);
+		
+		final int min_x = this.last_cam_x - Scene.SCENE_CHUNKS_RANGE;
+		final int max_x = this.last_cam_x + Scene.SCENE_CHUNKS_RANGE;
+		final int min_y = this.last_cam_y - Scene.SCENE_CHUNKS_RANGE;
+		final int max_y = this.last_cam_y + Scene.SCENE_CHUNKS_RANGE;
+		final int min_z = this.last_cam_z - Scene.SCENE_CHUNKS_RANGE;
+		final int max_z = this.last_cam_z + Scene.SCENE_CHUNKS_RANGE;
+		
+		// remove chunks outside display area
+		
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayed_chunks.entrySet()) {
+			if (!CoordinatesUtil.isBetween(entry.getKey().getChunkX(), min_x, max_x) || !CoordinatesUtil.isBetween(entry.getKey().getChunkY(), min_y, max_y)
+					|| !CoordinatesUtil.isBetween(entry.getKey().getChunkZ(), min_z, max_z)) {
+				this.toRemove.add(new ChunkChunkVAOPair(entry.getKey(), entry.getValue()));
+			}
+		}
+		final List<ChunkLocation> locations = new ArrayList<>();
+		// load chunks in display area
+		for (int x = min_x; x <= max_x; x++) {
+			for (int y = min_y; y <= max_y; y++) {
+				for (int z = min_z; z <= max_z; z++) {
+					locations.add(new ChunkLocation(x, y, z, this.centerChunk));
+				}
+			}
+		}
+		
+		Collections.sort(locations);
+		
+		for (final ChunkLocation chunkLocation : locations) {
+			final Chunk chunk = this.world.getChunkWithGenAt(chunkLocation.x, chunkLocation.y, chunkLocation.z);
+			if (chunk != null) {
+				
+				final boolean isDisplayed = this.displayed_chunks.containsKey(chunk);
+				
+				if (!isDisplayed) {
+					this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
+				}
+			}
+		}
+		
+	}
+	
 	public void render() {
+		this.checkCameraPosition();
+		
+		ChunkChunkVAOPair addEntry;
+		while ((addEntry = this.toAdd.poll()) != null) {
+			this.displayed_chunks.put(addEntry.getChunk(), addEntry.getChunkVAO());
+			addEntry.getChunkVAO().create();
+		}
+		
+		ChunkChunkVAOPair removeEntry;
+		while ((removeEntry = this.toRemove.poll()) != null) {
+			this.displayed_chunks.remove(removeEntry.getChunk());
+			removeEntry.getChunkVAO().dispose();
+		}
+		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
 		
 		this.program.enableVAttributes();
-		for (final Entry<Chunk, ChunkVAO> entry : this.chunks.entrySet()) {
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayed_chunks.entrySet()) {
 			if (entry.getValue() != null) {
 				
 				entry.getValue().render();
 			}
 		}
 		this.program.disableVAttributes();
+	}
+	
+	private void checkCameraPosition() {
+		final int center_x = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getX());
+		final int center_y = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getY());
+		final int center_z = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getZ());
+		
+		if (center_x != this.last_cam_x || center_y != this.last_cam_y || center_z != this.last_cam_z) {
+			
+			this.last_cam_x = center_x;
+			this.last_cam_y = center_y;
+			this.last_cam_z = center_z;
+			
+			System.out.println("Camera changed chunk: " + center_x + "," + center_y + "," + center_z);
+			
+			synchronized (this.lock) {
+				this.camPosChanged = true;
+				this.lock.notifyAll();
+			}
+		}
+		
 	}
 	
 	private void updateModelMatrix() {
@@ -179,11 +221,71 @@ public class Scene {
 	}
 	
 	public void dispose() {
-		for (final Entry<Chunk, ChunkVAO> entry : this.chunks.entrySet()) {
+		this.alive = false;
+		this.displayedChunkUpdaterThread.interrupt();
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayed_chunks.entrySet()) {
 			if (entry.getValue() != null) {
 				entry.getValue().dispose();
-				entry.getKey();
 			}
 		}
+		this.displayed_chunks.clear();
 	}
+	
+	private class ChunkChunkVAOPair {
+		private final Chunk chunk;
+		private final ChunkVAO chunkVAO;
+		
+		public ChunkChunkVAOPair(final Chunk chunk, final ChunkVAO chunkVAO) {
+			this.chunk = chunk;
+			this.chunkVAO = chunkVAO;
+		}
+		
+		public Chunk getChunk() {
+			return this.chunk;
+		}
+		
+		public ChunkVAO getChunkVAO() {
+			return this.chunkVAO;
+		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + (this.chunk == null ? 0 : this.chunk.hashCode());
+			result = prime * result + (this.chunkVAO == null ? 0 : this.chunkVAO.hashCode());
+			return result;
+		}
+		
+		@Override
+		public boolean equals(final Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (!(obj instanceof ChunkChunkVAOPair)) {
+				return false;
+			}
+			final ChunkChunkVAOPair other = (ChunkChunkVAOPair) obj;
+			if (this.chunk == null) {
+				if (other.chunk != null) {
+					return false;
+				}
+			} else if (!this.chunk.equals(other.chunk)) {
+				return false;
+			}
+			if (this.chunkVAO == null) {
+				if (other.chunkVAO != null) {
+					return false;
+				}
+			} else if (!this.chunkVAO.equals(other.chunkVAO)) {
+				return false;
+			}
+			return true;
+		}
+		
+	}
+	
 }
