@@ -55,9 +55,9 @@ public class WorldGen {
 					}
 				}
 				
-				// if (highest > WorldGen.SEALEVEL && this.random.nextInt(100) > 97) {
-				// this.plantTree(x, highest + 1, z);
-				// }
+				if (highest > WorldGen.SEALEVEL && this.random.nextInt(100) > 97) {
+					this.plantTree(x, highest + 1, z);
+				}
 			}
 		}
 	}
