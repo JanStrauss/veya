@@ -287,4 +287,8 @@ public class Scene {
 		
 	}
 	
+	public int getChunkCount() {
+		return this.displayed_chunks.size();
+	}
+	
 }
