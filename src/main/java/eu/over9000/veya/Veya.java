@@ -147,12 +147,13 @@ public class Veya {
 			final float posY = (float) Math.cos(System.currentTimeMillis() / 5000.0) * 1024f;
 			// final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 			
-			final float kek = (posY / 1024f + 1) / 2;
+			// final float kek = (posY / 1024f + 1) / 2;
 			
 			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 			
 			Veya.camera.updateViewMatrix();
-			// Veya.scene.updateLight(posX, posY, 0);
+			// Veya.scene.updateLight(posX + Veya.camera.getPosition().getX(), posY, 0 + Veya.camera.getPosition().getZ());
+			Veya.scene.updateLight(Veya.camera.getPosition().getX(), Veya.camera.getPosition().getY(), Veya.camera.getPosition().getZ());
 			
 			Veya.scene.render();
 			
