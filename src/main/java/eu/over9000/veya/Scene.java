@@ -40,13 +40,12 @@ public class Scene {
 	
 	private final ConcurrentLinkedQueue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
 	private final ConcurrentLinkedQueue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
-	protected boolean alive;
+	
+	private boolean alive;
 	
 	private int last_cam_x = 0;
 	private int last_cam_y = 0;
 	private int last_cam_z = 0;
-	
-	private ChunkLocation centerChunk;
 	
 	private final Runnable displayedChunkUpdater = new Runnable() {
 		
@@ -121,7 +120,7 @@ public class Scene {
 	
 	private void updateDisplayedChunks() {
 		
-		this.centerChunk = new ChunkLocation(this.last_cam_x, this.last_cam_y, this.last_cam_z);
+		final ChunkLocation centerChunk = new ChunkLocation(this.last_cam_x, this.last_cam_y, this.last_cam_z);
 		
 		final int min_x = this.last_cam_x - Scene.SCENE_CHUNKS_RANGE;
 		final int max_x = this.last_cam_x + Scene.SCENE_CHUNKS_RANGE;
@@ -143,7 +142,7 @@ public class Scene {
 		for (int x = min_x; x <= max_x; x++) {
 			for (int y = min_y; y <= max_y; y++) {
 				for (int z = min_z; z <= max_z; z++) {
-					locations.add(new ChunkLocation(x, y, z, this.centerChunk));
+					locations.add(new ChunkLocation(x, y, z, centerChunk));
 				}
 			}
 		}

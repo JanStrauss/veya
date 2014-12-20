@@ -228,4 +228,11 @@ public class Chunk {
 		this.blocks[x][y][z] = null;
 		this.blockChanged();
 	}
+	
+	public void assertNeighborsGenerated() {
+		this.world.getChunkWithGenAt(this.chunkX, this.chunkY, this.chunkZ - 1);
+		this.world.getChunkWithGenAt(this.chunkX, this.chunkY, this.chunkZ + 1);
+		this.world.getChunkWithGenAt(this.chunkX - 1, this.chunkY, this.chunkZ);
+		this.world.getChunkWithGenAt(this.chunkX + 1, this.chunkY, this.chunkZ);
+	}
 }
