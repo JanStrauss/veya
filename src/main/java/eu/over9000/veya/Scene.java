@@ -30,7 +30,7 @@ public class Scene {
 	
 	private final World world;
 	private final Map<Chunk, ChunkVAO> displayed_chunks = new ConcurrentHashMap<>();
-	private Light light;
+	private final Light light;
 	private final Program program;
 	private final int texture_handle;
 	private final Camera camera;
@@ -81,7 +81,7 @@ public class Scene {
 		this.world = new World(1337, "Keaysea");
 		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 		
-		this.light = new Light(60, 250, 60, 0.9f, 0.9f, 0.45f);
+		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 		
 		// System.out.println("generating world..");
 		//
@@ -113,9 +113,8 @@ public class Scene {
 		this.updateModelMatrix();
 	}
 	
-	public void updateLight(final float x, final float y, final float z) {
-		this.light = new Light(x, y, z, 0.9f, 0.9f, 0.45f);
-		this.light.init(this.program);
+	public Light getLight() {
+		return this.light;
 	}
 	
 	private void updateDisplayedChunks() {

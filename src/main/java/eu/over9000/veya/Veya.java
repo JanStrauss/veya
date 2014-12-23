@@ -29,6 +29,11 @@ public class Veya {
 	
 	private static boolean colorSwitch = false;
 	
+	private static float ambient = 0.70f;
+	private static float diffuse = 0.35f;
+	private static float specular = 0.05f;
+	private static float df = 0.05f;
+	
 	public static void main(final String[] args) throws LWJGLException {
 		
 		System.setProperty("org.lwjgl.util.Debug", "true");
@@ -42,13 +47,13 @@ public class Veya {
 		Display.setDisplayMode(new DisplayMode(1280, 720));
 		Display.setTitle("Veya");
 		Display.setResizable(true);
-		Display.create(new PixelFormat().withSamples(4), new ContextAttribs(3, 3));
+		Display.create(new PixelFormat().withSamples(4).withDepthBits(32), new ContextAttribs(3, 3));
 		
 		System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		System.out.println("Java version: " + System.getProperty("java.version"));
 		
 		Veya.program = new Program(new String[] { "vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", }, new String[] { "modelMatrix", "viewMatrix", "projectionMatrix",
-				"lightPosition", "lightColor", "colorSwitch" });
+				"lightPosition", "lightColor", "lightFactors", "colorSwitch", "cameraPosition" });
 		
 		Util.checkGLError();
 		
@@ -141,10 +146,52 @@ public class Veya {
 				if (Keyboard.getEventKey() == Keyboard.KEY_X) {
 					Mouse.setGrabbed(!Keyboard.getEventKeyState());
 				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_PRIOR && Keyboard.getEventKeyState() == true) {
+					if (Veya.specular + Veya.df <= 1.0f) {
+						Veya.specular += Veya.df;
+					} else {
+						Veya.specular = 1.0f;
+					}
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_NEXT && Keyboard.getEventKeyState() == true) {
+					if (Veya.specular - Veya.df >= 0.0f) {
+						Veya.specular -= Veya.df;
+					} else {
+						Veya.specular = 0.0f;
+					}
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_HOME && Keyboard.getEventKeyState() == true) {
+					if (Veya.diffuse + Veya.df <= 1.0f) {
+						Veya.diffuse += Veya.df;
+					} else {
+						Veya.diffuse = 1.0f;
+					}
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_END && Keyboard.getEventKeyState() == true) {
+					if (Veya.diffuse - Veya.df >= 0.0f) {
+						Veya.diffuse -= Veya.df;
+					} else {
+						Veya.diffuse = 0.0f;
+					}
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_INSERT && Keyboard.getEventKeyState() == true) {
+					if (Veya.ambient + Veya.df <= 1.0f) {
+						Veya.ambient += Veya.df;
+					} else {
+						Veya.ambient = 1.0f;
+					}
+				}
+				if (Keyboard.getEventKey() == Keyboard.KEY_DELETE && Keyboard.getEventKeyState() == true) {
+					if (Veya.ambient - Veya.df >= 0.0f) {
+						Veya.ambient -= Veya.df;
+					} else {
+						Veya.ambient = 0.0f;
+					}
+				}
 			}
 			
-			final float posX = (float) Math.sin(System.currentTimeMillis() / 5000.0) * 1024f;
-			final float posY = (float) Math.cos(System.currentTimeMillis() / 5000.0) * 1024f;
+			final float posX = (float) Math.sin(System.currentTimeMillis() / 5000.0);
+			final float posY = (float) Math.cos(System.currentTimeMillis() / 5000.0);
 			// final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 			
 			// final float kek = (posY / 1024f + 1) / 2;
@@ -152,9 +199,10 @@ public class Veya {
 			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 			
 			Veya.camera.updateViewMatrix();
+			Veya.camera.updateCameraPosition();
 			// Veya.scene.updateLight(posX + Veya.camera.getPosition().getX(), posY, 0 + Veya.camera.getPosition().getZ());
-			Veya.scene.updateLight(Veya.camera.getPosition().getX(), Veya.camera.getPosition().getY(), Veya.camera.getPosition().getZ());
-			
+			Veya.scene.getLight().updateLightPosition(Veya.camera.getPosition().getX(), Veya.camera.getPosition().getY(), Veya.camera.getPosition().getZ());
+			Veya.scene.getLight().updateLightFactors(Veya.ambient, Veya.diffuse, Veya.specular);
 			Veya.scene.render();
 			
 			Util.checkGLError();
@@ -169,7 +217,7 @@ public class Veya {
 			if (end - start > 1000) {
 				start = end;
 				Display.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z
-						+ " | #chunks displayed: " + Veya.scene.getChunkCount());
+						+ " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
 				count = 0;
 			} else {
 				count++;

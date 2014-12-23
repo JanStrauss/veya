@@ -14,12 +14,10 @@ out vec3 passTexturePosition;
 
 out vec3 normal;
 out vec3 position;
-out vec3 cameraPosition;
 
 
 void main() {
 	mat4 modelInvTranspMatrix = transpose(inverse(modelMatrix));
-	mat4 viewInvMatrix = inverse(viewMatrix);
 
 	vec4 worldPosition = modelMatrix * vec4(vertexPosition.xyz, 1.0);
     gl_Position = projectionMatrix * viewMatrix * worldPosition;
@@ -29,5 +27,4 @@ void main() {
     
     normal = normalize(vec3(modelInvTranspMatrix * vec4(vertexNormal,1.0)));
     position = vec3(worldPosition);
-    cameraPosition = vec3(viewInvMatrix * viewMatrix[3]);
 }

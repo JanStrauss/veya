@@ -18,11 +18,17 @@ public class Camera {
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	private final int viewMatrixLocation;
 	private final int projectionMatrixLocation;
+	private final int cameraPositionLocation;
 	
 	public Camera(final Program shader, final int width, final int height, final float posX, final float posY, final float posZ) {
 		this.viewMatrixLocation = shader.getUniformLocation("viewMatrix");
 		this.projectionMatrixLocation = shader.getUniformLocation("projectionMatrix");
+		this.cameraPositionLocation = shader.getUniformLocation("cameraPosition");
 		this.position = new Vector3f(posX, posY, posZ);
+	}
+	
+	public void updateCameraPosition() {
+		GL20.glUniform3f(this.cameraPositionLocation, this.position.x, this.position.y, this.position.z);
 	}
 	
 	public void updateViewMatrix() {
