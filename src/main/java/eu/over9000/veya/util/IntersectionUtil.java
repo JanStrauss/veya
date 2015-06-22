@@ -8,22 +8,20 @@ import org.lwjgl.util.vector.Vector3f;
 public class IntersectionUtil {
 
 	private static final int NUMDIM = 3;
-	private static final int RIGHT = 0;
-	private static final int LEFT = 1;
-	private static final int MIDDLE = 2;
+	private static final int RIGHT = 1;
+	private static final int LEFT = -1;
+	private static final int MIDDLE = 0;
 
-	public static boolean checkCollision(final Vector3f start, final Vector3f direction, final int worldX, final int worldY, final int worldZ) {
+	public static int[] checkIntersection(final Vector3f start, final Vector3f direction, final int worldX, final int worldY, final int worldZ) {
 		final float[] origin = new float[]{start.x, start.y, start.z};
 		final float[] dir = new float[]{direction.x, direction.y, direction.z};
 		final float[] minB = new float[]{worldX, worldY, worldZ};
 		final float[] maxB = new float[]{worldX + 1, worldY + 1, worldZ + 1};
 
-		final float[] coord = checkHitBoundingBox(minB, maxB, origin, dir);
-
-		return coord != null;
+		return checkHitBoundingBox(minB, maxB, origin, dir);
 	}
 
-	private static float[] checkHitBoundingBox(final float[] minB, final float[] maxB, final float[] origin, final float[] dir) {
+	private static int[] checkHitBoundingBox(final float[] minB, final float[] maxB, final float[] origin, final float[] dir) {
 		boolean inside = true;
 		final int[] quadrant = new int[NUMDIM];
 		int whichPlane;
@@ -85,6 +83,13 @@ public class IntersectionUtil {
 				coord[i] = candidatePlane[i];
 			}
 		}
-		return coord;		/* ray hits box */
+
+		return new int[]{whichPlane, quadrant[whichPlane]};		/* ray hits box */
+	}
+
+	public static Location3D getNeighborBlockFromIntersectionResult(final int x, final int y, final int z, final int[] intersectionResult) {
+		final int[] arrayLocation = new int[]{x, y, z};
+		arrayLocation[intersectionResult[0]] = arrayLocation[intersectionResult[0]] + intersectionResult[1];
+		return new Location3D(arrayLocation[0], arrayLocation[1], arrayLocation[2]);
 	}
 }

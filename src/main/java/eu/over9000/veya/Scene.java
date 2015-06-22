@@ -299,9 +299,7 @@ public class Scene {
 
 	public void performLeftClick() {
 		final Vector3f position = camera.getPosition();
-		final Vector3f lookAt = camera.getLookAt();
-
-		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
+		final Vector3f viewDirection = camera.getViewDirection();
 
 		final List<Location3D> candidates = world.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
 		Collections.sort(candidates);
@@ -313,29 +311,38 @@ public class Scene {
 				continue;
 			}
 
-			if (IntersectionUtil.checkCollision(position, lookAt, candidate.x, candidate.y, candidate.z)) {
-				System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
+			final int[] intersectionResult = IntersectionUtil.checkIntersection(position, viewDirection, candidate.x, candidate.y, candidate.z);
+
+			if (intersectionResult != null) {
+				//System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
 				world.clearBlockAt(candidate.x, candidate.y, candidate.z);
 				break;
 			}
 		}
-
 	}
 
 	public void performRightClick() {
-		camera.printViewMatrix();
-		Vector3f lookAt = camera.getLookAt();
-		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
-		for (float i = 0.5f; i < 5; i = i + 0.10f) {
-			Vector3f direction = camera.getLookAt();
-			direction.scale(i);
-			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
-			//System.out.println("dir: " + direction.x + " " + direction.y + " " + direction.z);
-			//System.out.println("loc: " + location.x + " " + location.y + " " + location.z);
-			//System.out.println();
-			BlockType block = world.getBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z));
-			if (block != null) {
-				world.setBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z), BlockType.TEST);
+		final Vector3f position = camera.getPosition();
+		final Vector3f viewDirection = camera.getViewDirection();
+
+		final List<Location3D> candidates = world.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
+		Collections.sort(candidates);
+
+		for (final Location3D candidate : candidates) {
+			final BlockType type = world.getBlockAt(candidate.x, candidate.y, candidate.z);
+
+			if (type == null) {
+				continue;
+			}
+
+			final int[] intersectionResult = IntersectionUtil.checkIntersection(position, viewDirection, candidate.x, candidate.y, candidate.z);
+
+			if (intersectionResult != null) {
+				//System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
+
+				final Location3D placeLocation = IntersectionUtil.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
+
+				world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST);
 				break;
 			}
 		}

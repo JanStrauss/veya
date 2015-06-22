@@ -158,7 +158,7 @@ public class Camera {
 		return new Vector3f(this.position.x, this.position.y, this.position.z);
 	}
 
-	public Vector3f getLookAt() {
+	public Vector3f getViewDirection() {
 		float x = (float) (Math.cos(pitch) * Math.sin(yaw));
 		float y = (float) -(Math.sin(pitch));
 		float z = (float) -(Math.cos(pitch) * Math.cos(yaw));

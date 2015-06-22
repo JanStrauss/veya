@@ -49,7 +49,7 @@ public class Veya {
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(Veya.program, 60, 200, 60);
+		Veya.camera = new Camera(Veya.program, 60, 90, 60);
 		Veya.scene = new Scene(Veya.program, Veya.camera);
 
 		Util.checkGLError();
