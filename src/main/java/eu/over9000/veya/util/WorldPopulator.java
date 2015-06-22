@@ -11,8 +11,8 @@ import eu.over9000.veya.data.World;
  */
 public class WorldPopulator {
 
-	private static final int TREE_ATTEMPT_COUNT = 16;
-	public static final int TREE_CHANCE = 33;
+	private static final int TREE_ATTEMPT_COUNT = 128;
+	public static final int TREE_CHANCE = 50;
 
 	public static void populateChunkStack(final World world, final Random random, final int chunkX, final int chunkZ) {
 		System.out.println("POPULATOR CALLED FOR " + chunkX + "," + chunkZ);

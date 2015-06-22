@@ -36,7 +36,6 @@ public class Scene {
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
 	private final Queue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
-	private final Queue<ChunkChunkVAOPair> toUpdate = new ConcurrentLinkedQueue<>();
 	private final Queue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
 
 	private boolean alive;
@@ -157,11 +156,6 @@ public class Scene {
 			if (!isDisplayed) {
 				chunk.getAndResetChangedFlag();
 				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
-			} else {
-				if (chunk.getAndResetChangedFlag()) {
-					System.out.println("UPDATE CHUNK " + chunk);
-					this.toUpdate.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
-				}
 			}
 		}
 	}
@@ -181,12 +175,15 @@ public class Scene {
 			removeEntry.getChunkVAO().dispose();
 		}
 
-		ChunkChunkVAOPair updateEntry;
-		while ((updateEntry = this.toUpdate.poll()) != null) {
-			ChunkVAO oldVAO = this.displayedChunks.remove(updateEntry.getChunk());
-			oldVAO.dispose();
-			this.displayedChunks.put(updateEntry.getChunk(), updateEntry.getChunkVAO());
-			updateEntry.getChunkVAO().create();
+		for (Chunk chunk : displayedChunks.keySet()) {
+			if (chunk.getAndResetChangedFlag()) {
+
+				ChunkVAO oldVAO = this.displayedChunks.get(chunk);
+				oldVAO.dispose();
+				ChunkVAO newVAO = new ChunkVAO(chunk, program);
+				this.displayedChunks.put(chunk, newVAO);
+				newVAO.create();
+			}
 		}
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);

@@ -24,16 +24,19 @@ public class Chunk {
 
 	public BlockType getBlockAt(final int x, final int y, final int z) {
 		Chunk.checkParameters(x, y, z);
-
 		return this.blocks[x][y][z];
 	}
 
 	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
 		Chunk.checkParameters(x, y, z);
-
 		this.blocks[x][y][z] = type;
+		blockChanged();
+	}
 
-		changed = true;
+	public void clearBlockAt(final int x, final int y, final int z) {
+		Chunk.checkParameters(x, y, z);
+		this.blocks[x][y][z] = null;
+		this.blockChanged();
 	}
 
 	public boolean getAndResetChangedFlag() {
@@ -85,7 +88,7 @@ public class Chunk {
 		}
 	}
 
-	public void blockChanged() {
+	private void blockChanged() {
 		this.changed = true;
 	}
 
@@ -194,10 +197,4 @@ public class Chunk {
 		}
 	}
 
-	public void clearBlockAt(final int x, final int y, final int z) {
-		Chunk.checkParameters(x, y, z);
-
-		this.blocks[x][y][z] = null;
-		this.blockChanged();
-	}
 }
