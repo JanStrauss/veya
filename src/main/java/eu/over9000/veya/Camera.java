@@ -1,11 +1,11 @@
 package eu.over9000.veya;
 
-import java.nio.FloatBuffer;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.nio.FloatBuffer;
 
 public class Camera {
 	public static final double PITCH_LIMIT = 90 * Math.PI / 180;
@@ -171,5 +171,12 @@ public class Camera {
 
 	public float getYaw() {
 		return yaw;
+	}
+
+	public void printViewMatrix() {
+		System.out.println(viewMatrix.m00 + " " + viewMatrix.m01 + " " + viewMatrix.m02 + viewMatrix.m03);
+		System.out.println(viewMatrix.m10 + " " + viewMatrix.m11 + " " + viewMatrix.m12 + viewMatrix.m13);
+		System.out.println(viewMatrix.m20 + " " + viewMatrix.m21 + " " + viewMatrix.m22 + viewMatrix.m23);
+		System.out.println(viewMatrix.m30 + " " + viewMatrix.m31 + " " + viewMatrix.m32 + viewMatrix.m33);
 	}
 }

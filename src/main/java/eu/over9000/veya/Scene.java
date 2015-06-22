@@ -1,11 +1,11 @@
 package eu.over9000.veya;
 
-import java.nio.FloatBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
+import eu.over9000.veya.data.BlockType;
+import eu.over9000.veya.data.Chunk;
+import eu.over9000.veya.data.World;
+import eu.over9000.veya.util.ChunkLocation;
+import eu.over9000.veya.util.CoordinatesUtil;
+import eu.over9000.veya.util.TextureLoader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -14,12 +14,11 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import eu.over9000.veya.data.BlockType;
-import eu.over9000.veya.data.Chunk;
-import eu.over9000.veya.data.World;
-import eu.over9000.veya.util.ChunkLocation;
-import eu.over9000.veya.util.CoordinatesUtil;
-import eu.over9000.veya.util.TextureLoader;
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Scene {
 	private final static int SCENE_CHUNKS_RANGE = 4;
@@ -294,42 +293,43 @@ public class Scene {
 			}
 			return true;
 		}
-
 	}
 
 	public void performLeftClick() {
+		camera.printViewMatrix();
 		Vector3f lookAt = camera.getLookAt();
 		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
 
-		for (float i = 1; i < 5; i = i + 0.5f) {
+		for (float i = 0.5f; i < 5; i = i + 0.10f) {
 			Vector3f direction = camera.getLookAt();
 			direction.scale(i);
 			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
 			//System.out.println("dir: " + direction.x + " " + direction.y + " " + direction.z);
 			//System.out.println("loc: " + location.x + " " + location.y + " " + location.z);
 			//System.out.println();
-			BlockType block = world.getBlockAt((int) location.x, (int) location.y, (int) location.z);
+			BlockType block = world.getBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z));
 			if (block != null) {
-				world.clearBlockAt((int) location.x, (int) location.y, (int) location.z);
+				world.clearBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z));
 				break;
 			}
 		}
 	}
 
 	public void performRightClick() {
+		camera.printViewMatrix();
 		Vector3f lookAt = camera.getLookAt();
 		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
 
-		for (float i = 1; i < 5; i = i + 0.5f) {
+		for (float i = 0.5f; i < 5; i = i + 0.10f) {
 			Vector3f direction = camera.getLookAt();
 			direction.scale(i);
 			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
 			//System.out.println("dir: " + direction.x + " " + direction.y + " " + direction.z);
 			//System.out.println("loc: " + location.x + " " + location.y + " " + location.z);
 			//System.out.println();
-			BlockType block = world.getBlockAt((int) location.x, (int) location.y, (int) location.z);
+			BlockType block = world.getBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z));
 			if (block != null) {
-				world.setBlockAt((int) location.x, (int) location.y, (int) location.z, BlockType.TEST);
+				world.setBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z), BlockType.TEST);
 				break;
 			}
 		}
