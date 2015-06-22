@@ -31,12 +31,14 @@ public class Chunk {
 		Chunk.checkParameters(x, y, z);
 		this.blocks[x][y][z] = type;
 		blockChanged();
+		notifyNeighborChunksOfUpdate(x, y, z);
 	}
 
 	public void clearBlockAt(final int x, final int y, final int z) {
 		Chunk.checkParameters(x, y, z);
 		this.blocks[x][y][z] = null;
 		this.blockChanged();
+		notifyNeighborChunksOfUpdate(x, y, z);
 	}
 
 	public boolean getAndResetChangedFlag() {
@@ -88,7 +90,46 @@ public class Chunk {
 		}
 	}
 
-	private void blockChanged() {
+	private void notifyNeighborChunksOfUpdate(int x, int y, int z) {
+		if (x == 0) {
+			final Chunk west = this.world.getChunkAtInternal(this.chunkX - 1, this.chunkY, this.chunkZ);
+			if (west != null) {
+				west.blockChanged();
+			}
+		}
+		if (x == Chunk.CHUNK_SIZE - 1) {
+			final Chunk east = this.world.getChunkAtInternal(this.chunkX + 1, this.chunkY, this.chunkZ);
+			if (east != null) {
+				east.blockChanged();
+			}
+		}
+		if (y == 0) {
+			final Chunk bottom = this.world.getChunkAtInternal(this.chunkX, this.chunkY - 1, this.chunkZ);
+			if (bottom != null) {
+				bottom.blockChanged();
+			}
+		}
+		if (y == Chunk.CHUNK_SIZE - 1) {
+			final Chunk top = this.world.getChunkAtInternal(this.chunkX, this.chunkY + 1, this.chunkZ);
+			if (top != null) {
+				top.blockChanged();
+			}
+		}
+		if (z == 0) {
+			final Chunk north = this.world.getChunkAtInternal(this.chunkX, this.chunkY, this.chunkZ - 1);
+			if (north != null) {
+				north.blockChanged();
+			}
+		}
+		if (z == Chunk.CHUNK_SIZE - 1) {
+			final Chunk south = this.world.getChunkAtInternal(this.chunkX, this.chunkY, this.chunkZ + 1);
+			if (south != null) {
+				south.blockChanged();
+			}
+		}
+	}
+
+	public void blockChanged() {
 		this.changed = true;
 	}
 

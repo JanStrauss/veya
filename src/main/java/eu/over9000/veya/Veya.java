@@ -49,7 +49,7 @@ public class Veya {
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(Veya.program, Display.getHeight(), Display.getWidth(), 60, 200, 60);
+		Veya.camera = new Camera(Veya.program, 60, 200, 60);
 		Veya.scene = new Scene(Veya.program, Veya.camera);
 
 		Util.checkGLError();
@@ -114,6 +114,13 @@ public class Veya {
 
 				Veya.camera.yaw(dx * Veya.mouseSensitivity);
 				Veya.camera.pitch(dy * Veya.mouseSensitivity);
+			}
+
+			while (Mouse.next()) {
+				if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+
+					scene.performLeftClick();
+				}
 			}
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {

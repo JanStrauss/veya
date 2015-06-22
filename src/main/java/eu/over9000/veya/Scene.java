@@ -12,7 +12,9 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
+import eu.over9000.veya.data.BlockType;
 import eu.over9000.veya.data.Chunk;
 import eu.over9000.veya.data.World;
 import eu.over9000.veya.util.ChunkLocation;
@@ -293,6 +295,19 @@ public class Scene {
 			return true;
 		}
 
+	}
+
+	public void performLeftClick() {
+		for (float i = 1; i < 5; i = i + 0.5f) {
+			Vector3f direction = camera.getLookAt();
+			direction.scale(i);
+			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
+			BlockType block = world.getBlockAt((int) location.x, (int) location.y, (int) location.z);
+			if (block != null) {
+				world.clearBlockAt((int) location.x, (int) location.y, (int) location.z);
+				break;
+			}
+		}
 	}
 
 	public int getChunkCount() {

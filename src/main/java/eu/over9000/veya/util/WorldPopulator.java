@@ -15,7 +15,7 @@ public class WorldPopulator {
 	public static final int TREE_CHANCE = 50;
 
 	public static void populateChunkStack(final World world, final Random random, final int chunkX, final int chunkZ) {
-		System.out.println("POPULATOR CALLED FOR " + chunkX + "," + chunkZ);
+		//System.out.println("POPULATOR CALLED FOR " + chunkX + "," + chunkZ);
 
 		for (int attemp = 0; attemp < TREE_ATTEMPT_COUNT; attemp++) {
 			if (random.nextInt(100) < TREE_CHANCE) {

@@ -15,7 +15,7 @@ public class WorldGenerator {
 	public static List<Chunk> genChunksAt(World world, Random random, final int chunkX, final int chunkZ) {
 		BlockType[][][] rawChunkStack = new BlockType[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][World.MAX_WORLD_HEIGHT];
 
-		System.out.println("GENERATOR CALLED FOR " + chunkX + "," + chunkZ);
+		//System.out.println("GENERATOR CALLED FOR " + chunkX + "," + chunkZ);
 
 		for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
 			for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
