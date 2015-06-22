@@ -298,13 +298,38 @@ public class Scene {
 	}
 
 	public void performLeftClick() {
+		Vector3f lookAt = camera.getLookAt();
+		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
+
 		for (float i = 1; i < 5; i = i + 0.5f) {
 			Vector3f direction = camera.getLookAt();
 			direction.scale(i);
 			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
+			//System.out.println("dir: " + direction.x + " " + direction.y + " " + direction.z);
+			//System.out.println("loc: " + location.x + " " + location.y + " " + location.z);
+			//System.out.println();
 			BlockType block = world.getBlockAt((int) location.x, (int) location.y, (int) location.z);
 			if (block != null) {
 				world.clearBlockAt((int) location.x, (int) location.y, (int) location.z);
+				break;
+			}
+		}
+	}
+
+	public void performRightClick() {
+		Vector3f lookAt = camera.getLookAt();
+		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
+
+		for (float i = 1; i < 5; i = i + 0.5f) {
+			Vector3f direction = camera.getLookAt();
+			direction.scale(i);
+			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
+			//System.out.println("dir: " + direction.x + " " + direction.y + " " + direction.z);
+			//System.out.println("loc: " + location.x + " " + location.y + " " + location.z);
+			//System.out.println();
+			BlockType block = world.getBlockAt((int) location.x, (int) location.y, (int) location.z);
+			if (block != null) {
+				world.setBlockAt((int) location.x, (int) location.y, (int) location.z, BlockType.TEST);
 				break;
 			}
 		}

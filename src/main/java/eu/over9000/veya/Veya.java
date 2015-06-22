@@ -121,6 +121,10 @@ public class Veya {
 
 					scene.performLeftClick();
 				}
+				if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState()) {
+					scene.performRightClick();
+
+				}
 			}
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
