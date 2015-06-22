@@ -1,11 +1,11 @@
 package eu.over9000.veya;
 
-import eu.over9000.veya.data.BlockType;
-import eu.over9000.veya.data.Chunk;
-import eu.over9000.veya.data.World;
-import eu.over9000.veya.util.ChunkLocation;
-import eu.over9000.veya.util.CoordinatesUtil;
-import eu.over9000.veya.util.TextureLoader;
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -14,11 +14,13 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.nio.FloatBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import eu.over9000.veya.data.BlockType;
+import eu.over9000.veya.data.Chunk;
+import eu.over9000.veya.data.World;
+import eu.over9000.veya.util.CoordinatesUtil;
+import eu.over9000.veya.util.IntersectionUtil;
+import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.TextureLoader;
 
 public class Scene {
 	private final static int SCENE_CHUNKS_RANGE = 4;
@@ -117,7 +119,7 @@ public class Scene {
 
 	private void updateDisplayedChunks() {
 
-		final ChunkLocation centerChunk = new ChunkLocation(this.last_cam_x, this.last_cam_y, this.last_cam_z);
+		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
 
 		final int min_x = this.last_cam_x - Scene.SCENE_CHUNKS_RANGE;
 		final int max_x = this.last_cam_x + Scene.SCENE_CHUNKS_RANGE;
@@ -133,19 +135,19 @@ public class Scene {
 			}
 		}
 
-		final List<ChunkLocation> locations = new ArrayList<>();
+		final List<Location3D> locations = new ArrayList<>();
 		// load chunks in display area
 		for (int x = min_x; x <= max_x; x++) {
 			for (int y = min_y; y <= max_y; y++) {
 				for (int z = min_z; z <= max_z; z++) {
-					locations.add(new ChunkLocation(x, y, z, centerChunk));
+					locations.add(new Location3D(x, y, z, centerChunk));
 				}
 			}
 		}
 
 		Collections.sort(locations);
 
-		for (final ChunkLocation chunkLocation : locations) {
+		for (final Location3D chunkLocation : locations) {
 			final Chunk chunk = this.world.getChunkAt(chunkLocation.x, chunkLocation.y, chunkLocation.z);
 
 			if (chunk == null) {
@@ -296,30 +298,34 @@ public class Scene {
 	}
 
 	public void performLeftClick() {
-		camera.printViewMatrix();
-		Vector3f lookAt = camera.getLookAt();
+		final Vector3f position = camera.getPosition();
+		final Vector3f lookAt = camera.getLookAt();
+
 		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
 
-		for (float i = 0.5f; i < 5; i = i + 0.10f) {
-			Vector3f direction = camera.getLookAt();
-			direction.scale(i);
-			Vector3f location = Vector3f.add(camera.getPosition(), direction, null);
-			//System.out.println("dir: " + direction.x + " " + direction.y + " " + direction.z);
-			//System.out.println("loc: " + location.x + " " + location.y + " " + location.z);
-			//System.out.println();
-			BlockType block = world.getBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z));
-			if (block != null) {
-				world.clearBlockAt(Math.round(location.x), Math.round(location.y), Math.round(location.z));
+		final List<Location3D> candidates = world.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
+		Collections.sort(candidates);
+
+		for (final Location3D candidate : candidates) {
+			final BlockType type = world.getBlockAt(candidate.x, candidate.y, candidate.z);
+
+			if (type == null) {
+				continue;
+			}
+
+			if (IntersectionUtil.checkCollision(position, lookAt, candidate.x, candidate.y, candidate.z)) {
+				System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
+				world.clearBlockAt(candidate.x, candidate.y, candidate.z);
 				break;
 			}
 		}
+
 	}
 
 	public void performRightClick() {
 		camera.printViewMatrix();
 		Vector3f lookAt = camera.getLookAt();
 		System.out.printf("START: %.2f %.2f | %.2f %.2f %.2f \n", camera.getYaw(), camera.getPitch(), lookAt.x, lookAt.y, lookAt.z);
-
 		for (float i = 0.5f; i < 5; i = i + 0.10f) {
 			Vector3f direction = camera.getLookAt();
 			direction.scale(i);

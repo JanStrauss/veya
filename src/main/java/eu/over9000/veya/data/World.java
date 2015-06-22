@@ -1,14 +1,17 @@
 package eu.over9000.veya.data;
 
-import com.google.common.math.IntMath;
-import eu.over9000.veya.util.ChunkMap;
-import eu.over9000.veya.util.WorldGenerator;
-import eu.over9000.veya.util.WorldPopulator;
-
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+
+import com.google.common.math.IntMath;
+
+import eu.over9000.veya.util.ChunkMap;
+import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.WorldGenerator;
+import eu.over9000.veya.util.WorldPopulator;
 
 public class World {
 	public static final int MAX_WORLD_HEIGHT = 256;
@@ -152,6 +155,29 @@ public class World {
 		chunk.clearBlockAt(blockX, blockY, blockZ);
 	}
 
+	public List<Location3D> getBlocksAround(final int centerX, final int centerY, final int centerZ, final int radius) {
+		final List<Location3D> result = new ArrayList<>();
+		final Location3D center = new Location3D(centerX, centerY, centerZ);
+
+		final int min_x = centerX - radius;
+		final int max_x = centerX + radius;
+		final int min_y = centerY - radius;
+		final int max_y = centerY + radius;
+		final int min_z = centerZ - radius;
+		final int max_z = centerZ + radius;
+
+		for (int x = min_x; x <= max_x; x++) {
+			for (int y = min_y; y <= max_y; y++) {
+				for (int z = min_z; z <= max_z; z++) {
+					// TODO: Sphere
+					result.add(new Location3D(x, y, z, center));
+				}
+			}
+		}
+
+		return result;
+	}
+
 	public int getHighestYAt(final int x, final int z) {
 		for (int chunkY = World.MAX_WORLD_HEIGHT_IN_CHUNKS - 1; chunkY >= 0; chunkY--) {
 			final int chunkX = World.worldToChunkCoordinate(x);
@@ -174,4 +200,5 @@ public class World {
 		}
 		return 0;
 	}
+
 }
