@@ -3,3 +3,5 @@ target/
 .settings/
 .project
 dependency-reduced-pom.xml
+.idea/
+veya.iml

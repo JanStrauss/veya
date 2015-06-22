@@ -1,10 +1,7 @@
 package eu.over9000.veya;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -23,32 +20,33 @@ import eu.over9000.veya.util.CoordinatesUtil;
 import eu.over9000.veya.util.TextureLoader;
 
 public class Scene {
-	private final static int SCENE_CHUNKS_RANGE = 12;
-	
+	private final static int SCENE_CHUNKS_RANGE = 4;
+
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;
-	
+
 	private final World world;
-	private final Map<Chunk, ChunkVAO> displayed_chunks = new ConcurrentHashMap<>();
+	private final Map<Chunk, ChunkVAO> displayedChunks = new ConcurrentHashMap<>();
 	private final Light light;
 	private final Program program;
 	private final int texture_handle;
 	private final Camera camera;
-	
+
 	private Matrix4f modelMatrix = new Matrix4f();
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-	
-	private final ConcurrentLinkedQueue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
-	private final ConcurrentLinkedQueue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
-	
+
+	private final Queue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
+	private final Queue<ChunkChunkVAOPair> toUpdate = new ConcurrentLinkedQueue<>();
+	private final Queue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
+
 	private boolean alive;
-	
+
 	private int last_cam_x = 0;
 	private int last_cam_y = 0;
 	private int last_cam_z = 0;
-	
+
 	private final Runnable displayedChunkUpdater = new Runnable() {
-		
+
 		@Override
 		public void run() {
 			while (Scene.this.alive) {
@@ -65,24 +63,24 @@ public class Scene {
 					}
 					Scene.this.camPosChanged = false;
 				}
-				
+
 				Scene.this.updateDisplayedChunks();
 			}
-			
+
 		}
 	};
-	
+
 	private final Thread displayedChunkUpdaterThread;
-	
+
 	public Scene(final Program shader, final Camera camera) {
 		this.alive = true;
 		this.camera = camera;
 		this.program = shader;
 		this.world = new World(1337, "Keaysea");
 		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
-		
+
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
-		
+
 		// System.out.println("generating world..");
 		//
 		// this.world.genStartChunks(8);
@@ -94,7 +92,7 @@ public class Scene {
 		// for (final Chunk chunk : this.world.getLoadedChunks()) {
 		// final ChunkVAO vao = new ChunkVAO(chunk, this.program);
 		// vao.create();
-		// this.displayed_chunks.put(chunk, vao);
+		// this.displayedChunks.put(chunk, vao);
 		//
 		// System.out.println(i + "/" + max);
 		// Display.setTitle("VEYA | gen chunkVAO: " + i + "/" + max);
@@ -102,40 +100,39 @@ public class Scene {
 		// }
 		//
 		// System.out.println("VAOs created.");
-		
+
 		this.displayedChunkUpdaterThread = new Thread(this.displayedChunkUpdater, "DisplayedChunkUpdater");
 		this.displayedChunkUpdaterThread.start();
-		
+
 	}
-	
+
 	public void init() {
 		this.light.init(this.program);
 		this.updateModelMatrix();
 	}
-	
+
 	public Light getLight() {
 		return this.light;
 	}
-	
+
 	private void updateDisplayedChunks() {
-		
+
 		final ChunkLocation centerChunk = new ChunkLocation(this.last_cam_x, this.last_cam_y, this.last_cam_z);
-		
+
 		final int min_x = this.last_cam_x - Scene.SCENE_CHUNKS_RANGE;
 		final int max_x = this.last_cam_x + Scene.SCENE_CHUNKS_RANGE;
 		final int min_y = this.last_cam_y - Scene.SCENE_CHUNKS_RANGE;
 		final int max_y = this.last_cam_y + Scene.SCENE_CHUNKS_RANGE;
 		final int min_z = this.last_cam_z - Scene.SCENE_CHUNKS_RANGE;
 		final int max_z = this.last_cam_z + Scene.SCENE_CHUNKS_RANGE;
-		
+
 		// remove chunks outside display area
-		
-		for (final Entry<Chunk, ChunkVAO> entry : this.displayed_chunks.entrySet()) {
-			if (!CoordinatesUtil.isBetween(entry.getKey().getChunkX(), min_x, max_x) || !CoordinatesUtil.isBetween(entry.getKey().getChunkY(), min_y, max_y)
-					|| !CoordinatesUtil.isBetween(entry.getKey().getChunkZ(), min_z, max_z)) {
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
+			if (!CoordinatesUtil.isBetween(entry.getKey().getChunkX(), min_x, max_x) || !CoordinatesUtil.isBetween(entry.getKey().getChunkY(), min_y, max_y) || !CoordinatesUtil.isBetween(entry.getKey().getChunkZ(), min_z, max_z)) {
 				this.toRemove.add(new ChunkChunkVAOPair(entry.getKey(), entry.getValue()));
 			}
 		}
+
 		final List<ChunkLocation> locations = new ArrayList<>();
 		// load chunks in display area
 		for (int x = min_x; x <= max_x; x++) {
@@ -145,107 +142,122 @@ public class Scene {
 				}
 			}
 		}
-		
+
 		Collections.sort(locations);
-		
+
 		for (final ChunkLocation chunkLocation : locations) {
-			final Chunk chunk = this.world.getChunkWithGenAt(chunkLocation.x, chunkLocation.y, chunkLocation.z);
-			if (chunk != null) {
-				
-				final boolean isDisplayed = this.displayed_chunks.containsKey(chunk);
-				
-				if (!isDisplayed) {
-					this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
+			final Chunk chunk = this.world.getChunkAt(chunkLocation.x, chunkLocation.y, chunkLocation.z);
+
+			if (chunk == null) {
+				continue;
+			}
+
+			final boolean isDisplayed = this.displayedChunks.containsKey(chunk);
+
+			if (!isDisplayed) {
+				chunk.getAndResetChangedFlag();
+				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
+			} else {
+				if (chunk.getAndResetChangedFlag()) {
+					System.out.println("UPDATE CHUNK " + chunk);
+					this.toUpdate.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
 				}
 			}
 		}
-		
 	}
-	
+
 	public void render() {
 		this.checkCameraPosition();
-		
+
 		ChunkChunkVAOPair addEntry;
 		while ((addEntry = this.toAdd.poll()) != null) {
-			this.displayed_chunks.put(addEntry.getChunk(), addEntry.getChunkVAO());
+			this.displayedChunks.put(addEntry.getChunk(), addEntry.getChunkVAO());
 			addEntry.getChunkVAO().create();
 		}
-		
+
 		ChunkChunkVAOPair removeEntry;
 		while ((removeEntry = this.toRemove.poll()) != null) {
-			this.displayed_chunks.remove(removeEntry.getChunk());
+			this.displayedChunks.remove(removeEntry.getChunk());
 			removeEntry.getChunkVAO().dispose();
 		}
-		
+
+		ChunkChunkVAOPair updateEntry;
+		while ((updateEntry = this.toUpdate.poll()) != null) {
+			ChunkVAO oldVAO = this.displayedChunks.remove(updateEntry.getChunk());
+			oldVAO.dispose();
+			this.displayedChunks.put(updateEntry.getChunk(), updateEntry.getChunkVAO());
+			updateEntry.getChunkVAO().create();
+		}
+
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
-		
+
 		this.program.enableVAttributes();
-		for (final Entry<Chunk, ChunkVAO> entry : this.displayed_chunks.entrySet()) {
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
-				
+
 				entry.getValue().render();
 			}
 		}
 		this.program.disableVAttributes();
 	}
-	
+
 	private void checkCameraPosition() {
 		final int center_x = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getX());
 		final int center_y = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getY());
 		final int center_z = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getZ());
-		
+
 		if (center_x != this.last_cam_x || center_y != this.last_cam_y || center_z != this.last_cam_z) {
-			
+
 			this.last_cam_x = center_x;
 			this.last_cam_y = center_y;
 			this.last_cam_z = center_z;
-			
+
 			System.out.println("Camera changed chunk: " + center_x + "," + center_y + "," + center_z);
-			
+
 			synchronized (this.lock) {
 				this.camPosChanged = true;
 				this.lock.notifyAll();
 			}
 		}
-		
+
 	}
-	
+
 	private void updateModelMatrix() {
 		this.modelMatrix = new Matrix4f();
 		this.modelMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(this.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);
 	}
-	
+
 	public void dispose() {
 		this.alive = false;
 		this.displayedChunkUpdaterThread.interrupt();
-		for (final Entry<Chunk, ChunkVAO> entry : this.displayed_chunks.entrySet()) {
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
 				entry.getValue().dispose();
 			}
 		}
-		this.displayed_chunks.clear();
+		this.displayedChunks.clear();
 	}
-	
+
 	private class ChunkChunkVAOPair {
 		private final Chunk chunk;
 		private final ChunkVAO chunkVAO;
-		
+
 		public ChunkChunkVAOPair(final Chunk chunk, final ChunkVAO chunkVAO) {
 			this.chunk = chunk;
 			this.chunkVAO = chunkVAO;
 		}
-		
+
 		public Chunk getChunk() {
 			return this.chunk;
 		}
-		
+
 		public ChunkVAO getChunkVAO() {
 			return this.chunkVAO;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -254,7 +266,7 @@ public class Scene {
 			result = prime * result + (this.chunkVAO == null ? 0 : this.chunkVAO.hashCode());
 			return result;
 		}
-		
+
 		@Override
 		public boolean equals(final Object obj) {
 			if (this == obj) {
@@ -283,11 +295,11 @@ public class Scene {
 			}
 			return true;
 		}
-		
+
 	}
-	
+
 	public int getChunkCount() {
-		return this.displayed_chunks.size();
+		return this.displayedChunks.size();
 	}
-	
+
 }
