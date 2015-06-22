@@ -209,7 +209,7 @@ public class Veya {
 
 			try {
 				Vector3f camPos = camera.getPosition();
-				float camY = scene.getWorld().getHighestYAt((int) camPos.x, (int) camPos.z) + 2.7f;
+				float camY = scene.getWorld().getHighestYAt((int) Math.floor(camPos.x), (int) Math.floor(camPos.z)) + 2.7f;
 				Veya.camera.setPosition(camPos.x, camY, camPos.z);
 			} catch (IllegalStateException e) {
 			}
