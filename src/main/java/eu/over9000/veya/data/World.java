@@ -79,7 +79,7 @@ public class World {
 	}
 
 	private void populateChunkStackAt(final int chunkX, final int chunkZ) {
-		ChunkMap.ChunkState state = chunks.getChunkState(chunkX, chunkZ);
+		final ChunkMap.ChunkState state = chunks.getChunkState(chunkX, chunkZ);
 
 		if (state.populated) {
 			return;
@@ -97,14 +97,14 @@ public class World {
 	}
 
 	private void generateChunkStackAt(final int chunkX, final int chunkZ) {
-		ChunkMap.ChunkState state = chunks.getChunkState(chunkX, chunkZ);
+		final ChunkMap.ChunkState state = chunks.getChunkState(chunkX, chunkZ);
 
 		if (state.generated) {
 			return;
 		}
 
 		final List<Chunk> newChunks = WorldGenerator.genChunksAt(this, random, chunkX, chunkZ);
-		for (Chunk chunk : newChunks) {
+		for (final Chunk chunk : newChunks) {
 			chunks.setChunkAt(chunk.getChunkX(), chunk.getChunkY(), chunk.getChunkZ(), chunk);
 		}
 

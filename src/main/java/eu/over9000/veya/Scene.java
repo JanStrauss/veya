@@ -23,7 +23,7 @@ import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.util.TextureLoader;
 
 public class Scene {
-	private final static int SCENE_CHUNKS_RANGE = 4;
+	private final static int SCENE_CHUNKS_RANGE = 8;
 
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;
@@ -178,12 +178,12 @@ public class Scene {
 			removeEntry.getChunkVAO().dispose();
 		}
 
-		for (Chunk chunk : displayedChunks.keySet()) {
+		for (final Chunk chunk : displayedChunks.keySet()) {
 			if (chunk.getAndResetChangedFlag()) {
 
-				ChunkVAO oldVAO = this.displayedChunks.get(chunk);
+				final ChunkVAO oldVAO = this.displayedChunks.get(chunk);
 				oldVAO.dispose();
-				ChunkVAO newVAO = new ChunkVAO(chunk, program);
+				final ChunkVAO newVAO = new ChunkVAO(chunk, program);
 				this.displayedChunks.put(chunk, newVAO);
 				newVAO.create();
 			}
@@ -239,6 +239,10 @@ public class Scene {
 			}
 		}
 		this.displayedChunks.clear();
+	}
+
+	public World getWorld() {
+		return world;
 	}
 
 	private class ChunkChunkVAOPair {

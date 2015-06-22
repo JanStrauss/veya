@@ -90,7 +90,7 @@ public class Chunk {
 		}
 	}
 
-	private void notifyNeighborChunksOfUpdate(int x, int y, int z) {
+	private void notifyNeighborChunksOfUpdate(final int x, final int y, final int z) {
 		if (x == 0) {
 			final Chunk west = this.world.getChunkAtInternal(this.chunkX - 1, this.chunkY, this.chunkZ);
 			if (west != null) {

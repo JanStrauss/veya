@@ -11,7 +11,7 @@ public enum BlockType {
 	private final int textureIDSouth;
 	private final int textureIDWest;
 	
-	private BlockType(final int textureIDAll) {
+	BlockType(final int textureIDAll) {
 		this.textureIDBottom = textureIDAll;
 		this.textureIDTop = textureIDAll;
 		this.textureIDNorth = textureIDAll;
@@ -20,7 +20,7 @@ public enum BlockType {
 		this.textureIDWest = textureIDAll;
 	}
 	
-	private BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDAll) {
+	BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDAll) {
 		this.textureIDBottom = textureIDBottom;
 		this.textureIDTop = textureIDTop;
 		this.textureIDNorth = textureIDAll;
@@ -29,7 +29,7 @@ public enum BlockType {
 		this.textureIDWest = textureIDAll;
 	}
 	
-	private BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDNorth, final int textureIDEast, final int textureIDSouth, final int textureIDWest) {
+	BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDNorth, final int textureIDEast, final int textureIDSouth, final int textureIDWest) {
 		this.textureIDBottom = textureIDBottom;
 		this.textureIDTop = textureIDTop;
 		this.textureIDNorth = textureIDNorth;

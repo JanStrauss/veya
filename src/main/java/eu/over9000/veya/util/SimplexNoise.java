@@ -18,16 +18,16 @@ package eu.over9000.veya.util;
  */
 
 public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
-	private static Grad grad3[] = { new Grad(1, 1, 0), new Grad(-1, 1, 0), new Grad(1, -1, 0), new Grad(-1, -1, 0), new Grad(1, 0, 1), new Grad(-1, 0, 1), new Grad(1, 0, -1), new Grad(-1, 0, -1),
+	private static final Grad[] grad3 = { new Grad(1, 1, 0), new Grad(-1, 1, 0), new Grad(1, -1, 0), new Grad(-1, -1, 0), new Grad(1, 0, 1), new Grad(-1, 0, 1), new Grad(1, 0, -1), new Grad(-1, 0, -1),
 			new Grad(0, 1, 1), new Grad(0, -1, 1), new Grad(0, 1, -1), new Grad(0, -1, -1) };
 	
-	private static Grad grad4[] = { new Grad(0, 1, 1, 1), new Grad(0, 1, 1, -1), new Grad(0, 1, -1, 1), new Grad(0, 1, -1, -1), new Grad(0, -1, 1, 1), new Grad(0, -1, 1, -1), new Grad(0, -1, -1, 1),
+	private static final Grad[] grad4 = { new Grad(0, 1, 1, 1), new Grad(0, 1, 1, -1), new Grad(0, 1, -1, 1), new Grad(0, 1, -1, -1), new Grad(0, -1, 1, 1), new Grad(0, -1, 1, -1), new Grad(0, -1, -1, 1),
 			new Grad(0, -1, -1, -1), new Grad(1, 0, 1, 1), new Grad(1, 0, 1, -1), new Grad(1, 0, -1, 1), new Grad(1, 0, -1, -1), new Grad(-1, 0, 1, 1), new Grad(-1, 0, 1, -1), new Grad(-1, 0, -1, 1),
 			new Grad(-1, 0, -1, -1), new Grad(1, 1, 0, 1), new Grad(1, 1, 0, -1), new Grad(1, -1, 0, 1), new Grad(1, -1, 0, -1), new Grad(-1, 1, 0, 1), new Grad(-1, 1, 0, -1), new Grad(-1, -1, 0, 1),
 			new Grad(-1, -1, 0, -1), new Grad(1, 1, 1, 0), new Grad(1, 1, -1, 0), new Grad(1, -1, 1, 0), new Grad(1, -1, -1, 0), new Grad(-1, 1, 1, 0), new Grad(-1, 1, -1, 0), new Grad(-1, -1, 1, 0),
 			new Grad(-1, -1, -1, 0) };
 	
-	private static short p[] = { 151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26,
+	private static final short[] p = { 151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0, 26,
 			197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71, 134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229,
 			122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161, 1, 216, 80, 73, 209, 76, 132, 187, 208, 89, 18, 169, 200, 196, 135, 130, 116, 188, 159, 86,
 			164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42, 223, 183, 170, 213,
@@ -35,8 +35,8 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 			238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254, 138, 236, 205, 93,
 			222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180 };
 	// To remove the need for index wrapping, double the permutation table length
-	private static short perm[] = new short[512];
-	private static short permMod12[] = new short[512];
+	private static final short[] perm = new short[512];
+	private static final short[] permMod12 = new short[512];
 	static {
 		for (int i = 0; i < 512; i++) {
 			SimplexNoise.perm[i] = SimplexNoise.p[i & 255];
@@ -72,7 +72,9 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 	
 	// 2D simplex noise
 	public static double noise(final double xin, final double yin) {
-		double n0, n1, n2; // Noise contributions from the three corners
+		final double n0; // Noise contributions from the three corners
+		final double n1;
+		final double n2;
 		// Skew the input space to determine which simplex cell we're in
 		final double s = (xin + yin) * SimplexNoise.F2; // Hairy factor for 2D
 		final int i = SimplexNoise.fastfloor(xin + s);
@@ -84,7 +86,8 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		final double y0 = yin - Y0;
 		// For the 2D case, the simplex shape is an equilateral triangle.
 		// Determine which simplex we are in.
-		int i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
+		final int i1; // Offsets for second (middle) corner of simplex in (i,j) coords
+		final int j1;
 		if (x0 > y0) {
 			i1 = 1;
 			j1 = 0;
@@ -135,7 +138,10 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 	
 	// 3D simplex noise
 	public static double noise(final double xin, final double yin, final double zin) {
-		double n0, n1, n2, n3; // Noise contributions from the four corners
+		final double n0; // Noise contributions from the four corners
+		final double n1;
+		final double n2;
+		final double n3;
 		// Skew the input space to determine which simplex cell we're in
 		final double s = (xin + yin + zin) * SimplexNoise.F3; // Very nice and simple skew factor for 3D
 		final int i = SimplexNoise.fastfloor(xin + s);
@@ -150,8 +156,12 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		final double z0 = zin - Z0;
 		// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
 		// Determine which simplex we are in.
-		int i1, j1, k1; // Offsets for second corner of simplex in (i,j,k) coords
-		int i2, j2, k2; // Offsets for third corner of simplex in (i,j,k) coords
+		final int i1; // Offsets for second corner of simplex in (i,j,k) coords
+		final int j1;
+		final int k1;
+		final int i2; // Offsets for third corner of simplex in (i,j,k) coords
+		final int j2;
+		final int k2;
 		if (x0 >= y0) {
 			if (y0 >= z0) {
 				i1 = 1;
@@ -261,7 +271,11 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 	// 4D simplex noise, better simplex rank ordering method 2012-03-09
 	public static double noise(final double x, final double y, final double z, final double w) {
 		
-		double n0, n1, n2, n3, n4; // Noise contributions from the five corners
+		final double n0; // Noise contributions from the five corners
+		final double n1;
+		final double n2;
+		final double n3;
+		final double n4;
 		// Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
 		final double s = (x + y + z + w) * SimplexNoise.F4; // Factor for 4D skewing
 		final int i = SimplexNoise.fastfloor(x + s);
@@ -316,9 +330,18 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		} else {
 			rankw++;
 		}
-		int i1, j1, k1, l1; // The integer offsets for the second simplex corner
-		int i2, j2, k2, l2; // The integer offsets for the third simplex corner
-		int i3, j3, k3, l3; // The integer offsets for the fourth simplex corner
+		final int i1; // The integer offsets for the second simplex corner
+		final int j1;
+		final int k1;
+		final int l1;
+		final int i2; // The integer offsets for the third simplex corner
+		final int j2;
+		final int k2;
+		final int l2;
+		final int i3; // The integer offsets for the fourth simplex corner
+		final int j3;
+		final int k3;
+		final int l3;
 		// simplex[c] is a 4-vector with the numbers 0, 1, 2 and 3 in some order.
 		// Many values of c will never occur, since e.g. x>y>z>w makes x<z, y<w and x<w
 		// impossible. Only the 24 indices which have non-zero entries make any sense.

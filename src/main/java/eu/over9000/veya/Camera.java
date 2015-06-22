@@ -1,11 +1,11 @@
 package eu.over9000.veya;
 
+import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
-
-import java.nio.FloatBuffer;
 
 public class Camera {
 	public static final double PITCH_LIMIT = 90 * Math.PI / 180;
@@ -159,9 +159,9 @@ public class Camera {
 	}
 
 	public Vector3f getViewDirection() {
-		float x = (float) (Math.cos(pitch) * Math.sin(yaw));
-		float y = (float) -(Math.sin(pitch));
-		float z = (float) -(Math.cos(pitch) * Math.cos(yaw));
+		final float x = (float) (Math.cos(pitch) * Math.sin(yaw));
+		final float y = (float) -(Math.sin(pitch));
+		final float z = (float) -(Math.cos(pitch) * Math.cos(yaw));
 		return new Vector3f(x, y, z);
 	}
 
@@ -178,5 +178,11 @@ public class Camera {
 		System.out.println(viewMatrix.m10 + " " + viewMatrix.m11 + " " + viewMatrix.m12 + viewMatrix.m13);
 		System.out.println(viewMatrix.m20 + " " + viewMatrix.m21 + " " + viewMatrix.m22 + viewMatrix.m23);
 		System.out.println(viewMatrix.m30 + " " + viewMatrix.m31 + " " + viewMatrix.m32 + viewMatrix.m33);
+	}
+
+	public void setPosition(final float x, final float y, final float z) {
+		this.position.x = x;
+		this.position.y = y;
+		this.position.z = z;
 	}
 }

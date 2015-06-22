@@ -5,6 +5,7 @@ import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
+import org.lwjgl.util.vector.Vector3f;
 
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
@@ -14,7 +15,7 @@ public class Veya {
 	private static Scene scene;
 
 	private static final float mouseSensitivity = 0.01f;
-	private static final float movementSpeed = 25.0f;
+	private static final float movementSpeed = 5.0f;
 
 	private static final float fieldOfView = 60.0f;
 	private static final float nearClippingPlane = 0.1f;
@@ -25,7 +26,7 @@ public class Veya {
 	private static float ambient = 0.70f;
 	private static float diffuse = 0.35f;
 	private static float specular = 0.05f;
-	private static float df = 0.05f;
+	private static final float df = 0.05f;
 
 	public static void main(final String[] args) throws LWJGLException {
 
@@ -205,10 +206,19 @@ public class Veya {
 
 			// GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
 
+
+			try {
+				Vector3f camPos = camera.getPosition();
+				float camY = scene.getWorld().getHighestYAt((int) camPos.x, (int) camPos.z) + 2.7f;
+				Veya.camera.setPosition(camPos.x, camY, camPos.z);
+			} catch (IllegalStateException e) {
+			}
+
+
 			Veya.camera.updateViewMatrix();
 			Veya.camera.updateCameraPosition();
 			// Veya.scene.updateLight(posX + Veya.camera.getPosition().getX(), posY, 0 + Veya.camera.getPosition().getZ());
-			Veya.scene.getLight().updateLightPosition(Veya.camera.getPosition().getX(), Veya.camera.getPosition().getY(), Veya.camera.getPosition().getZ());
+			Veya.scene.getLight().updateLightPosition(0, 200, 0);
 			Veya.scene.getLight().updateLightFactors(Veya.ambient, Veya.diffuse, Veya.specular);
 			Veya.scene.render();
 
