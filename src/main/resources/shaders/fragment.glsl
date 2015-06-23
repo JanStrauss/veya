@@ -38,6 +38,13 @@ void main() {
 		vec4 texColor = texture(textureData, vec3(passTexturePosition.xy, int(passTexturePosition.z)));
 		
 		vec3 baseColor = vec3(texColor.rgb);
-		fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor, lightFactors), texColor.a);
+
+		// dirty workaround, water is only transparent surface and should have specular reflections
+		vec3 adaptedLightFactors = lightFactors;
+		if(texColor.a == 1.0){
+			adaptedLightFactors.z = 0;
+		}
+
+		fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor, adaptedLightFactors), texColor.a);
 	}
 }

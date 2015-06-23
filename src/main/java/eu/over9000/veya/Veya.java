@@ -23,9 +23,9 @@ public class Veya {
 
 	private static boolean colorSwitch = false;
 
-	private static float ambient = 0.70f;
-	private static float diffuse = 0.55f;
-	private static float specular = 0.05f;
+	private static float ambient = 0.75f;
+	private static float diffuse = 0.50f;
+	private static float specular = 0.50f;
 	private static final float df = 0.05f;
 
 	public static void main(final String[] args) throws LWJGLException {
@@ -211,10 +211,10 @@ public class Veya {
 
 
 			try {
-				Vector3f camPos = camera.getPosition();
-				float camY = scene.getWorld().getHighestYAt((int) Math.floor(camPos.x), (int) Math.floor(camPos.z)) + 2.7f;
+				final Vector3f camPos = camera.getPosition();
+				final float camY = scene.getWorld().getHighestYAt((int) Math.floor(camPos.x), (int) Math.floor(camPos.z)) + 2.7f;
 				//Veya.camera.setPosition(camPos.x, camY, camPos.z);
-			} catch (IllegalStateException e) {
+			} catch (final IllegalStateException e) {
 			}
 
 

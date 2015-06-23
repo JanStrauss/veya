@@ -76,8 +76,8 @@ public class ChunkVAO {
                     final BlockType neighborBlockWest = chunk.getNeighborBlockWest(x, y, z);
                     final BlockType neighborBlockEast = chunk.getNeighborBlockEast(x, y, z);
 
-                    List<Vertex> vertexList = solid ? vertexListSolid : vertexListTransparent;
-                    List<Integer> indexList = solid ? indexListSolid : indexListTransparent;
+                    final List<Vertex> vertexList = solid ? vertexListSolid : vertexListTransparent;
+                    final List<Integer> indexList = solid ? indexListSolid : indexListTransparent;
 
 
                     if (neighborBlockBottom == null || (solid && !neighborBlockBottom.isSolid())) {
@@ -220,7 +220,7 @@ public class ChunkVAO {
         // System.out.println("created ChunkVAO with " + this.vertexData.length + " vertices");
     }
 
-    public void render(boolean solid) {
+    public void render(final boolean solid) {
 
         try {
             if (solid) {
