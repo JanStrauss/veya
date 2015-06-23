@@ -1,11 +1,12 @@
 package eu.over9000.veya;
 
-import java.nio.FloatBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
+import eu.over9000.veya.data.BlockType;
+import eu.over9000.veya.data.Chunk;
+import eu.over9000.veya.data.World;
+import eu.over9000.veya.util.CoordinatesUtil;
+import eu.over9000.veya.util.IntersectionUtil;
+import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.TextureLoader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -14,16 +15,14 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import eu.over9000.veya.data.BlockType;
-import eu.over9000.veya.data.Chunk;
-import eu.over9000.veya.data.World;
-import eu.over9000.veya.util.CoordinatesUtil;
-import eu.over9000.veya.util.IntersectionUtil;
-import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.util.TextureLoader;
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Scene {
-	private final static int SCENE_CHUNKS_RANGE = 8;
+	private final static int SCENE_CHUNKS_RANGE = 4;
 
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;
@@ -196,7 +195,13 @@ public class Scene {
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
 
-				entry.getValue().render();
+				entry.getValue().render(true);
+			}
+		}
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
+			if (entry.getValue() != null) {
+
+				entry.getValue().render(false);
 			}
 		}
 		this.program.disableVAttributes();
