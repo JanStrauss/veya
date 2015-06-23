@@ -1,4 +1,4 @@
-package eu.over9000.veya.util;
+package eu.over9000.veya.generation.util;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import eu.over9000.veya.model.Chunk;
+import eu.over9000.veya.model.world.Chunk;
 
 public class ChunkMap {
 

@@ -9,8 +9,8 @@ import java.util.function.Predicate;
 import eu.over9000.veya.generation.populators.IPopulator;
 import eu.over9000.veya.generation.populators.SandPopulator;
 import eu.over9000.veya.generation.populators.TreePopulator;
-import eu.over9000.veya.model.BlockType;
-import eu.over9000.veya.model.World;
+import eu.over9000.veya.model.world.BlockType;
+import eu.over9000.veya.model.world.World;
 import eu.over9000.veya.util.Location3D;
 
 /**

@@ -1,4 +1,4 @@
-package eu.over9000.veya;
+package eu.over9000.veya.model.render;
 
 import org.lwjgl.opengl.GL20;
 

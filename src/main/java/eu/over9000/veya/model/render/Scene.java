@@ -1,4 +1,4 @@
-package eu.over9000.veya;
+package eu.over9000.veya.model.render;
 
 import java.nio.FloatBuffer;
 import java.util.*;
@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import eu.over9000.veya.model.BlockType;
-import eu.over9000.veya.model.Chunk;
-import eu.over9000.veya.model.World;
+import eu.over9000.veya.model.world.BlockType;
+import eu.over9000.veya.model.world.Chunk;
+import eu.over9000.veya.model.world.World;
 import eu.over9000.veya.util.CoordinatesUtil;
 import eu.over9000.veya.util.IntersectionUtil;
 import eu.over9000.veya.util.Location3D;

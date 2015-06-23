@@ -1,4 +1,4 @@
-package eu.over9000.veya.util;
+package eu.over9000.veya.generation.util;
 
 /*
  * A speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.

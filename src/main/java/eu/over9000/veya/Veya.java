@@ -7,6 +7,10 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Vector3f;
 
+import eu.over9000.veya.model.render.Camera;
+import eu.over9000.veya.model.render.Program;
+import eu.over9000.veya.model.render.Scene;
+
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
 

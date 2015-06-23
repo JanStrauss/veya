@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import eu.over9000.veya.model.BlockType;
-import eu.over9000.veya.model.Chunk;
-import eu.over9000.veya.model.World;
-import eu.over9000.veya.util.SimplexNoise;
+import eu.over9000.veya.model.world.BlockType;
+import eu.over9000.veya.model.world.Chunk;
+import eu.over9000.veya.model.world.World;
+import eu.over9000.veya.generation.util.SimplexNoise;
 
 public class WorldGenerator {
 

@@ -1,4 +1,4 @@
-package eu.over9000.veya.model;
+package eu.over9000.veya.model.world;
 
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Random;
 
 import com.google.common.math.IntMath;
 
-import eu.over9000.veya.util.ChunkMap;
+import eu.over9000.veya.generation.util.ChunkMap;
 import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.generation.WorldGenerator;
 import eu.over9000.veya.generation.WorldPopulator;
