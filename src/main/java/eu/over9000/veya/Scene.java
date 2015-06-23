@@ -195,7 +195,13 @@ public class Scene {
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
 
-				entry.getValue().render();
+				entry.getValue().render(true);
+			}
+		}
+		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
+			if (entry.getValue() != null) {
+
+				entry.getValue().render(false);
 			}
 		}
 		this.program.disableVAttributes();
