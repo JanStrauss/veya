@@ -267,6 +267,14 @@ public class ChunkVAO {
 
 	}
 
+	private static void addIndexEntries(final List<Integer> indexDataList, final int firstIndex) {
+		indexDataList.add(firstIndex);
+		indexDataList.add(firstIndex + 1);
+		indexDataList.add(firstIndex + 2);
+		indexDataList.add(firstIndex + 3);
+		indexDataList.add(Veya.RESTART);
+	}
+
 	private static void addBottomOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
 		final int firstIndex = vertexDataList.size();
 		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, block.getTextureIDBottom(), 0, -1, 0));
@@ -274,12 +282,7 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, block.getTextureIDBottom(), 0, -1, 0));
 		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, block.getTextureIDBottom(), 0, -1, 0));
 
-		indexDataList.add(firstIndex + 0);
-		indexDataList.add(firstIndex + 1);
-		indexDataList.add(firstIndex + 2);
-		indexDataList.add(firstIndex + 3);
-
-		indexDataList.add(Veya.RESTART);
+		addIndexEntries(indexDataList, firstIndex);
 	}
 
 	private static void addTopOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
@@ -290,12 +293,7 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, block.getTextureIDTop(), 0, 1, 0));
 		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, block.getTextureIDTop(), 0, 1, 0));
 
-		indexDataList.add(firstIndex + 0);
-		indexDataList.add(firstIndex + 1);
-		indexDataList.add(firstIndex + 2);
-		indexDataList.add(firstIndex + 3);
-
-		indexDataList.add(Veya.RESTART);
+		addIndexEntries(indexDataList, firstIndex);
 	}
 
 	private static void addSouthOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
@@ -306,12 +304,7 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, block.getTextureIDSouth(), 0, 0, 1));
 		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, block.getTextureIDSouth(), 0, 0, 1));
 
-		indexDataList.add(firstIndex + 0);
-		indexDataList.add(firstIndex + 1);
-		indexDataList.add(firstIndex + 2);
-		indexDataList.add(firstIndex + 3);
-
-		indexDataList.add(Veya.RESTART);
+		addIndexEntries(indexDataList, firstIndex);
 	}
 
 	private static void addNorthOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
@@ -322,12 +315,7 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, block.getTextureIDNorth(), 0, 0, -1));
 		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, block.getTextureIDNorth(), 0, 0, -1));
 
-		indexDataList.add(firstIndex + 0);
-		indexDataList.add(firstIndex + 1);
-		indexDataList.add(firstIndex + 2);
-		indexDataList.add(firstIndex + 3);
-
-		indexDataList.add(Veya.RESTART);
+		addIndexEntries(indexDataList, firstIndex);
 	}
 
 	private static void addWestOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
@@ -338,12 +326,7 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureIDWest(), -1, 0, 0));
 		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, block.getTextureIDWest(), -1, 0, 0));
 
-		indexDataList.add(firstIndex + 0);
-		indexDataList.add(firstIndex + 1);
-		indexDataList.add(firstIndex + 2);
-		indexDataList.add(firstIndex + 3);
-
-		indexDataList.add(Veya.RESTART);
+		addIndexEntries(indexDataList, firstIndex);
 	}
 
 	private static void addEastOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
@@ -354,12 +337,7 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, block.getTextureIDEast(), 1, 0, 0));
 		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureIDEast(), 1, 0, 0));
 
-		indexDataList.add(firstIndex + 0);
-		indexDataList.add(firstIndex + 1);
-		indexDataList.add(firstIndex + 2);
-		indexDataList.add(firstIndex + 3);
-
-		indexDataList.add(Veya.RESTART);
+		addIndexEntries(indexDataList, firstIndex);
 	}
 
 	@Override
