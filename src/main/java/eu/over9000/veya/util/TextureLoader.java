@@ -1,16 +1,15 @@
 package eu.over9000.veya.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-
+import de.matthiasmann.twl.utils.PNGDecoder;
+import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 
-import de.matthiasmann.twl.utils.PNGDecoder;
-import de.matthiasmann.twl.utils.PNGDecoder.Format;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public class TextureLoader {
 	
@@ -57,7 +56,7 @@ public class TextureLoader {
 		
 		// Upload the texture data and generate mip maps (for scaling)
 		// GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, tWidth, tHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
-		GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGB, TextureLoader.TEXTURE_WIDTH, TextureLoader.TEXTURE_HEIGHT, texCount, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, convertedBuffer);
+		GL12.glTexImage3D(GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGBA, TextureLoader.TEXTURE_WIDTH, TextureLoader.TEXTURE_HEIGHT, texCount, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, convertedBuffer);
 		GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY);
 		
 		// Setup the ST coordinate system

@@ -76,4 +76,8 @@ public enum BlockType {
 	public int getTextureIDWest() {
 		return this.textureIDWest;
 	}
+
+	public boolean isSolid() {
+		return !this.equals(BlockType.WATER);
+	}
 }
