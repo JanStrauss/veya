@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import eu.over9000.veya.data.Chunk;
+import eu.over9000.veya.model.Chunk;
 
 public class ChunkMap {
 

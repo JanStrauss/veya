@@ -1,4 +1,4 @@
-package eu.over9000.veya.data;
+package eu.over9000.veya.model;
 
 public enum BlockType {
 	

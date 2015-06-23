@@ -1,7 +1,7 @@
 package eu.over9000.veya;
 
 public class Vertex {
-	// Vertex data
+	// Vertex model
 	private float[] xyzw = new float[] { 0f, 0f, 0f, 1f };
 	private float[] rgba = new float[] { 1f, 1f, 1f, 1f };
 	private float[] st = new float[] { 0f, 0f };

@@ -1,15 +1,17 @@
 package eu.over9000.veya;
 
-import com.google.common.primitives.Ints;
-import eu.over9000.veya.data.BlockType;
-import eu.over9000.veya.data.Chunk;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.*;
+
+import com.google.common.primitives.Ints;
+
+import eu.over9000.veya.model.BlockType;
+import eu.over9000.veya.model.Chunk;
 
 public class ChunkVAO {
 

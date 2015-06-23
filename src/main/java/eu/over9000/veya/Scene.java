@@ -1,12 +1,11 @@
 package eu.over9000.veya;
 
-import eu.over9000.veya.data.BlockType;
-import eu.over9000.veya.data.Chunk;
-import eu.over9000.veya.data.World;
-import eu.over9000.veya.util.CoordinatesUtil;
-import eu.over9000.veya.util.IntersectionUtil;
-import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.util.TextureLoader;
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -15,11 +14,13 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.nio.FloatBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import eu.over9000.veya.model.BlockType;
+import eu.over9000.veya.model.Chunk;
+import eu.over9000.veya.model.World;
+import eu.over9000.veya.util.CoordinatesUtil;
+import eu.over9000.veya.util.IntersectionUtil;
+import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.TextureLoader;
 
 public class Scene {
 	private final static int SCENE_CHUNKS_RANGE = 4;

@@ -1,12 +1,13 @@
-package eu.over9000.veya.util;
+package eu.over9000.veya.generation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import eu.over9000.veya.data.BlockType;
-import eu.over9000.veya.data.Chunk;
-import eu.over9000.veya.data.World;
+import eu.over9000.veya.model.BlockType;
+import eu.over9000.veya.model.Chunk;
+import eu.over9000.veya.model.World;
+import eu.over9000.veya.util.SimplexNoise;
 
 public class WorldGenerator {
 

@@ -1,4 +1,4 @@
-package eu.over9000.veya.data;
+package eu.over9000.veya.model;
 
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import com.google.common.math.IntMath;
 
 import eu.over9000.veya.util.ChunkMap;
 import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.util.WorldGenerator;
-import eu.over9000.veya.util.WorldPopulator;
+import eu.over9000.veya.generation.WorldGenerator;
+import eu.over9000.veya.generation.WorldPopulator;
 
 public class World {
 	public static final int MAX_WORLD_HEIGHT = 256;

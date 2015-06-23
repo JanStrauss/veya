@@ -15,16 +15,16 @@ public class Veya {
 	private static Scene scene;
 
 	private static final float mouseSensitivity = 0.01f;
-	private static final float movementSpeed = 5.0f;
+	private static final float movementSpeed = 10.0f;
 
-	private static final float fieldOfView = 60.0f;
+	private static final float fieldOfView = 75.0f;
 	private static final float nearClippingPlane = 0.1f;
 	private static final float farClippingPlane = 1000.0f;
 
 	private static boolean colorSwitch = false;
 
 	private static float ambient = 0.70f;
-	private static float diffuse = 0.35f;
+	private static float diffuse = 0.55f;
 	private static float specular = 0.05f;
 	private static final float df = 0.05f;
 
@@ -213,7 +213,7 @@ public class Veya {
 			try {
 				Vector3f camPos = camera.getPosition();
 				float camY = scene.getWorld().getHighestYAt((int) Math.floor(camPos.x), (int) Math.floor(camPos.z)) + 2.7f;
-				Veya.camera.setPosition(camPos.x, camY, camPos.z);
+				//Veya.camera.setPosition(camPos.x, camY, camPos.z);
 			} catch (IllegalStateException e) {
 			}
 
