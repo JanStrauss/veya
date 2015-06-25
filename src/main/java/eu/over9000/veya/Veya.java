@@ -14,9 +14,9 @@ import eu.over9000.veya.model.render.Scene;
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
 
-	private static Camera camera;
-	private static Program program;
-	private static Scene scene;
+	public static Camera camera;
+	public static Program program;
+	public static Scene scene;
 
 	private static final float mouseSensitivity = 0.01f;
 	private static final float movementSpeed = 10.0f;
@@ -54,8 +54,8 @@ public class Veya {
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(Veya.program, 60, 90, 60);
-		Veya.scene = new Scene(Veya.program, Veya.camera);
+		Veya.camera = new Camera(60, 90, 60);
+		Veya.scene = new Scene(1337);
 
 		Util.checkGLError();
 
@@ -98,23 +98,25 @@ public class Veya {
 			lastTime = time;
 
 			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-				Veya.camera.walkForward(Veya.movementSpeed * dt);
+				Veya.camera.tryWalkForward(Veya.movementSpeed * dt);
 			}
 			if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-				Veya.camera.walkBackwards(Veya.movementSpeed * dt);
+				Veya.camera.tryWalkBackwards(Veya.movementSpeed * dt);
 			}
 			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				Veya.camera.strafeLeft(Veya.movementSpeed * dt);
+				Veya.camera.tryStrafeLeft(Veya.movementSpeed * dt);
 			}
 			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-				Veya.camera.strafeRight(Veya.movementSpeed * dt);
+				Veya.camera.tryStrafeRight(Veya.movementSpeed * dt);
 			}
 			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-				Veya.camera.moveUp(Veya.movementSpeed * dt);
+				Veya.camera.tryMoveUp(Veya.movementSpeed * dt);
 			}
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-				Veya.camera.moveDown(Veya.movementSpeed * dt);
+				Veya.camera.tryMoveDown(Veya.movementSpeed * dt);
 			}
+
+			Veya.camera.performMove();
 
 			if (!Keyboard.isKeyDown(Keyboard.KEY_X)) {
 				final float dx = Mouse.getDX();

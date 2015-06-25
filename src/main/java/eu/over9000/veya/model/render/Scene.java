@@ -14,11 +14,12 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import eu.over9000.veya.Veya;
 import eu.over9000.veya.model.world.BlockType;
 import eu.over9000.veya.model.world.Chunk;
 import eu.over9000.veya.model.world.World;
 import eu.over9000.veya.util.CoordinatesUtil;
-import eu.over9000.veya.util.IntersectionUtil;
+import eu.over9000.veya.util.CollisionUtil;
 import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.util.TextureLoader;
 
@@ -31,9 +32,7 @@ public class Scene {
 	private final World world;
 	private final Map<Chunk, ChunkVAO> displayedChunks = new ConcurrentHashMap<>();
 	private final Light light;
-	private final Program program;
 	private final int texture_handle;
-	private final Camera camera;
 
 	private Matrix4f modelMatrix = new Matrix4f();
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
@@ -74,11 +73,9 @@ public class Scene {
 
 	private final Thread displayedChunkUpdaterThread;
 
-	public Scene(final Program shader, final Camera camera) {
+	public Scene(final long seed) {
 		this.alive = true;
-		this.camera = camera;
-		this.program = shader;
-		this.world = new World(1337, "Keaysea");
+		this.world = new World(seed, "Keaysea");
 		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
@@ -109,7 +106,7 @@ public class Scene {
 	}
 
 	public void init() {
-		this.light.init(this.program);
+		this.light.init(Veya.program);
 		this.updateModelMatrix();
 	}
 
@@ -158,7 +155,7 @@ public class Scene {
 
 			if (!isDisplayed) {
 				chunk.getAndResetChangedFlag();
-				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, this.program)));
+				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, Veya.program)));
 			}
 		}
 	}
@@ -183,7 +180,7 @@ public class Scene {
 
 				final ChunkVAO oldVAO = this.displayedChunks.get(chunk);
 				oldVAO.dispose();
-				final ChunkVAO newVAO = new ChunkVAO(chunk, program);
+				final ChunkVAO newVAO = new ChunkVAO(chunk, Veya.program);
 				this.displayedChunks.put(chunk, newVAO);
 				newVAO.create();
 			}
@@ -192,7 +189,7 @@ public class Scene {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, this.texture_handle);
 
-		this.program.enableVAttributes();
+		Veya.program.enableVAttributes();
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
 
@@ -205,13 +202,13 @@ public class Scene {
 				entry.getValue().render(false);
 			}
 		}
-		this.program.disableVAttributes();
+		Veya.program.disableVAttributes();
 	}
 
 	private void checkCameraPosition() {
-		final int center_x = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getX());
-		final int center_y = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getY());
-		final int center_z = World.worldToChunkCoordinate((int) Scene.this.camera.getPosition().getZ());
+		final int center_x = World.worldToChunkCoordinate((int) Veya.camera.getPosition().getX());
+		final int center_y = World.worldToChunkCoordinate((int) Veya.camera.getPosition().getY());
+		final int center_z = World.worldToChunkCoordinate((int) Veya.camera.getPosition().getZ());
 
 		if (center_x != this.last_cam_x || center_y != this.last_cam_y || center_z != this.last_cam_z) {
 
@@ -233,7 +230,7 @@ public class Scene {
 		this.modelMatrix = new Matrix4f();
 		this.modelMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
-		GL20.glUniformMatrix4(this.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);
+		GL20.glUniformMatrix4(Veya.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);
 	}
 
 	public void dispose() {
@@ -308,10 +305,10 @@ public class Scene {
 	}
 
 	public void performLeftClick() {
-		final Vector3f position = camera.getPosition();
-		final Vector3f viewDirection = camera.getViewDirection();
+		final Vector3f position = Veya.camera.getPosition();
+		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = world.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
+		final List<Location3D> candidates = Location3D.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
 		Collections.sort(candidates);
 
 		for (final Location3D candidate : candidates) {
@@ -321,7 +318,7 @@ public class Scene {
 				continue;
 			}
 
-			final int[] intersectionResult = IntersectionUtil.checkIntersection(position, viewDirection, candidate.x, candidate.y, candidate.z);
+			final int[] intersectionResult = CollisionUtil.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
 				//System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
@@ -332,10 +329,10 @@ public class Scene {
 	}
 
 	public void performRightClick() {
-		final Vector3f position = camera.getPosition();
-		final Vector3f viewDirection = camera.getViewDirection();
+		final Vector3f position = Veya.camera.getPosition();
+		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = world.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
+		final List<Location3D> candidates = Location3D.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
 		Collections.sort(candidates);
 
 		for (final Location3D candidate : candidates) {
@@ -345,12 +342,12 @@ public class Scene {
 				continue;
 			}
 
-			final int[] intersectionResult = IntersectionUtil.checkIntersection(position, viewDirection, candidate.x, candidate.y, candidate.z);
+			final int[] intersectionResult = CollisionUtil.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
 				//System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
 
-				final Location3D placeLocation = IntersectionUtil.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
+				final Location3D placeLocation = CollisionUtil.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
 
 				world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST);
 				break;
@@ -360,6 +357,15 @@ public class Scene {
 
 	public int getChunkCount() {
 		return this.displayedChunks.size();
+	}
+
+	public void filterAir(final List<Location3D> locations) {
+		for (final Iterator<Location3D> iterator = locations.iterator(); iterator.hasNext(); ) {
+			final Location3D location = iterator.next();
+			if (world.getBlockAt(location) == null) {
+				iterator.remove();
+			}
+		}
 	}
 
 }

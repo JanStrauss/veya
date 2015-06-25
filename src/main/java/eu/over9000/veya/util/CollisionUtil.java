@@ -1,18 +1,40 @@
 package eu.over9000.veya.util;
 
+import java.util.List;
+
 import org.lwjgl.util.vector.Vector3f;
 
 /**
  * Created by Jan on 22.06.2015.
  */
-public class IntersectionUtil {
+public class CollisionUtil {
 
 	private static final int NUMDIM = 3;
 	private static final int RIGHT = 1;
 	private static final int LEFT = -1;
 	private static final int MIDDLE = 0;
 
-	public static int[] checkIntersection(final Vector3f start, final Vector3f direction, final int worldX, final int worldY, final int worldZ) {
+	public static boolean checkCollision(final AABB camera, final List<Location3D> locations) {
+		for (final Location3D location3D : locations) {
+			final AABB block = new AABB(location3D);
+			if (checkSingleBLock(camera, block)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean checkSingleBLock(final AABB camera, final AABB block) {
+		for (int i = 0; i < NUMDIM; i++) {
+			if (!(camera.min[i] <= block.max[i] && camera.max[i] >= block.min[i])) {
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+	public static int[] checkCollision(final Vector3f start, final Vector3f direction, final int worldX, final int worldY, final int worldZ) {
 		final float[] origin = new float[]{start.x, start.y, start.z};
 		final float[] dir = new float[]{direction.x, direction.y, direction.z};
 		final float[] minB = new float[]{worldX, worldY, worldZ};

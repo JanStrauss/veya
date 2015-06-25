@@ -1,18 +1,29 @@
 package eu.over9000.veya.model.render;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import eu.over9000.veya.Veya;
+import eu.over9000.veya.util.AABB;
+import eu.over9000.veya.util.CollisionUtil;
+import eu.over9000.veya.util.Location3D;
+
 public class Camera {
-	public static final double PITCH_LIMIT = 90 * Math.PI / 180;
+	private static final float CAMERA_OFFSET_SIDE = 0.25f;
+	private static final float CAMERA_OFFSET_BOTTOM = 1.7f;
+	private static final float CAMERA_OFFSET_TOP = 0.1f;
+
+	public static final float PITCH_LIMIT = (float) (90 * Math.PI / 180);
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private Matrix4f viewMatrix = new Matrix4f();
 
-	private final Vector3f position;
+	private final Vector3f currentPosition;
+	private final Vector3f nextPosition;
 	private float yaw = 0;
 	private float pitch = 0;
 
@@ -22,15 +33,16 @@ public class Camera {
 	private final int cameraPositionLocation;
 	public static final float YAW_LIMIT = 2f * (float) Math.PI;
 
-	public Camera(final Program shader, final float posX, final float posY, final float posZ) {
-		this.viewMatrixLocation = shader.getUniformLocation("viewMatrix");
-		this.projectionMatrixLocation = shader.getUniformLocation("projectionMatrix");
-		this.cameraPositionLocation = shader.getUniformLocation("cameraPosition");
-		this.position = new Vector3f(posX, posY, posZ);
+	public Camera(final float posX, final float posY, final float posZ) {
+		this.viewMatrixLocation = Veya.program.getUniformLocation("viewMatrix");
+		this.projectionMatrixLocation = Veya.program.getUniformLocation("projectionMatrix");
+		this.cameraPositionLocation = Veya.program.getUniformLocation("cameraPosition");
+		this.currentPosition = new Vector3f(posX, posY, posZ);
+		this.nextPosition = new Vector3f(posX, posY, posZ);
 	}
 
 	public void updateCameraPosition() {
-		GL20.glUniform3f(this.cameraPositionLocation, this.position.x, this.position.y, this.position.z);
+		GL20.glUniform3f(this.cameraPositionLocation, this.currentPosition.x, this.currentPosition.y, this.currentPosition.z);
 	}
 
 	public void updateViewMatrix() {
@@ -38,7 +50,7 @@ public class Camera {
 
 		this.viewMatrix.rotate(this.pitch, new Vector3f(1, 0, 0), this.viewMatrix);
 		this.viewMatrix.rotate(this.yaw, new Vector3f(0, 1, 0), this.viewMatrix);
-		this.viewMatrix.translate(this.position.negate(null), this.viewMatrix);
+		this.viewMatrix.translate(this.currentPosition.negate(null), this.viewMatrix);
 
 		this.viewMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
@@ -70,27 +82,27 @@ public class Camera {
 	}
 
 	// moves the camera forward relative to its current rotation (yaw)
-	public void walkForward(final float distance) {
-		this.position.x += distance * (float) Math.sin(this.yaw);
-		this.position.z -= distance * (float) Math.cos(this.yaw);
+	public void tryWalkForward(final float distance) {
+		this.nextPosition.x += distance * (float) Math.sin(this.yaw);
+		this.nextPosition.z -= distance * (float) Math.cos(this.yaw);
 	}
 
 	// moves the camera backward relative to its current rotation (yaw)
-	public void walkBackwards(final float distance) {
-		this.position.x -= distance * (float) Math.sin(this.yaw);
-		this.position.z += distance * (float) Math.cos(this.yaw);
+	public void tryWalkBackwards(final float distance) {
+		this.nextPosition.x -= distance * (float) Math.sin(this.yaw);
+		this.nextPosition.z += distance * (float) Math.cos(this.yaw);
 	}
 
 	// strafes the camera left relitive to its current rotation (yaw)
-	public void strafeLeft(final float distance) {
-		this.position.x += distance * (float) Math.sin(this.yaw - Math.toRadians(90));
-		this.position.z -= distance * (float) Math.cos(this.yaw - Math.toRadians(90));
+	public void tryStrafeLeft(final float distance) {
+		this.nextPosition.x += distance * (float) Math.sin(this.yaw - Math.toRadians(90));
+		this.nextPosition.z -= distance * (float) Math.cos(this.yaw - Math.toRadians(90));
 	}
 
 	// strafes the camera right relitive to its current rotation (yaw)
-	public void strafeRight(final float distance) {
-		this.position.x += distance * (float) Math.sin(this.yaw + Math.toRadians(90));
-		this.position.z -= distance * (float) Math.cos(this.yaw + Math.toRadians(90));
+	public void tryStrafeRight(final float distance) {
+		this.nextPosition.x += distance * (float) Math.sin(this.yaw + Math.toRadians(90));
+		this.nextPosition.z -= distance * (float) Math.cos(this.yaw + Math.toRadians(90));
 	}
 
 	// increment the camera's current yaw rotation
@@ -112,50 +124,48 @@ public class Camera {
 
 	}
 
-	// private void setViewMatrix(final float eyeX, final float eyeY, final float eyeZ, final float dx, final float dy) {
-	// final Vector3f up = new Vector3f(0, 1, 0).normalise(null);
-	//
-	// final Vector3f eye = new Vector3f(eyeX, eyeY, eyeZ);
-	//
-	// this.lookDir = Camera.rotY(this.lookDir, (float) (dy * Math.PI / 180));
-	//
-	// // final Vector3f front = Vector3f.sub(this.lookAt, eye, null).normalise(null); // front
-	// final Vector3f front = this.lookDir.normalise(null); // front
-	// final Vector3f side = Vector3f.cross(front, up, null).normalise(null); // side
-	// final Vector3f upCam = Vector3f.cross(side, front, null).normalise(null); // up in cam
-	//
-	// this.viewMatrix = new Matrix4f();
-	// this.viewMatrix.m00 = side.x;
-	// this.viewMatrix.m01 = upCam.x;
-	// this.viewMatrix.m02 = -front.x;
-	// this.viewMatrix.m03 = 0;
-	// this.viewMatrix.m10 = side.y;
-	// this.viewMatrix.m11 = upCam.y;
-	// this.viewMatrix.m12 = -front.y;
-	// this.viewMatrix.m13 = 0;
-	// this.viewMatrix.m20 = side.z;
-	// this.viewMatrix.m21 = upCam.z;
-	// this.viewMatrix.m22 = -front.z;
-	// this.viewMatrix.m23 = 0;
-	// this.viewMatrix.m30 = Vector3f.dot(side, eye);
-	// this.viewMatrix.m31 = Vector3f.dot(upCam, eye);
-	// this.viewMatrix.m32 = Vector3f.dot(front, eye);
-	// this.viewMatrix.m33 = 1;
-	//
-	// // System.out.println("updated view matrix:");
-	// // System.out.println(this.viewMatrix);
-	// }
-
-	public void moveUp(final float distance) {
-		this.position.y += distance;
+	public void tryMoveUp(final float distance) {
+		this.nextPosition.y += distance;
 	}
 
-	public void moveDown(final float distance) {
-		this.position.y -= distance;
+	public void tryMoveDown(final float distance) {
+		this.nextPosition.y -= distance;
+	}
+
+	public void performMove() {
+		if (currentPosition.equals(nextPosition)) {
+			return;
+		}
+
+		final boolean checkX = checkNewPositionSingleDim(buildAABB(nextPosition.x, currentPosition.y, currentPosition.z));
+		final boolean checkY = checkNewPositionSingleDim(buildAABB(currentPosition.x, nextPosition.y, currentPosition.z));
+		final boolean checkZ = checkNewPositionSingleDim(buildAABB(currentPosition.x, currentPosition.y, nextPosition.z));
+
+		if (!checkX) {
+			this.currentPosition.x = nextPosition.x;
+		}
+
+		if (!checkY) {
+			this.currentPosition.y = nextPosition.y;
+		}
+
+		if (!checkZ) {
+			this.currentPosition.z = nextPosition.z;
+		}
+
+		nextPosition.x = currentPosition.x;
+		nextPosition.y = currentPosition.y;
+		nextPosition.z = currentPosition.z;
+	}
+
+	private boolean checkNewPositionSingleDim(final AABB newPos) {
+		final List<Location3D> blocksAround = Location3D.getBlocksAround(newPos, 1);
+		Veya.scene.filterAir(blocksAround);
+		return CollisionUtil.checkCollision(newPos, blocksAround);
 	}
 
 	public Vector3f getPosition() {
-		return new Vector3f(this.position.x, this.position.y, this.position.z);
+		return new Vector3f(this.currentPosition.x, this.currentPosition.y, this.currentPosition.z);
 	}
 
 	public Vector3f getViewDirection() {
@@ -165,24 +175,8 @@ public class Camera {
 		return new Vector3f(x, y, z);
 	}
 
-	public float getPitch() {
-		return pitch;
-	}
+	private AABB buildAABB(final float x, final float y, final float z) {
+		return new AABB(x - CAMERA_OFFSET_SIDE, y - CAMERA_OFFSET_BOTTOM, z - CAMERA_OFFSET_SIDE, x + CAMERA_OFFSET_SIDE, y + CAMERA_OFFSET_TOP, z + CAMERA_OFFSET_SIDE);
 
-	public float getYaw() {
-		return yaw;
-	}
-
-	public void printViewMatrix() {
-		System.out.println(viewMatrix.m00 + " " + viewMatrix.m01 + " " + viewMatrix.m02 + viewMatrix.m03);
-		System.out.println(viewMatrix.m10 + " " + viewMatrix.m11 + " " + viewMatrix.m12 + viewMatrix.m13);
-		System.out.println(viewMatrix.m20 + " " + viewMatrix.m21 + " " + viewMatrix.m22 + viewMatrix.m23);
-		System.out.println(viewMatrix.m30 + " " + viewMatrix.m31 + " " + viewMatrix.m32 + viewMatrix.m33);
-	}
-
-	public void setPosition(final float x, final float y, final float z) {
-		this.position.x = x;
-		this.position.y = y;
-		this.position.z = z;
 	}
 }
