@@ -130,6 +130,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}_${buildNumber}</finalName>
 	</build>
 </project>
