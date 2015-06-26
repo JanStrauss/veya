@@ -78,7 +78,7 @@ public class Chunk {
 
 	private static void checkParameters(final int x, final int y, final int z) {
 		if (0 > x || x >= Chunk.CHUNK_SIZE) {
-			throw new IllegalArgumentException("x value (" + x + ") is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
+			throw new IllegalArgumentException("y value (" + x + ") is not in valid range of [0," + Chunk.CHUNK_SIZE + "[");
 		}
 
 		if (0 > y || y >= Chunk.CHUNK_SIZE) {

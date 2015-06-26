@@ -9,6 +9,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
+import eu.over9000.veya.model.physic.Gravity;
 import eu.over9000.veya.util.AABB;
 import eu.over9000.veya.util.CollisionUtil;
 import eu.over9000.veya.util.Location3D;
@@ -24,6 +25,8 @@ public class Camera {
 
 	private final Vector3f currentPosition;
 	private final Vector3f nextPosition;
+	private final Gravity.State state;
+
 	private float yaw = 0;
 	private float pitch = 0;
 
@@ -32,6 +35,7 @@ public class Camera {
 	private final int projectionMatrixLocation;
 	private final int cameraPositionLocation;
 	public static final float YAW_LIMIT = 2f * (float) Math.PI;
+	private boolean jumping = false;
 
 	public Camera(final float posX, final float posY, final float posZ) {
 		this.viewMatrixLocation = Veya.program.getUniformLocation("viewMatrix");
@@ -39,6 +43,9 @@ public class Camera {
 		this.cameraPositionLocation = Veya.program.getUniformLocation("cameraPosition");
 		this.currentPosition = new Vector3f(posX, posY, posZ);
 		this.nextPosition = new Vector3f(posX, posY, posZ);
+		this.state = new Gravity.State();
+		state.v = 0;
+		state.y = posY;
 	}
 
 	public void updateCameraPosition() {
@@ -125,7 +132,12 @@ public class Camera {
 	}
 
 	public void tryMoveUp(final float distance) {
-		this.nextPosition.y += distance;
+		if (!jumping) {
+			this.jumping = true;
+			this.state.v = 10;
+		}
+
+		//this.nextPosition.y += distance;
 	}
 
 	public void tryMoveDown(final float distance) {
@@ -145,8 +157,13 @@ public class Camera {
 			this.currentPosition.x = nextPosition.x;
 		}
 
-		if (!checkY) {
+		if (!checkY) { // no collision
 			this.currentPosition.y = nextPosition.y;
+		} else { // collision
+			this.state.v = 0;
+			if (currentPosition.y > nextPosition.y) {
+				jumping = false;
+			}
 		}
 
 		if (!checkZ) {
@@ -156,6 +173,17 @@ public class Camera {
 		nextPosition.x = currentPosition.x;
 		nextPosition.y = currentPosition.y;
 		nextPosition.z = currentPosition.z;
+	}
+
+	public void applyGravity(final long t, final float dt) {
+		state.y = currentPosition.y;
+
+		Gravity.integrate(state, dt);
+
+		//System.out.println(jumping + " " + state);
+
+		nextPosition.y = state.y;
+
 	}
 
 	private boolean checkNewPositionSingleDim(final AABB newPos) {
@@ -177,6 +205,6 @@ public class Camera {
 
 	private AABB buildAABB(final float x, final float y, final float z) {
 		return new AABB(x - CAMERA_OFFSET_SIDE, y - CAMERA_OFFSET_BOTTOM, z - CAMERA_OFFSET_SIDE, x + CAMERA_OFFSET_SIDE, y + CAMERA_OFFSET_TOP, z + CAMERA_OFFSET_SIDE);
-
 	}
+
 }

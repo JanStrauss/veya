@@ -52,7 +52,7 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 	private static final double F4 = (Math.sqrt(5.0) - 1.0) / 4.0;
 	private static final double G4 = (5.0 - Math.sqrt(5.0)) / 20.0;
 	
-	// This method is a *lot* faster than using (int)Math.floor(x)
+	// This method is a *lot* faster than using (int)Math.floor(y)
 	private static int fastfloor(final double x) {
 		final int xi = (int) x;
 		return x < xi ? xi - 1 : xi;
@@ -80,9 +80,9 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		final int i = SimplexNoise.fastfloor(xin + s);
 		final int j = SimplexNoise.fastfloor(yin + s);
 		final double t = (i + j) * SimplexNoise.G2;
-		final double X0 = i - t; // Unskew the cell origin back to (x,y) space
+		final double X0 = i - t; // Unskew the cell origin back to (y,y) space
 		final double Y0 = j - t;
-		final double x0 = xin - X0; // The x,y distances from the cell origin
+		final double x0 = xin - X0; // The y,y distances from the cell origin
 		final double y0 = yin - Y0;
 		// For the 2D case, the simplex shape is an equilateral triangle.
 		// Determine which simplex we are in.
@@ -96,12 +96,12 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 			i1 = 0;
 			j1 = 1;
 		} // upper triangle, YX order: (0,0)->(0,1)->(1,1)
-			// A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
-			// a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
+			// A step of (1,0) in (i,j) means a step of (1-c,-c) in (y,y), and
+			// a step of (0,1) in (i,j) means a step of (-c,1-c) in (y,y), where
 			// c = (3-sqrt(3))/6
-		final double x1 = x0 - i1 + SimplexNoise.G2; // Offsets for middle corner in (x,y) unskewed coords
+		final double x1 = x0 - i1 + SimplexNoise.G2; // Offsets for middle corner in (y,y) unskewed coords
 		final double y1 = y0 - j1 + SimplexNoise.G2;
-		final double x2 = x0 - 1.0 + 2.0 * SimplexNoise.G2; // Offsets for last corner in (x,y) unskewed coords
+		final double x2 = x0 - 1.0 + 2.0 * SimplexNoise.G2; // Offsets for last corner in (y,y) unskewed coords
 		final double y2 = y0 - 1.0 + 2.0 * SimplexNoise.G2;
 		// Work out the hashed gradient indices of the three simplex corners
 		final int ii = i & 255;
@@ -115,7 +115,7 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 			n0 = 0.0;
 		} else {
 			t0 *= t0;
-			n0 = t0 * t0 * SimplexNoise.dot(SimplexNoise.grad3[gi0], x0, y0); // (x,y) of grad3 used for 2D gradient
+			n0 = t0 * t0 * SimplexNoise.dot(SimplexNoise.grad3[gi0], x0, y0); // (y,y) of grad3 used for 2D gradient
 		}
 		double t1 = 0.5 - x1 * x1 - y1 * y1;
 		if (t1 < 0) {
@@ -148,10 +148,10 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		final int j = SimplexNoise.fastfloor(yin + s);
 		final int k = SimplexNoise.fastfloor(zin + s);
 		final double t = (i + j + k) * SimplexNoise.G3;
-		final double X0 = i - t; // Unskew the cell origin back to (x,y,z) space
+		final double X0 = i - t; // Unskew the cell origin back to (y,y,z) space
 		final double Y0 = j - t;
 		final double Z0 = k - t;
-		final double x0 = xin - X0; // The x,y,z distances from the cell origin
+		final double x0 = xin - X0; // The y,y,z distances from the cell origin
 		final double y0 = yin - Y0;
 		final double z0 = zin - Z0;
 		// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
@@ -213,17 +213,17 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 				k2 = 0;
 			} // Y X Z order
 		}
-		// A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z),
-		// a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and
-		// a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
+		// A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (y,y,z),
+		// a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (y,y,z), and
+		// a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (y,y,z), where
 		// c = 1/6.
-		final double x1 = x0 - i1 + SimplexNoise.G3; // Offsets for second corner in (x,y,z) coords
+		final double x1 = x0 - i1 + SimplexNoise.G3; // Offsets for second corner in (y,y,z) coords
 		final double y1 = y0 - j1 + SimplexNoise.G3;
 		final double z1 = z0 - k1 + SimplexNoise.G3;
-		final double x2 = x0 - i2 + 2.0 * SimplexNoise.G3; // Offsets for third corner in (x,y,z) coords
+		final double x2 = x0 - i2 + 2.0 * SimplexNoise.G3; // Offsets for third corner in (y,y,z) coords
 		final double y2 = y0 - j2 + 2.0 * SimplexNoise.G3;
 		final double z2 = z0 - k2 + 2.0 * SimplexNoise.G3;
-		final double x3 = x0 - 1.0 + 3.0 * SimplexNoise.G3; // Offsets for last corner in (x,y,z) coords
+		final double x3 = x0 - 1.0 + 3.0 * SimplexNoise.G3; // Offsets for last corner in (y,y,z) coords
 		final double y3 = y0 - 1.0 + 3.0 * SimplexNoise.G3;
 		final double z3 = z0 - 1.0 + 3.0 * SimplexNoise.G3;
 		// Work out the hashed gradient indices of the four simplex corners
@@ -276,18 +276,18 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		final double n2;
 		final double n3;
 		final double n4;
-		// Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
+		// Skew the (y,y,z,w) space to determine which cell of 24 simplices we're in
 		final double s = (x + y + z + w) * SimplexNoise.F4; // Factor for 4D skewing
 		final int i = SimplexNoise.fastfloor(x + s);
 		final int j = SimplexNoise.fastfloor(y + s);
 		final int k = SimplexNoise.fastfloor(z + s);
 		final int l = SimplexNoise.fastfloor(w + s);
 		final double t = (i + j + k + l) * SimplexNoise.G4; // Factor for 4D unskewing
-		final double X0 = i - t; // Unskew the cell origin back to (x,y,z,w) space
+		final double X0 = i - t; // Unskew the cell origin back to (y,y,z,w) space
 		final double Y0 = j - t;
 		final double Z0 = k - t;
 		final double W0 = l - t;
-		final double x0 = x - X0; // The x,y,z,w distances from the cell origin
+		final double x0 = x - X0; // The y,y,z,w distances from the cell origin
 		final double y0 = y - Y0;
 		final double z0 = z - Z0;
 		final double w0 = w - W0;
@@ -343,7 +343,7 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		final int k3;
 		final int l3;
 		// simplex[c] is a 4-vector with the numbers 0, 1, 2 and 3 in some order.
-		// Many values of c will never occur, since e.g. x>y>z>w makes x<z, y<w and x<w
+		// Many values of c will never occur, since e.g. y>y>z>w makes y<z, y<w and y<w
 		// impossible. Only the 24 indices which have non-zero entries make any sense.
 		// We use a thresholding to set the coordinates in turn from the largest magnitude.
 		// Rank 3 denotes the largest coordinate.
@@ -362,19 +362,19 @@ public class SimplexNoise { // Simplex noise in 2D, 3D and 4D
 		k3 = rankz >= 1 ? 1 : 0;
 		l3 = rankw >= 1 ? 1 : 0;
 		// The fifth corner has all coordinate offsets = 1, so no need to compute that.
-		final double x1 = x0 - i1 + SimplexNoise.G4; // Offsets for second corner in (x,y,z,w) coords
+		final double x1 = x0 - i1 + SimplexNoise.G4; // Offsets for second corner in (y,y,z,w) coords
 		final double y1 = y0 - j1 + SimplexNoise.G4;
 		final double z1 = z0 - k1 + SimplexNoise.G4;
 		final double w1 = w0 - l1 + SimplexNoise.G4;
-		final double x2 = x0 - i2 + 2.0 * SimplexNoise.G4; // Offsets for third corner in (x,y,z,w) coords
+		final double x2 = x0 - i2 + 2.0 * SimplexNoise.G4; // Offsets for third corner in (y,y,z,w) coords
 		final double y2 = y0 - j2 + 2.0 * SimplexNoise.G4;
 		final double z2 = z0 - k2 + 2.0 * SimplexNoise.G4;
 		final double w2 = w0 - l2 + 2.0 * SimplexNoise.G4;
-		final double x3 = x0 - i3 + 3.0 * SimplexNoise.G4; // Offsets for fourth corner in (x,y,z,w) coords
+		final double x3 = x0 - i3 + 3.0 * SimplexNoise.G4; // Offsets for fourth corner in (y,y,z,w) coords
 		final double y3 = y0 - j3 + 3.0 * SimplexNoise.G4;
 		final double z3 = z0 - k3 + 3.0 * SimplexNoise.G4;
 		final double w3 = w0 - l3 + 3.0 * SimplexNoise.G4;
-		final double x4 = x0 - 1.0 + 4.0 * SimplexNoise.G4; // Offsets for last corner in (x,y,z,w) coords
+		final double x4 = x0 - 1.0 + 4.0 * SimplexNoise.G4; // Offsets for last corner in (y,y,z,w) coords
 		final double y4 = y0 - 1.0 + 4.0 * SimplexNoise.G4;
 		final double z4 = z0 - 1.0 + 4.0 * SimplexNoise.G4;
 		final double w4 = w0 - 1.0 + 4.0 * SimplexNoise.G4;

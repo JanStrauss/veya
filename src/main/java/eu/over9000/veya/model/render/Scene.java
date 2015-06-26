@@ -321,7 +321,7 @@ public class Scene {
 			final int[] intersectionResult = CollisionUtil.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
-				//System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
+				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
 				world.clearBlockAt(candidate.x, candidate.y, candidate.z);
 				break;
 			}
@@ -345,7 +345,7 @@ public class Scene {
 			final int[] intersectionResult = CollisionUtil.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
-				//System.out.println("found collision with block at " + candidate.x + " " + candidate.y + " " + candidate.z + " with type " + type);
+				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
 
 				final Location3D placeLocation = CollisionUtil.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
 

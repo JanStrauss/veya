@@ -19,7 +19,7 @@ public class Veya {
 	public static Scene scene;
 
 	private static final float mouseSensitivity = 0.01f;
-	private static final float movementSpeed = 10.0f;
+	private static final float movementSpeed = 5.0f;
 
 	private static final float fieldOfView = 75.0f;
 	private static final float nearClippingPlane = 0.1f;
@@ -97,6 +97,7 @@ public class Veya {
 			final float dt = (time - lastTime) / 1000.0f;
 			lastTime = time;
 
+
 			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 				Veya.camera.tryWalkForward(Veya.movementSpeed * dt);
 			}
@@ -115,6 +116,8 @@ public class Veya {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 				Veya.camera.tryMoveDown(Veya.movementSpeed * dt);
 			}
+
+			Veya.camera.applyGravity(time, dt);
 
 			Veya.camera.performMove();
 
@@ -219,7 +222,7 @@ public class Veya {
 			try {
 				final Vector3f camPos = camera.getPosition();
 				final float camY = scene.getWorld().getHighestYAt((int) Math.floor(camPos.x), (int) Math.floor(camPos.z)) + 2.7f;
-				//Veya.camera.setPosition(camPos.x, camY, camPos.z);
+				//Veya.camera.setPosition(camPos.y, camY, camPos.z);
 			} catch (final IllegalStateException e) {
 			}
 
@@ -242,7 +245,7 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				Display.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
+				Display.setTitle("VEYA | fps: " + count + " | pos: y=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
 				count = 0;
 			} else {
 				count++;
