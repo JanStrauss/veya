@@ -17,14 +17,14 @@ public class CollisionUtil {
 	public static boolean checkCollision(final AABB camera, final List<Location3D> locations) {
 		for (final Location3D location3D : locations) {
 			final AABB block = new AABB(location3D);
-			if (checkSingleBLock(camera, block)) {
+			if (checkCollision(camera, block)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private static boolean checkSingleBLock(final AABB camera, final AABB block) {
+	public static boolean checkCollision(final AABB camera, final AABB block) {
 		for (int i = 0; i < NUMDIM; i++) {
 			if (!(camera.min[i] <= block.max[i] && camera.max[i] >= block.min[i])) {
 				return false;

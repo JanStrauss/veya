@@ -18,10 +18,7 @@ import eu.over9000.veya.Veya;
 import eu.over9000.veya.model.world.BlockType;
 import eu.over9000.veya.model.world.Chunk;
 import eu.over9000.veya.model.world.World;
-import eu.over9000.veya.util.CoordinatesUtil;
-import eu.over9000.veya.util.CollisionUtil;
-import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.util.TextureLoader;
+import eu.over9000.veya.util.*;
 
 public class Scene {
 	private final static int SCENE_CHUNKS_RANGE = 4;
@@ -332,7 +329,7 @@ public class Scene {
 		final Vector3f position = Veya.camera.getPosition();
 		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = Location3D.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
+		final List<Location3D> candidates = Location3D.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 4);
 		Collections.sort(candidates);
 
 		for (final Location3D candidate : candidates) {
@@ -349,7 +346,13 @@ public class Scene {
 
 				final Location3D placeLocation = CollisionUtil.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
 
-				world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST);
+				final AABB blockAABB = new AABB(placeLocation);
+				final AABB cameraAABB = Veya.camera.getAABB();
+
+				if (!CollisionUtil.checkCollision(cameraAABB, blockAABB)) {
+					world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST);
+				}
+
 				break;
 			}
 		}

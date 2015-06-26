@@ -1,17 +1,18 @@
 package eu.over9000.veya.model.render;
 
-import eu.over9000.veya.Veya;
-import eu.over9000.veya.model.physic.Gravity;
-import eu.over9000.veya.util.AABB;
-import eu.over9000.veya.util.CollisionUtil;
-import eu.over9000.veya.util.Location3D;
+import java.nio.FloatBuffer;
+import java.util.List;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.nio.FloatBuffer;
-import java.util.List;
+import eu.over9000.veya.Veya;
+import eu.over9000.veya.model.physic.Gravity;
+import eu.over9000.veya.util.AABB;
+import eu.over9000.veya.util.CollisionUtil;
+import eu.over9000.veya.util.Location3D;
 
 public class Camera {
 	private static final float CAMERA_OFFSET_SIDE = 0.25f;
@@ -209,4 +210,7 @@ public class Camera {
 		return new AABB(x - CAMERA_OFFSET_SIDE, y - CAMERA_OFFSET_BOTTOM, z - CAMERA_OFFSET_SIDE, x + CAMERA_OFFSET_SIDE, y + CAMERA_OFFSET_TOP, z + CAMERA_OFFSET_SIDE);
 	}
 
+	public AABB getAABB() {
+		return buildAABB(currentPosition.x, currentPosition.y, currentPosition.z);
+	}
 }

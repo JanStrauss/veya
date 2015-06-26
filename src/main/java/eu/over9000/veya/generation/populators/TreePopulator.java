@@ -31,7 +31,6 @@ public class TreePopulator implements IPopulator {
 					continue;
 				}
 
-
 				if (random.nextInt(100) < LARGE_TREE_CHANCE) {
 					plantLargeTree(world, random, worldX, maxY + 1, worldZ);
 				} else {
@@ -45,7 +44,7 @@ public class TreePopulator implements IPopulator {
 	private static void plantLargeTree(final World world, final Random random, final int xRoot, final int yRoot, final int zRoot) {
 		final int numCrowns = 1 + random.nextInt(3);
 		final int height = 5 + random.nextInt(4);
-		final int trunkRadius = 3 + random.nextInt(3);
+		final int trunkRadius = 4 + random.nextInt(2);
 
 		world.setBlockAt(xRoot, yRoot - 1, zRoot, BlockType.DIRT);
 		for (int y = 0; y < height; y++) {
@@ -56,13 +55,11 @@ public class TreePopulator implements IPopulator {
 		WorldPopulator.placeRndSphere(world, random, xRoot, yTrunkTop, zRoot, trunkRadius, BlockType.LEAVES, blockType -> blockType == null);
 
 		for (int crown = 0; crown < numCrowns; crown++) {
-			final int crownRadius = 3 + random.nextInt(2);
+			final int crownRadius = 3 + random.nextInt(trunkRadius - 3);
 
 			final int crownX = random.nextInt(7) - 3;
 			final int crownY = random.nextInt(5) - 1;
 			final int crownZ = random.nextInt(7) - 3;
-
-			//world.setBlockAtIfAir(xRoot + crownX, yTrunkTop + crownY, zRoot + crownZ, BlockType.WOOD);
 
 			WorldPopulator.fillLine(world, xRoot + crownX, yTrunkTop + crownY, zRoot + crownZ, xRoot, yTrunkTop, zRoot, BlockType.WOOD);
 			WorldPopulator.placeRndSphere(world, random, xRoot + crownX, yTrunkTop + crownY, zRoot + crownZ, crownRadius, BlockType.LEAVES, blockType -> blockType == null);
