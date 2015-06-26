@@ -1,18 +1,17 @@
 package eu.over9000.veya.model.render;
 
-import java.nio.FloatBuffer;
-import java.util.List;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.model.physic.Gravity;
 import eu.over9000.veya.util.AABB;
 import eu.over9000.veya.util.CollisionUtil;
 import eu.over9000.veya.util.Location3D;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+
+import java.nio.FloatBuffer;
+import java.util.List;
 
 public class Camera {
 	private static final float CAMERA_OFFSET_SIDE = 0.25f;
@@ -36,6 +35,7 @@ public class Camera {
 	private final int cameraPositionLocation;
 	public static final float YAW_LIMIT = 2f * (float) Math.PI;
 	private boolean jumping = false;
+	private boolean onGround = false;
 
 	public Camera(final float posX, final float posY, final float posZ) {
 		this.viewMatrixLocation = Veya.program.getUniformLocation("viewMatrix");
@@ -132,7 +132,7 @@ public class Camera {
 	}
 
 	public void tryMoveUp(final float distance) {
-		if (!jumping) {
+		if (onGround && !jumping) {
 			this.jumping = true;
 			this.state.v = 10;
 		}
@@ -159,10 +159,12 @@ public class Camera {
 
 		if (!checkY) { // no collision
 			this.currentPosition.y = nextPosition.y;
+			onGround = false;
 		} else { // collision
 			this.state.v = 0;
 			if (currentPosition.y > nextPosition.y) {
 				jumping = false;
+				onGround = true;
 			}
 		}
 
