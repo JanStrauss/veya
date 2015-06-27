@@ -60,7 +60,7 @@ public class ChunkVAO {
 				for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
 					final BlockType block = chunk.getBlockAt(x, y, z);
 
-					if (block == null) {
+					if (block == null || Veya.ignoreBlocks.contains(block)) {
 						continue;
 					}
 
@@ -81,27 +81,27 @@ public class ChunkVAO {
 					final List<Integer> indexList = solid ? indexListSolid : indexListTransparent;
 
 
-					if (neighborBlockBottom == null || (solid && !neighborBlockBottom.isSolid())) {
+					if (checkBlockFace(solid, neighborBlockBottom)) {
 						ChunkVAO.addBottomOfBlock(indexList, vertexList, block, worldX, worldY, worldZ);
 					}
 
-					if (neighborBlockTop == null || (solid && !neighborBlockTop.isSolid())) {
+					if (checkBlockFace(solid, neighborBlockTop)) {
 						ChunkVAO.addTopOfBlock(indexList, vertexList, block, worldX, worldY, worldZ);
 					}
 
-					if (neighborBlockNorth == null || (solid && !neighborBlockNorth.isSolid())) {
+					if (checkBlockFace(solid, neighborBlockNorth)) {
 						ChunkVAO.addNorthOfBlock(indexList, vertexList, block, worldX, worldY, worldZ);
 					}
 
-					if (neighborBlockSouth == null || (solid && !neighborBlockSouth.isSolid())) {
+					if (checkBlockFace(solid, neighborBlockSouth)) {
 						ChunkVAO.addSouthOfBlock(indexList, vertexList, block, worldX, worldY, worldZ);
 					}
 
-					if (neighborBlockWest == null || (solid && !neighborBlockWest.isSolid())) {
+					if (checkBlockFace(solid, neighborBlockWest)) {
 						ChunkVAO.addWestOfBlock(indexList, vertexList, block, worldX, worldY, worldZ);
 					}
 
-					if (neighborBlockEast == null || (solid && !neighborBlockEast.isSolid())) {
+					if (checkBlockFace(solid, neighborBlockEast)) {
 						ChunkVAO.addEastOfBlock(indexList, vertexList, block, worldX, worldY, worldZ);
 					}
 
@@ -145,6 +145,10 @@ public class ChunkVAO {
 			this.vbo_buffer_transparent.flip();
 		}
 
+	}
+
+	private boolean checkBlockFace(final boolean solid, final BlockType neighborBlock) {
+		return neighborBlock == null || Veya.ignoreBlocks.contains(neighborBlock) || (solid && !neighborBlock.isSolid());
 	}
 
 	public void create() {

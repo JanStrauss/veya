@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import eu.over9000.veya.generation.util.SimplexNoise;
 import eu.over9000.veya.model.world.BlockType;
 import eu.over9000.veya.model.world.Chunk;
 import eu.over9000.veya.model.world.World;
-import eu.over9000.veya.generation.util.SimplexNoise;
 
 public class WorldGenerator {
 
@@ -23,7 +23,12 @@ public class WorldGenerator {
 				final List<Integer> topBlocks = new ArrayList<>();
 				boolean createPre = false;
 
-				for (int y = 0; y < World.MAX_WORLD_HEIGHT; y++) {
+				final int bedrock_height = 1 + random.nextInt(3);
+				for (int y = 0; y < bedrock_height; y++) {
+					rawChunkStack[x][z][y] = BlockType.BEDROCK;
+				}
+
+				for (int y = bedrock_height; y < World.MAX_WORLD_HEIGHT; y++) {
 
 					if (genElevation(x + chunkX * Chunk.CHUNK_SIZE, y, z + chunkZ * Chunk.CHUNK_SIZE)) {
 						rawChunkStack[x][z][y] = BlockType.STONE;

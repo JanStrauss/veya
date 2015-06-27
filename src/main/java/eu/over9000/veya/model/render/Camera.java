@@ -133,12 +133,14 @@ public class Camera {
 	}
 
 	public void tryMoveUp(final float distance) {
-		if (onGround && !jumping) {
-			this.jumping = true;
-			this.state.v = 10;
+		if (Veya.gravitySwitch) {
+			if (onGround && !jumping) {
+				this.jumping = true;
+				this.state.v = 2.5f * Veya.getMovementMultiplier();
+			}
+		} else {
+			this.nextPosition.y += distance;
 		}
-
-		//this.nextPosition.y += distance;
 	}
 
 	public void tryMoveDown(final float distance) {
@@ -178,7 +180,7 @@ public class Camera {
 		nextPosition.z = currentPosition.z;
 	}
 
-	public void applyGravity(final long t, final float dt) {
+	public void applyGravity(final float dt) {
 		state.y = currentPosition.y;
 
 		Gravity.integrate(state, dt);
@@ -212,5 +214,9 @@ public class Camera {
 
 	public AABB getAABB() {
 		return buildAABB(currentPosition.x, currentPosition.y, currentPosition.z);
+	}
+
+	public void resetVelocity() {
+		state.v = 0;
 	}
 }

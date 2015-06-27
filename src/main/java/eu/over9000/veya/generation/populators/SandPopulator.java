@@ -18,7 +18,7 @@ public class SandPopulator implements IPopulator {
 
 		final EnumSet<BlockType> valid = EnumSet.of(BlockType.DIRT, BlockType.STONE, BlockType.GRASS);
 
-		final int chunkAttempts = random.nextInt(8);
+		final int chunkAttempts = random.nextInt(5);
 
 		for (int attempt = 0; attempt < chunkAttempts; attempt++) {
 

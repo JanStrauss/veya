@@ -7,7 +7,7 @@ public enum BlockType {
 	GRASS(0, 1, 2),
 	TEST(5, 4, 6, 7, 8, 9),
 	LOG_OAK(10, 10, 11),
-	LOG_SPRUCE(10, 10, 25),
+	LOG_SPRUCE(27, 27, 25),
 	LOG_BIRCH(10, 10, 21),
 	WATER(12),
 	LEAVES_DEFAULT(13),

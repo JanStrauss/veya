@@ -124,7 +124,7 @@ public class Scene {
 
 		// remove chunks outside display area
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
-			if (!CoordinatesUtil.isBetween(entry.getKey().getChunkX(), min_x, max_x) || !CoordinatesUtil.isBetween(entry.getKey().getChunkY(), min_y, max_y) || !CoordinatesUtil.isBetween(entry.getKey().getChunkZ(), min_z, max_z)) {
+			if (!MathUtil.isBetween(entry.getKey().getChunkX(), min_x, max_x) || !MathUtil.isBetween(entry.getKey().getChunkY(), min_y, max_y) || !MathUtil.isBetween(entry.getKey().getChunkZ(), min_z, max_z)) {
 				this.toRemove.add(new ChunkChunkVAOPair(entry.getKey(), entry.getValue()));
 			}
 		}
@@ -311,7 +311,7 @@ public class Scene {
 		for (final Location3D candidate : candidates) {
 			final BlockType type = world.getBlockAt(candidate.x, candidate.y, candidate.z);
 
-			if (type == null) {
+			if (type == null || type == BlockType.BEDROCK) {
 				continue;
 			}
 
@@ -365,7 +365,7 @@ public class Scene {
 	public void filterAir(final List<Location3D> locations) {
 		for (final Iterator<Location3D> iterator = locations.iterator(); iterator.hasNext(); ) {
 			final Location3D location = iterator.next();
-			if (world.getBlockAt(location) == null) {
+			if (world.getBlockAt(location) == null || Veya.ignoreBlocks.contains(world.getBlockAt(location))) {
 				iterator.remove();
 			}
 		}

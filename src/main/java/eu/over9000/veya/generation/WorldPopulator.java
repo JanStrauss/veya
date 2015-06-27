@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import eu.over9000.veya.generation.populators.GravelPopulator;
-import eu.over9000.veya.generation.populators.IPopulator;
-import eu.over9000.veya.generation.populators.SandPopulator;
-import eu.over9000.veya.generation.populators.TreePopulator;
+import eu.over9000.veya.generation.populators.*;
 import eu.over9000.veya.model.world.BlockType;
 import eu.over9000.veya.model.world.World;
 import eu.over9000.veya.util.Location3D;
@@ -22,6 +19,7 @@ public class WorldPopulator {
 	static List<IPopulator> populators = new ArrayList<>();
 
 	static {
+		populators.add(new OrePopulator());
 		populators.add(new SandPopulator());
 		populators.add(new GravelPopulator());
 		populators.add(new TreePopulator());
