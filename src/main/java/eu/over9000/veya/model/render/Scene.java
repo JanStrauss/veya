@@ -21,7 +21,7 @@ import eu.over9000.veya.model.world.World;
 import eu.over9000.veya.util.*;
 
 public class Scene {
-	private final static int SCENE_CHUNKS_RANGE = 4;
+	private final static int SCENE_CHUNKS_RANGE = 8;
 
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;

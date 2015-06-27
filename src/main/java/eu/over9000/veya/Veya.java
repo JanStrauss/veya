@@ -1,5 +1,10 @@
 package eu.over9000.veya;
 
+import java.awt.*;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -31,6 +36,7 @@ public class Veya {
 	private static float diffuse = 0.50f;
 	private static float specular = 0.50f;
 	private static final float df = 0.05f;
+	private static Frame frame;
 
 	public static void main(final String[] args) throws LWJGLException {
 
@@ -42,19 +48,27 @@ public class Veya {
 	}
 
 	private static void init() throws LWJGLException {
-		Display.setDisplayMode(new DisplayMode(1280, 720));
-		Display.setTitle("Veya");
-		Display.setResizable(true);
+		final Canvas canvas = new Canvas();
+		frame = new Frame();
+		frame.add(canvas);
+		frame.setSize(1280, 720);
+		frame.setLocationByPlatform(true);
+		frame.setVisible(true);
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		frame.setIconImage(loadIcon());
+
+		Display.setParent(canvas);
 		Display.create(new PixelFormat().withSamples(4).withDepthBits(24), new ContextAttribs(3, 3));
 
 		System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		System.out.println("Java version: " + System.getProperty("java.version"));
+		System.out.println("graphics adapter: " + Display.getAdapter());
 
 		Veya.program = new Program(new String[]{"vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal",}, new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "cameraPosition"});
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(60, 90, 60);
+		Veya.camera = new Camera(-40, 90, -40);
 		Veya.scene = new Scene(1337);
 
 		Util.checkGLError();
@@ -245,7 +259,7 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				Display.setTitle("VEYA | fps: " + count + " | pos: y=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
+				frame.setTitle("VEYA | fps: " + count + " | pos: y=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
 				count = 0;
 			} else {
 				count++;
@@ -262,4 +276,12 @@ public class Veya {
 		System.exit(0);
 	}
 
+	private static Image loadIcon() {
+		try {
+			return ImageIO.read(Veya.class.getResourceAsStream("/icon/veya.png"));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
