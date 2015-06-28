@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.world;
+package eu.over9000.veya.world;
 
 import java.util.Objects;
 

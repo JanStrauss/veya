@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.world;
+package eu.over9000.veya.world;
 
 import java.math.RoundingMode;
 import java.util.Collection;

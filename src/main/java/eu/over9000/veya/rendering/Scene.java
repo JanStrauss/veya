@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.render;
+package eu.over9000.veya.rendering;
 
 import java.nio.FloatBuffer;
 import java.util.*;
@@ -15,13 +15,17 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
-import eu.over9000.veya.model.world.BlockType;
-import eu.over9000.veya.model.world.Chunk;
-import eu.over9000.veya.model.world.World;
+import eu.over9000.veya.collision.AABB;
+import eu.over9000.veya.collision.CollisionUtil;
+import eu.over9000.veya.world.BlockType;
+import eu.over9000.veya.world.Chunk;
+import eu.over9000.veya.world.World;
 import eu.over9000.veya.util.*;
 
 public class Scene {
-	private final static int SCENE_CHUNKS_RANGE = 8;
+
+	private final static int SCENE_CHUNK_VIEW_RANGE = 8;
+	private final static int SCENE_CHUNK_CACHE_RANGE = SCENE_CHUNK_VIEW_RANGE + 2;
 
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;
@@ -77,26 +81,6 @@ public class Scene {
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 
-		// System.out.println("generating world..");
-		//
-		// this.world.genStartChunks(8);
-		//
-		// System.out.println("generation done, creating VAOs");
-		//
-		// int i = 0;
-		// final int max = this.world.getLoadedChunks().size();
-		// for (final Chunk chunk : this.world.getLoadedChunks()) {
-		// final ChunkVAO vao = new ChunkVAO(chunk, this.program);
-		// vao.create();
-		// this.displayedChunks.put(chunk, vao);
-		//
-		// System.out.println(i + "/" + max);
-		// Display.setTitle("VEYA | gen chunkVAO: " + i + "/" + max);
-		// i++;
-		// }
-		//
-		// System.out.println("VAOs created.");
-
 		this.displayedChunkUpdaterThread = new Thread(this.displayedChunkUpdater, "DisplayedChunkUpdater");
 		this.displayedChunkUpdaterThread.start();
 
@@ -115,12 +99,12 @@ public class Scene {
 
 		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
 
-		final int min_x = this.last_cam_x - Scene.SCENE_CHUNKS_RANGE;
-		final int max_x = this.last_cam_x + Scene.SCENE_CHUNKS_RANGE;
-		final int min_y = this.last_cam_y - Scene.SCENE_CHUNKS_RANGE;
-		final int max_y = this.last_cam_y + Scene.SCENE_CHUNKS_RANGE;
-		final int min_z = this.last_cam_z - Scene.SCENE_CHUNKS_RANGE;
-		final int max_z = this.last_cam_z + Scene.SCENE_CHUNKS_RANGE;
+		final int min_x = this.last_cam_x - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_x = this.last_cam_x + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_y = this.last_cam_y - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_y = this.last_cam_y + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_z = this.last_cam_z - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_z = this.last_cam_z + Scene.SCENE_CHUNK_VIEW_RANGE;
 
 		// remove chunks outside display area
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {

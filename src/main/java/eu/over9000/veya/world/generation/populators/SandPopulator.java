@@ -1,13 +1,13 @@
-package eu.over9000.veya.generation.populators;
+package eu.over9000.veya.world.generation.populators;
 
 import java.util.EnumSet;
 import java.util.Random;
 
-import eu.over9000.veya.generation.WorldGenerator;
-import eu.over9000.veya.generation.WorldPopulator;
-import eu.over9000.veya.model.world.BlockType;
-import eu.over9000.veya.model.world.Chunk;
-import eu.over9000.veya.model.world.World;
+import eu.over9000.veya.world.generation.WorldGenerator;
+import eu.over9000.veya.world.generation.WorldPopulator;
+import eu.over9000.veya.world.BlockType;
+import eu.over9000.veya.world.Chunk;
+import eu.over9000.veya.world.World;
 
 /**
  * Created by Jan on 23.06.2015.

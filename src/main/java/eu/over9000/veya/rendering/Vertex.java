@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.render;
+package eu.over9000.veya.rendering;
 
 public class Vertex {
 	// Vertex model

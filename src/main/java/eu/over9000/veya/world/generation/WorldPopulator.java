@@ -1,4 +1,4 @@
-package eu.over9000.veya.generation;
+package eu.over9000.veya.world.generation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import eu.over9000.veya.generation.populators.*;
-import eu.over9000.veya.model.world.BlockType;
-import eu.over9000.veya.model.world.World;
+import eu.over9000.veya.world.generation.populators.*;
+import eu.over9000.veya.world.BlockType;
+import eu.over9000.veya.world.World;
 import eu.over9000.veya.util.Location3D;
 
 /**

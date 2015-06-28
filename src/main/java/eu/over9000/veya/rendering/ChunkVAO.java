@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.render;
+package eu.over9000.veya.rendering;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -11,8 +11,8 @@ import org.lwjgl.opengl.*;
 import com.google.common.primitives.Ints;
 
 import eu.over9000.veya.Veya;
-import eu.over9000.veya.model.world.BlockType;
-import eu.over9000.veya.model.world.Chunk;
+import eu.over9000.veya.world.BlockType;
+import eu.over9000.veya.world.Chunk;
 
 public class ChunkVAO {
 

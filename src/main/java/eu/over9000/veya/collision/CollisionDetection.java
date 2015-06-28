@@ -1,13 +1,15 @@
-package eu.over9000.veya.util;
+package eu.over9000.veya.collision;
 
 import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
+import eu.over9000.veya.util.Location3D;
+
 /**
  * Created by Jan on 22.06.2015.
  */
-public class CollisionUtil {
+public class CollisionDetection {
 
 	private static final int NUMDIM = 3;
 	private static final int RIGHT = 1;

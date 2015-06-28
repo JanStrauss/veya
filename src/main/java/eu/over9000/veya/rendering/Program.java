@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.render;
+package eu.over9000.veya.rendering;
 
 import java.io.BufferedReader;
 import java.io.IOException;

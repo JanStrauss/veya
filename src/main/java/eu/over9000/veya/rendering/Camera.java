@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.render;
+package eu.over9000.veya.rendering;
 
 import java.nio.FloatBuffer;
 import java.util.List;
@@ -9,9 +9,9 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
-import eu.over9000.veya.model.physic.Gravity;
-import eu.over9000.veya.util.AABB;
-import eu.over9000.veya.util.CollisionUtil;
+import eu.over9000.veya.util.Gravity;
+import eu.over9000.veya.collision.AABB;
+import eu.over9000.veya.collision.CollisionUtil;
 import eu.over9000.veya.util.Location3D;
 
 public class Camera {
@@ -168,6 +168,7 @@ public class Camera {
 			if (currentPosition.y > nextPosition.y) {
 				jumping = false;
 				onGround = true;
+				Veya.gravitySwitch = true;
 			}
 		}
 

@@ -1,4 +1,4 @@
-package eu.over9000.veya.model.physic;
+package eu.over9000.veya.util;
 
 import eu.over9000.veya.Veya;
 

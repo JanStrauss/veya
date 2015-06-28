@@ -1,4 +1,6 @@
-package eu.over9000.veya.util;
+package eu.over9000.veya.collision;
+
+import eu.over9000.veya.util.Location3D;
 
 /**
  * Created by Jan on 25.06.2015.
