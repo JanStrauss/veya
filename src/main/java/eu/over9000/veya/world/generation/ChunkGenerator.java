@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import eu.over9000.veya.world.generation.noise.SimplexNoise;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
+import eu.over9000.veya.world.generation.noise.SimplexNoise;
+import eu.over9000.veya.world.storage.ChunkStack;
 
-public class WorldGenerator {
+public class ChunkGenerator {
 
 	public static final int SEALEVEL = 64;
 
-	public static List<Chunk> genChunksAt(final World world, final Random random, final int chunkX, final int chunkZ) {
+	public static ChunkStack genChunksAt(final World world, final Random random, final int chunkX, final int chunkZ) {
 		final BlockType[][][] rawChunkStack = new BlockType[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][World.MAX_WORLD_HEIGHT];
 
 		//System.out.println("GENERATOR CALLED FOR " + chunkX + "," + chunkZ);
@@ -34,7 +35,7 @@ public class WorldGenerator {
 						rawChunkStack[x][z][y] = BlockType.STONE;
 						createPre = true;
 					} else {
-						if (y <= WorldGenerator.SEALEVEL) {
+						if (y <= ChunkGenerator.SEALEVEL) {
 							rawChunkStack[x][z][y] = BlockType.WATER;
 						}
 						if (createPre) {
@@ -56,28 +57,34 @@ public class WorldGenerator {
 		return buildChunks(world, chunkX, chunkZ, rawChunkStack);
 	}
 
-	private static List<Chunk> buildChunks(final World world, final int chunkX, final int chunkZ, final BlockType[][][] rawChunkStack) {
-		final ArrayList<Chunk> chunks = new ArrayList<>(World.MAX_WORLD_HEIGHT_IN_CHUNKS);
+	private static ChunkStack buildChunks(final World world, final int chunkX, final int chunkZ, final BlockType[][][] rawChunkStack) {
+		final ChunkStack chunks = new ChunkStack(world, chunkX, chunkZ);
 
 		for (int chunkY = 0; chunkY < World.MAX_WORLD_HEIGHT_IN_CHUNKS; chunkY++) {
 			final Chunk chunk = new Chunk(world, chunkX, chunkY, chunkZ);
-
+			boolean empty = true;
 			for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
 				for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
 					final int baseY = chunkY * Chunk.CHUNK_SIZE;
 					for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
-						chunk.setBlockAt(x, y, z, rawChunkStack[x][z][baseY + y]);
+						final BlockType type = rawChunkStack[x][z][baseY + y];
+						if (type != null) {
+							empty = false;
+							chunk.initBlockAt(x, y, z, type);
+						}
 					}
 				}
 			}
+			if (!empty) {
+				chunks.setChunkAt(chunkY, chunk);
+			}
 
-			chunks.add(chunk);
 		}
 		return chunks;
 	}
 
 	private static void fillTopWithDirtAndGrass(final Random random, final BlockType[][][] rawChunkStack, final int x, final int z, final int top) {
-		if (top >= WorldGenerator.SEALEVEL) {
+		if (top >= ChunkGenerator.SEALEVEL) {
 			rawChunkStack[x][z][top] = BlockType.GRASS;
 		} else {
 			rawChunkStack[x][z][top] = BlockType.DIRT;

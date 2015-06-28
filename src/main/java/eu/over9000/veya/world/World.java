@@ -1,15 +1,13 @@
 package eu.over9000.veya.world;
 
 import java.math.RoundingMode;
-import java.util.List;
 import java.util.Random;
 
 import com.google.common.math.IntMath;
 
 import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.world.generation.WorldGenerator;
-import eu.over9000.veya.world.generation.WorldPopulator;
-import eu.over9000.veya.world.util.ChunkMap;
+import eu.over9000.veya.world.storage.ChunkProvider;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 public class World {
 	public static final int MAX_WORLD_HEIGHT = 256;
@@ -17,25 +15,34 @@ public class World {
 
 	private final long seed;
 	private final String name;
-	private final ChunkMap chunks = new ChunkMap();
+	private final ChunkProvider provider;
 	private final Random random;
 
 	public World(final long seed, final String name) {
 		this.seed = seed;
 		this.name = name;
 		this.random = new Random(seed);
+		this.provider = new ChunkProvider(this);
+	}
+
+	public BlockType getBlockAt(final Location3D location, final ChunkRequestLevel level, final boolean create) {
+		return getBlockAt(location.x, location.y, location.z, level, create);
 	}
 
 	public BlockType getBlockAt(final Location3D location) {
-		return getBlockAt(location.x, location.y, location.z);
+		return getBlockAt(location.x, location.y, location.z, ChunkRequestLevel.CACHE, false);
 	}
 
 	public BlockType getBlockAt(final int x, final int y, final int z) {
+		return getBlockAt(x, y, z, ChunkRequestLevel.CACHE, false);
+	}
+
+	public BlockType getBlockAt(final int x, final int y, final int z, final ChunkRequestLevel level, final boolean create) {
 		final int chunkX = World.worldToChunkCoordinate(x);
 		final int chunkY = World.worldToChunkCoordinate(y);
 		final int chunkZ = World.worldToChunkCoordinate(z);
 
-		final Chunk chunk = this.getChunkAtInternal(chunkX, chunkY, chunkZ);
+		final Chunk chunk = this.getChunkAt(chunkX, chunkY, chunkZ, level, create);
 
 		if (chunk == null) {
 			return null;
@@ -48,12 +55,12 @@ public class World {
 		return chunk.getBlockAt(blockX, blockY, blockZ);
 	}
 
-	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
+	public void setBlockAt(final int x, final int y, final int z, final BlockType type, final ChunkRequestLevel level, final boolean create) {
 		final int chunkX = World.worldToChunkCoordinate(x);
 		final int chunkY = World.worldToChunkCoordinate(y);
 		final int chunkZ = World.worldToChunkCoordinate(z);
 
-		final Chunk chunk = this.getChunkAtInternal(chunkX, chunkY, chunkZ);
+		final Chunk chunk = this.getChunkAt(chunkX, chunkY, chunkZ, level, create);
 
 		if (chunk == null) {
 			return;
@@ -66,47 +73,8 @@ public class World {
 		chunk.setBlockAt(blockX, blockY, blockZ, type);
 	}
 
-	public Chunk getChunkAtInternal(final int chunkX, final int chunkY, final int chunkZ) {
-		return this.chunks.getChunkAt(chunkX, chunkY, chunkZ);
-	}
-
-	public Chunk getChunkAt(final int chunkX, final int chunkY, final int chunkZ) {
-		generateChunkStackAt(chunkX, chunkZ);
-		populateChunkStackAt(chunkX, chunkZ);
-		return this.chunks.getChunkAt(chunkX, chunkY, chunkZ);
-	}
-
-	private void populateChunkStackAt(final int chunkX, final int chunkZ) {
-		final ChunkMap.ChunkState state = chunks.getChunkState(chunkX, chunkZ);
-
-		if (state.populated) {
-			return;
-		}
-
-		for (int x = -1; x <= 1; x++) {
-			for (int z = -1; z <= 1; z++) {
-				generateChunkStackAt(chunkX + x, chunkZ + z);
-			}
-		}
-
-		WorldPopulator.populateChunkStack(this, random, chunkX, chunkZ);
-
-		state.populated = true;
-	}
-
-	private void generateChunkStackAt(final int chunkX, final int chunkZ) {
-		final ChunkMap.ChunkState state = chunks.getChunkState(chunkX, chunkZ);
-
-		if (state.generated) {
-			return;
-		}
-
-		final List<Chunk> newChunks = WorldGenerator.genChunksAt(this, random, chunkX, chunkZ);
-		for (final Chunk chunk : newChunks) {
-			chunks.setChunkAt(chunk.getChunkX(), chunk.getChunkY(), chunk.getChunkZ(), chunk);
-		}
-
-		state.generated = true;
+	public Chunk getChunkAt(final int chunkX, final int chunkY, final int chunkZ, final ChunkRequestLevel level, final boolean create) {
+		return this.provider.getChunkAt(chunkX, chunkY, chunkZ, level, create);
 	}
 
 	public long getSeed() {
@@ -133,18 +101,22 @@ public class World {
 		return chunk * Chunk.CHUNK_SIZE + coord;
 	}
 
-	public void setBlockAtIfAir(final int x, final int y, final int z, final BlockType type) {
-		if (this.getBlockAt(x, y, z) == null) {
-			this.setBlockAt(x, y, z, type);
+	public void setBlockAtIfAir(final int x, final int y, final int z, final BlockType type, final ChunkRequestLevel level, final boolean create) {
+		if (this.getBlockAt(x, y, z, level, create) == null) {
+			this.setBlockAt(x, y, z, type, level, create);
 		}
 	}
 
-	public void clearBlockAt(final int x, final int y, final int z) {
+	public void clearBlockAt(final int x, final int y, final int z, final ChunkRequestLevel level) {
 		final int chunkX = World.worldToChunkCoordinate(x);
 		final int chunkY = World.worldToChunkCoordinate(y);
 		final int chunkZ = World.worldToChunkCoordinate(z);
 
-		final Chunk chunk = this.getChunkAtInternal(chunkX, chunkY, chunkZ);
+		final Chunk chunk = this.getChunkAt(chunkX, chunkY, chunkZ, level, false);
+
+		if (chunk == null) {
+			return;
+		}
 
 		final int blockX = World.worldToBlockInChunkCoordinate(x);
 		final int blockY = World.worldToBlockInChunkCoordinate(y);
@@ -153,15 +125,15 @@ public class World {
 		chunk.clearBlockAt(blockX, blockY, blockZ);
 	}
 
-	public int getHighestYAt(final int x, final int z) {
+	public int getHighestYAt(final int x, final int z, final ChunkRequestLevel level) {
 		for (int chunkY = World.MAX_WORLD_HEIGHT_IN_CHUNKS - 1; chunkY >= 0; chunkY--) {
 			final int chunkX = World.worldToChunkCoordinate(x);
 			final int chunkZ = World.worldToChunkCoordinate(z);
 
-			final Chunk chunk = this.getChunkAtInternal(chunkX, chunkY, chunkZ);
+			final Chunk chunk = this.getChunkAt(chunkX, chunkY, chunkZ, level, false);
 
 			if (chunk == null) {
-				throw new IllegalStateException("getHighestYAt called for ungenerated chunk");
+				continue;
 			}
 
 			for (int blockY = Chunk.CHUNK_SIZE - 1; blockY >= 0; blockY--) {
@@ -174,5 +146,17 @@ public class World {
 			}
 		}
 		return 0;
+	}
+
+	public boolean hasChunkChanged(final Chunk chunk) {
+		return provider.hasChunkChanged(chunk);
+	}
+
+	public Random getRandom() {
+		return random;
+	}
+
+	public void onExit() {
+		provider.onExit();
 	}
 }

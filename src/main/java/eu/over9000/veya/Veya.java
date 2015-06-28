@@ -21,6 +21,8 @@ import eu.over9000.veya.world.BlockType;
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
 	public static final boolean ENABLE_DAY_NIGHT = false;
+	public static final boolean ENABLE_COLLISION = true;
+
 	public static final float MOVEMENT_MULTIPLIER_WALK = 4.5f;
 	public static final float MOVEMENT_MULTIPLIER_FLY = 10f;
 

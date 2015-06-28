@@ -6,7 +6,8 @@ import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
-import eu.over9000.veya.world.generation.WorldPopulator;
+import eu.over9000.veya.world.generation.ChunkPopulator;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 /**
  * Created by Jan on 23.06.2015.
@@ -28,7 +29,7 @@ public class TreePopulator implements IPopulator {
 				final int worldX = World.chunkToWorldCoordinate(random.nextInt(Chunk.CHUNK_SIZE), chunkX);
 				final int worldZ = World.chunkToWorldCoordinate(random.nextInt(Chunk.CHUNK_SIZE), chunkZ);
 
-				final int maxY = world.getHighestYAt(worldX, worldZ);
+				final int maxY = world.getHighestYAt(worldX, worldZ, ChunkRequestLevel.GENERATOR);
 
 				if (world.getBlockAt(worldX, maxY, worldZ) != BlockType.GRASS) {
 					continue;
@@ -55,13 +56,13 @@ public class TreePopulator implements IPopulator {
 		final int height = 5 + random.nextInt(4);
 		final int trunkRadius = 4 + random.nextInt(2);
 
-		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT);
+		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT, ChunkRequestLevel.GENERATOR, false);
 		for (int y = 0; y < height; y++) {
-			world.setBlockAtIfAir(rootLocation.x, rootLocation.y + y, rootLocation.z, BlockType.LOG_OAK);
+			world.setBlockAtIfAir(rootLocation.x, rootLocation.y + y, rootLocation.z, BlockType.LOG_OAK, ChunkRequestLevel.GENERATOR, true);
 		}
 
 		final int yTrunkTop = rootLocation.y + height;
-		WorldPopulator.placeRndSphere(world, random, rootLocation.x, yTrunkTop, rootLocation.z, trunkRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
+		ChunkPopulator.placeRndSphere(world, random, rootLocation.x, yTrunkTop, rootLocation.z, trunkRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
 
 		for (int crown = 0; crown < numCrowns; crown++) {
 			final int crownRadius = 3 + random.nextInt(trunkRadius - 3);
@@ -70,20 +71,20 @@ public class TreePopulator implements IPopulator {
 			final int crownY = random.nextInt(5) - 1;
 			final int crownZ = random.nextInt(7) - 3;
 
-			WorldPopulator.fillLine(world, rootLocation.x + crownX, yTrunkTop + crownY, rootLocation.z + crownZ, rootLocation.x, yTrunkTop, rootLocation.z, BlockType.LOG_SPRUCE);
-			WorldPopulator.placeRndSphere(world, random, rootLocation.x + crownX, yTrunkTop + crownY, rootLocation.z + crownZ, crownRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
+			ChunkPopulator.fillLine(world, rootLocation.x + crownX, yTrunkTop + crownY, rootLocation.z + crownZ, rootLocation.x, yTrunkTop, rootLocation.z, BlockType.LOG_SPRUCE);
+			ChunkPopulator.placeRndSphere(world, random, rootLocation.x + crownX, yTrunkTop + crownY, rootLocation.z + crownZ, crownRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
 		}
 
 	}
 
 	private static void plantDefaultTree(final World world, final Random random, final Location3D rootLocation) {
-		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT);
+		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT, ChunkRequestLevel.GENERATOR, false);
 
 		final int height = 5 + random.nextInt(2);
 		final BlockType logType = random.nextInt(100) < OAK_TREE_CHANCE ? BlockType.LOG_OAK : BlockType.LOG_BIRCH;
 
 		for (int i = 0; i < height; i++) {
-			world.setBlockAtIfAir(rootLocation.x, rootLocation.y + i, rootLocation.z, logType);
+			world.setBlockAtIfAir(rootLocation.x, rootLocation.y + i, rootLocation.z, logType, ChunkRequestLevel.GENERATOR, true);
 		}
 		for (int l = 0; l < 2; l++) {
 			final int y = rootLocation.y + height - 3 + l;
@@ -91,9 +92,9 @@ public class TreePopulator implements IPopulator {
 				for (int z = rootLocation.z - 2; z <= rootLocation.z + 2; z++) {
 					if (x != rootLocation.x || z != rootLocation.z) {
 						if (Math.abs(x - rootLocation.x) + Math.abs(z - rootLocation.z) == 4) {
-							WorldPopulator.setBlockWithChance(world, x, y, z, BlockType.LEAVES_DEFAULT, random, 0.75f);
+							ChunkPopulator.setBlockWithChance(world, x, y, z, BlockType.LEAVES_DEFAULT, random, 0.75f);
 						} else {
-							world.setBlockAtIfAir(x, y, z, BlockType.LEAVES_DEFAULT);
+							world.setBlockAtIfAir(x, y, z, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
 						}
 					}
 				}
@@ -102,15 +103,15 @@ public class TreePopulator implements IPopulator {
 		for (int x = rootLocation.x - 1; x <= rootLocation.x + 1; x++) {
 			for (int z = rootLocation.z - 1; z <= rootLocation.z + 1; z++) {
 				if (x != rootLocation.x || z != rootLocation.z) {
-					world.setBlockAtIfAir(x, rootLocation.y + height - 1, z, BlockType.LEAVES_DEFAULT);
+					world.setBlockAtIfAir(x, rootLocation.y + height - 1, z, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
 				}
 			}
 		}
-		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(rootLocation.x - 1, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(rootLocation.x + 1, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z - 1, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z + 1, BlockType.LEAVES_DEFAULT);
+		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
+		world.setBlockAtIfAir(rootLocation.x - 1, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
+		world.setBlockAtIfAir(rootLocation.x + 1, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
+		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z - 1, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
+		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z + 1, BlockType.LEAVES_DEFAULT, ChunkRequestLevel.GENERATOR, true);
 
 	}
 
@@ -127,7 +128,7 @@ public class TreePopulator implements IPopulator {
 		// trunk
 		final int logOffset = random.nextInt(3);
 		for (int logY = 0; logY < height - logOffset; logY++) {
-			world.setBlockAt(rootLocation.x, rootLocation.y + logY, rootLocation.z, BlockType.LOG_SPRUCE);
+			world.setBlockAt(rootLocation.x, rootLocation.y + logY, rootLocation.z, BlockType.LOG_SPRUCE, ChunkRequestLevel.GENERATOR, true);
 		}
 
 		// leaves
@@ -141,7 +142,7 @@ public class TreePopulator implements IPopulator {
 					final int zDist = zCurrent - rootLocation.z;
 
 					if (Math.abs(xDist) != leavesRange || Math.abs(zDist) != leavesRange || leavesRange <= 0) {
-						world.setBlockAtIfAir(xCurrent, yCurrent, zCurrent, BlockType.LEAVES_SPRUCE);
+						world.setBlockAtIfAir(xCurrent, yCurrent, zCurrent, BlockType.LEAVES_SPRUCE, ChunkRequestLevel.GENERATOR, true);
 					}
 				}
 			}

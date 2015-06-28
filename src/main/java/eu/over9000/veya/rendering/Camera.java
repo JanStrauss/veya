@@ -9,9 +9,9 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
-import eu.over9000.veya.util.Gravity;
 import eu.over9000.veya.collision.AABB;
 import eu.over9000.veya.collision.CollisionDetection;
+import eu.over9000.veya.util.Gravity;
 import eu.over9000.veya.util.Location3D;
 
 public class Camera {
@@ -156,11 +156,11 @@ public class Camera {
 		final boolean checkY = checkNewPositionSingleDim(buildAABB(currentPosition.x, nextPosition.y, currentPosition.z));
 		final boolean checkZ = checkNewPositionSingleDim(buildAABB(currentPosition.x, currentPosition.y, nextPosition.z));
 
-		if (!checkX) {
+		if (!checkX || !Veya.ENABLE_COLLISION) {
 			this.currentPosition.x = nextPosition.x;
 		}
 
-		if (!checkY) { // no collision
+		if (!checkY || !Veya.ENABLE_COLLISION) { // no collision
 			this.currentPosition.y = nextPosition.y;
 			onGround = false;
 		} else { // collision
@@ -171,8 +171,7 @@ public class Camera {
 				Veya.gravitySwitch = true;
 			}
 		}
-
-		if (!checkZ) {
+		if (!checkZ || !Veya.ENABLE_COLLISION) {
 			this.currentPosition.z = nextPosition.z;
 		}
 

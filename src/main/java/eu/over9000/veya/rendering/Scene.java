@@ -23,6 +23,7 @@ import eu.over9000.veya.util.TextureLoader;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 public class Scene {
 
@@ -97,6 +98,19 @@ public class Scene {
 		return this.light;
 	}
 
+	private boolean checkChunkInRange(final Chunk chunk) {
+		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
+
+		final int min_x = centerChunk.x - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_x = centerChunk.x + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_y = centerChunk.y - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_y = centerChunk.y + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_z = centerChunk.z - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_z = centerChunk.z + Scene.SCENE_CHUNK_VIEW_RANGE;
+
+		return MathUtil.isBetween(chunk.getChunkX(), min_x, max_x) && MathUtil.isBetween(chunk.getChunkY(), min_y, max_y) && MathUtil.isBetween(chunk.getChunkZ(), min_z, max_z);
+	}
+
 	private void updateDisplayedChunks() {
 
 		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
@@ -110,7 +124,7 @@ public class Scene {
 
 		// remove chunks outside display area
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
-			if (!MathUtil.isBetween(entry.getKey().getChunkX(), min_x, max_x) || !MathUtil.isBetween(entry.getKey().getChunkY(), min_y, max_y) || !MathUtil.isBetween(entry.getKey().getChunkZ(), min_z, max_z)) {
+			if (!checkChunkInRange(entry.getKey())) {
 				this.toRemove.add(new ChunkChunkVAOPair(entry.getKey(), entry.getValue()));
 			}
 		}
@@ -128,7 +142,7 @@ public class Scene {
 		Collections.sort(locations);
 
 		for (final Location3D chunkLocation : locations) {
-			final Chunk chunk = this.world.getChunkAt(chunkLocation.x, chunkLocation.y, chunkLocation.z);
+			final Chunk chunk = this.world.getChunkAt(chunkLocation.x, chunkLocation.y, chunkLocation.z, ChunkRequestLevel.NEIGHBORS_LOADED, false);
 
 			if (chunk == null) {
 				continue;
@@ -137,7 +151,7 @@ public class Scene {
 			final boolean isDisplayed = this.displayedChunks.containsKey(chunk);
 
 			if (!isDisplayed) {
-				chunk.getAndResetChangedFlag();
+				world.hasChunkChanged(chunk);
 				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, Veya.program)));
 			}
 		}
@@ -147,19 +161,19 @@ public class Scene {
 		this.checkCameraPosition();
 
 		ChunkChunkVAOPair addEntry;
-		while ((addEntry = this.toAdd.poll()) != null) {
+		if ((addEntry = this.toAdd.poll()) != null) {
 			this.displayedChunks.put(addEntry.getChunk(), addEntry.getChunkVAO());
 			addEntry.getChunkVAO().create();
 		}
 
 		ChunkChunkVAOPair removeEntry;
-		while ((removeEntry = this.toRemove.poll()) != null) {
+		if ((removeEntry = this.toRemove.poll()) != null) {
 			this.displayedChunks.remove(removeEntry.getChunk());
 			removeEntry.getChunkVAO().dispose();
 		}
 
 		for (final Chunk chunk : displayedChunks.keySet()) {
-			if (chunk.getAndResetChangedFlag()) {
+			if (world.hasChunkChanged(chunk)) {
 				final ChunkVAO oldVAO = this.displayedChunks.get(chunk);
 				oldVAO.dispose();
 				final ChunkVAO newVAO = new ChunkVAO(chunk, Veya.program);
@@ -223,6 +237,7 @@ public class Scene {
 				entry.getValue().dispose();
 			}
 		}
+		this.world.onExit();
 		this.displayedChunks.clear();
 	}
 
@@ -304,7 +319,7 @@ public class Scene {
 
 			if (intersectionResult != null) {
 				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
-				world.clearBlockAt(candidate.x, candidate.y, candidate.z);
+				world.clearBlockAt(candidate.x, candidate.y, candidate.z, ChunkRequestLevel.CACHE);
 				break;
 			}
 		}
@@ -335,11 +350,18 @@ public class Scene {
 				final AABB cameraAABB = Veya.camera.getAABB();
 
 				if (!CollisionDetection.checkCollision(cameraAABB, blockAABB)) {
-					world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST);
+					world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST, ChunkRequestLevel.CACHE, true);
 				}
 
 				break;
 			}
+		}
+	}
+
+	public void onNewChunk(final Chunk chunk) {
+		if (checkChunkInRange(chunk)) {
+			toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, Veya.program)));
+
 		}
 	}
 

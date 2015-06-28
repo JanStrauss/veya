@@ -3,11 +3,12 @@ package eu.over9000.veya.world.generation.populators;
 import java.util.EnumSet;
 import java.util.Random;
 
-import eu.over9000.veya.world.generation.WorldGenerator;
-import eu.over9000.veya.world.generation.WorldPopulator;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
+import eu.over9000.veya.world.generation.ChunkGenerator;
+import eu.over9000.veya.world.generation.ChunkPopulator;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 /**
  * Created by Jan on 23.06.2015.
@@ -24,9 +25,9 @@ public class SandPopulator implements IPopulator {
 
 			final int worldX = World.chunkToWorldCoordinate(random.nextInt(Chunk.CHUNK_SIZE), chunkX);
 			final int worldZ = World.chunkToWorldCoordinate(random.nextInt(Chunk.CHUNK_SIZE), chunkZ);
-			final int worldY = world.getHighestYAt(worldX, worldZ);
-			if (worldY <= WorldGenerator.SEALEVEL) {
-				WorldPopulator.placeRndSphere(world, random, worldX, worldY, worldZ, 6 + random.nextInt(6), BlockType.SAND, valid::contains);
+			final int worldY = world.getHighestYAt(worldX, worldZ, ChunkRequestLevel.GENERATOR);
+			if (worldY <= ChunkGenerator.SEALEVEL) {
+				ChunkPopulator.placeRndSphere(world, random, worldX, worldY, worldZ, 6 + random.nextInt(6), BlockType.SAND, valid::contains);
 			}
 		}
 	}

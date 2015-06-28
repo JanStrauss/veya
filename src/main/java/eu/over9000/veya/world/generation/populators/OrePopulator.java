@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.MathUtil;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
-import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 /**
  * Created by Jan on 27.06.2015.
@@ -96,7 +97,7 @@ public class OrePopulator implements IPopulator {
 								final double zThresh = (z + 0.5D - zPos) / (fuzzXZ / 2.0D);
 								if (xThresh * xThresh + yThresh * yThresh + zThresh * zThresh < 1.0D) {
 									if (world.getBlockAt(x, y, z) == BlockType.STONE) {
-										world.setBlockAt(x, y, z, oreBlock);
+										world.setBlockAt(x, y, z, oreBlock, ChunkRequestLevel.GENERATOR, false);
 									}
 								}
 							}

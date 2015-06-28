@@ -6,15 +6,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import eu.over9000.veya.world.generation.populators.*;
+import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.World;
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.world.generation.populators.*;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 /**
  * Created by Jan on 22.06.2015.
  */
-public class WorldPopulator {
+public class ChunkPopulator {
 
 	static List<IPopulator> populators = new ArrayList<>();
 
@@ -33,7 +34,7 @@ public class WorldPopulator {
 
 	public static void setBlockWithChance(final World world, final int x, final int y, final int z, final BlockType block, final Random random, final float chance) {
 		if (random.nextFloat() < chance) {
-			world.setBlockAtIfAir(x, y, z, block);
+			world.setBlockAtIfAir(x, y, z, block, ChunkRequestLevel.GENERATOR, true);
 		}
 	}
 
@@ -56,7 +57,7 @@ public class WorldPopulator {
 			pos_z = (int) Math.floor(fromZ + i * (toZ - fromZ));
 
 
-			world.setBlockAt(pos_x, pos_y, pos_z, block);
+			world.setBlockAt(pos_x, pos_y, pos_z, block, ChunkRequestLevel.GENERATOR, true);
 
 			i = i + (mod);
 		}
@@ -86,9 +87,9 @@ public class WorldPopulator {
 			final BlockType current = world.getBlockAt(centerX + location.x, centerY + location.y, centerZ + location.z);
 			if (condition.test(current)) {
 				if (percent < 0.5f + rndOffset) {
-					world.setBlockAt(centerX + location.x, centerY + location.y, centerZ + location.z, block);
+					world.setBlockAt(centerX + location.x, centerY + location.y, centerZ + location.z, block, ChunkRequestLevel.GENERATOR, true);
 				} else if (random.nextBoolean()) {
-					world.setBlockAt(centerX + location.x, centerY + location.y, centerZ + location.z, block);
+					world.setBlockAt(centerX + location.x, centerY + location.y, centerZ + location.z, block, ChunkRequestLevel.GENERATOR, true);
 				}
 			}
 		}

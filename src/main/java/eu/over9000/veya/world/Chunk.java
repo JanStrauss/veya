@@ -2,6 +2,8 @@ package eu.over9000.veya.world;
 
 import java.util.Objects;
 
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
+
 public class Chunk {
 	public static final int CHUNK_SIZE = 32;
 
@@ -25,6 +27,11 @@ public class Chunk {
 	public BlockType getBlockAt(final int x, final int y, final int z) {
 		Chunk.checkParameters(x, y, z);
 		return this.blocks[x][y][z];
+	}
+
+	public void initBlockAt(final int x, final int y, final int z, final BlockType type) {
+		Chunk.checkParameters(x, y, z);
+		this.blocks[x][y][z] = type;
 	}
 
 	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
@@ -92,37 +99,37 @@ public class Chunk {
 
 	private void notifyNeighborChunksOfUpdate(final int x, final int y, final int z) {
 		if (x == 0) {
-			final Chunk west = this.world.getChunkAtInternal(this.chunkX - 1, this.chunkY, this.chunkZ);
+			final Chunk west = this.world.getChunkAt(this.chunkX - 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (west != null) {
 				west.blockChanged();
 			}
 		}
 		if (x == Chunk.CHUNK_SIZE - 1) {
-			final Chunk east = this.world.getChunkAtInternal(this.chunkX + 1, this.chunkY, this.chunkZ);
+			final Chunk east = this.world.getChunkAt(this.chunkX + 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (east != null) {
 				east.blockChanged();
 			}
 		}
 		if (y == 0) {
-			final Chunk bottom = this.world.getChunkAtInternal(this.chunkX, this.chunkY - 1, this.chunkZ);
+			final Chunk bottom = this.world.getChunkAt(this.chunkX, this.chunkY - 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (bottom != null) {
 				bottom.blockChanged();
 			}
 		}
 		if (y == Chunk.CHUNK_SIZE - 1) {
-			final Chunk top = this.world.getChunkAtInternal(this.chunkX, this.chunkY + 1, this.chunkZ);
+			final Chunk top = this.world.getChunkAt(this.chunkX, this.chunkY + 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (top != null) {
 				top.blockChanged();
 			}
 		}
 		if (z == 0) {
-			final Chunk north = this.world.getChunkAtInternal(this.chunkX, this.chunkY, this.chunkZ - 1);
+			final Chunk north = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ - 1, ChunkRequestLevel.CACHE, false);
 			if (north != null) {
 				north.blockChanged();
 			}
 		}
 		if (z == Chunk.CHUNK_SIZE - 1) {
-			final Chunk south = this.world.getChunkAtInternal(this.chunkX, this.chunkY, this.chunkZ + 1);
+			final Chunk south = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ + 1, ChunkRequestLevel.CACHE, false);
 			if (south != null) {
 				south.blockChanged();
 			}
@@ -170,7 +177,7 @@ public class Chunk {
 		try {
 			return this.getBlockAt(x, y - 1, z);
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAtInternal(this.chunkX, this.chunkY - 1, this.chunkZ);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY - 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -182,7 +189,7 @@ public class Chunk {
 		try {
 			return this.getBlockAt(x, y + 1, z);
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAtInternal(this.chunkX, this.chunkY + 1, this.chunkZ);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY + 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -194,7 +201,7 @@ public class Chunk {
 		try {
 			return this.getBlockAt(x, y, z - 1);
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAtInternal(this.chunkX, this.chunkY, this.chunkZ - 1);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ - 1, ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -206,7 +213,7 @@ public class Chunk {
 		try {
 			return this.getBlockAt(x, y, z + 1);
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAtInternal(this.chunkX, this.chunkY, this.chunkZ + 1);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ + 1, ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -218,7 +225,7 @@ public class Chunk {
 		try {
 			return this.getBlockAt(x - 1, y, z);
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAtInternal(this.chunkX - 1, this.chunkY, this.chunkZ);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX - 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -230,7 +237,7 @@ public class Chunk {
 		try {
 			return this.getBlockAt(x + 1, y, z);
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAtInternal(this.chunkX + 1, this.chunkY, this.chunkZ);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX + 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -238,18 +245,14 @@ public class Chunk {
 		}
 	}
 
-	public BlockType[][][] getBlocks() {
-		return blocks;
-	}
-
 	@Override
 	public String toString() {
 		return "Chunk{" +
-				"world=" + world +
-				", chunkX=" + chunkX +
-				", chunkY=" + chunkY +
-				", chunkZ=" + chunkZ +
-				", changed=" + changed +
+				"world=" + world.getName() +
+				", X=" + chunkX +
+				", Y=" + chunkY +
+				", Z=" + chunkZ +
 				'}';
 	}
+
 }

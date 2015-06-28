@@ -1,0 +1,11 @@
+option java_package = "eu.over9000.veya.proto";
+
+option java_outer_classname = "ProtoDefinitions";
+
+message ChunkStack {
+	message Chunk {
+		required int32 y = 1;
+		required bytes data = 2;
+	}
+	repeated Chunk chunk = 1;
+}
