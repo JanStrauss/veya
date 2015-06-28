@@ -103,32 +103,31 @@ public class Chunk {
 			if (west != null) {
 				west.blockChanged();
 			}
-		}
-		if (x == Chunk.CHUNK_SIZE - 1) {
+		} else if (x == Chunk.CHUNK_SIZE - 1) {
 			final Chunk east = this.world.getChunkAt(this.chunkX + 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (east != null) {
 				east.blockChanged();
 			}
 		}
+
 		if (y == 0) {
 			final Chunk bottom = this.world.getChunkAt(this.chunkX, this.chunkY - 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (bottom != null) {
 				bottom.blockChanged();
 			}
-		}
-		if (y == Chunk.CHUNK_SIZE - 1) {
+		} else if (y == Chunk.CHUNK_SIZE - 1) {
 			final Chunk top = this.world.getChunkAt(this.chunkX, this.chunkY + 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
 			if (top != null) {
 				top.blockChanged();
 			}
 		}
+
 		if (z == 0) {
 			final Chunk north = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ - 1, ChunkRequestLevel.CACHE, false);
 			if (north != null) {
 				north.blockChanged();
 			}
-		}
-		if (z == Chunk.CHUNK_SIZE - 1) {
+		} else if (z == Chunk.CHUNK_SIZE - 1) {
 			final Chunk south = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ + 1, ChunkRequestLevel.CACHE, false);
 			if (south != null) {
 				south.blockChanged();

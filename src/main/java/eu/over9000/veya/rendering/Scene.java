@@ -46,9 +46,8 @@ public class Scene {
 
 	private boolean alive;
 
-	private int last_cam_x = 0;
-	private int last_cam_y = 0;
-	private int last_cam_z = 0;
+	private Location3D centerChunk = new Location3D(0, 0, 0);
+	;
 
 	private final Runnable displayedChunkUpdater = new Runnable() {
 
@@ -70,6 +69,7 @@ public class Scene {
 				}
 
 				Scene.this.updateDisplayedChunks();
+				world.clearCache(centerChunk, SCENE_CHUNK_CACHE_RANGE);
 			}
 
 		}
@@ -98,8 +98,7 @@ public class Scene {
 		return this.light;
 	}
 
-	private boolean checkChunkInRange(final Chunk chunk) {
-		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
+	private boolean checkChunkInViewRange(final Chunk chunk) {
 
 		final int min_x = centerChunk.x - Scene.SCENE_CHUNK_VIEW_RANGE;
 		final int max_x = centerChunk.x + Scene.SCENE_CHUNK_VIEW_RANGE;
@@ -112,9 +111,6 @@ public class Scene {
 	}
 
 	private void updateDisplayedChunks() {
-
-		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
-
 		final int min_x = centerChunk.x - Scene.SCENE_CHUNK_VIEW_RANGE;
 		final int max_x = centerChunk.x + Scene.SCENE_CHUNK_VIEW_RANGE;
 		final int min_y = centerChunk.y - Scene.SCENE_CHUNK_VIEW_RANGE;
@@ -124,7 +120,7 @@ public class Scene {
 
 		// remove chunks outside display area
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
-			if (!checkChunkInRange(entry.getKey())) {
+			if (!checkChunkInViewRange(entry.getKey())) {
 				this.toRemove.add(new ChunkChunkVAOPair(entry.getKey(), entry.getValue()));
 			}
 		}
@@ -206,11 +202,9 @@ public class Scene {
 		final int center_y = World.worldToChunkCoordinate((int) Veya.camera.getPosition().getY());
 		final int center_z = World.worldToChunkCoordinate((int) Veya.camera.getPosition().getZ());
 
-		if (center_x != this.last_cam_x || center_y != this.last_cam_y || center_z != this.last_cam_z) {
+		if (center_x != centerChunk.x || center_y != centerChunk.y || center_z != centerChunk.z) {
 
-			this.last_cam_x = center_x;
-			this.last_cam_y = center_y;
-			this.last_cam_z = center_z;
+			centerChunk = new Location3D(center_x, center_y, center_z);
 
 			System.out.println("Camera changed chunk: " + center_x + "," + center_y + "," + center_z);
 
@@ -359,7 +353,7 @@ public class Scene {
 	}
 
 	public void onNewChunk(final Chunk chunk) {
-		if (checkChunkInRange(chunk)) {
+		if (checkChunkInViewRange(chunk)) {
 			toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, Veya.program)));
 
 		}

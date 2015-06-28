@@ -1,11 +1,14 @@
 package eu.over9000.veya.world.storage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.MathUtil;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.generation.ChunkGenerator;
@@ -168,4 +171,22 @@ public class ChunkProvider implements Runnable {
 		}
 	}
 
+	public void clearCache(final Location3D center, final int cacheRange) {
+		final int min_x = center.x - cacheRange;
+		final int max_x = center.x + cacheRange;
+		final int min_z = center.z - cacheRange;
+		final int max_z = center.z + cacheRange;
+
+		final List<ChunkStack> toRemove = new ArrayList<>();
+		for (final ChunkStack chunkStack : cache.getChunkStacks()) {
+			if (!MathUtil.isBetween(chunkStack.getX(), min_x, max_x) || !MathUtil.isBetween(chunkStack.getZ(), min_z, max_z)) {
+				toRemove.add(chunkStack);
+			}
+		}
+		for (final ChunkStack chunkStack : toRemove) {
+			cache.removeChunkStackAt(chunkStack.getX(), chunkStack.getZ());
+
+		}
+		System.out.println("removed " + toRemove.size() + " chunkstacks from cache, new size: " + cache.getChunkStacks().size());
+	}
 }

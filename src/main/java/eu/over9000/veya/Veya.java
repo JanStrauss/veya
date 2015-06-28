@@ -24,7 +24,7 @@ public class Veya {
 	public static final boolean ENABLE_COLLISION = true;
 
 	public static final float MOVEMENT_MULTIPLIER_WALK = 4.5f;
-	public static final float MOVEMENT_MULTIPLIER_FLY = 10f;
+	public static final float MOVEMENT_MULTIPLIER_FLY = 25f;
 
 	private static final float MOUSE_SENSITIVITY = 0.01f;
 

@@ -159,4 +159,9 @@ public class World {
 	public void onExit() {
 		provider.onExit();
 	}
+
+	public void clearCache(final Location3D center, final int cacheRange) {
+		provider.clearCache(center, cacheRange);
+
+	}
 }
