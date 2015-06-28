@@ -16,16 +16,18 @@ import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.collision.AABB;
-import eu.over9000.veya.collision.CollisionUtil;
+import eu.over9000.veya.collision.CollisionDetection;
+import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.util.TextureLoader;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
-import eu.over9000.veya.util.*;
 
 public class Scene {
 
 	private final static int SCENE_CHUNK_VIEW_RANGE = 8;
-	private final static int SCENE_CHUNK_CACHE_RANGE = SCENE_CHUNK_VIEW_RANGE + 2;
+	public final static int SCENE_CHUNK_CACHE_RANGE = SCENE_CHUNK_VIEW_RANGE + 2;
 
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;
@@ -99,12 +101,12 @@ public class Scene {
 
 		final Location3D centerChunk = new Location3D(this.last_cam_x, this.last_cam_y, this.last_cam_z);
 
-		final int min_x = this.last_cam_x - Scene.SCENE_CHUNK_VIEW_RANGE;
-		final int max_x = this.last_cam_x + Scene.SCENE_CHUNK_VIEW_RANGE;
-		final int min_y = this.last_cam_y - Scene.SCENE_CHUNK_VIEW_RANGE;
-		final int max_y = this.last_cam_y + Scene.SCENE_CHUNK_VIEW_RANGE;
-		final int min_z = this.last_cam_z - Scene.SCENE_CHUNK_VIEW_RANGE;
-		final int max_z = this.last_cam_z + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_x = centerChunk.x - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_x = centerChunk.x + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_y = centerChunk.y - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_y = centerChunk.y + Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int min_z = centerChunk.z - Scene.SCENE_CHUNK_VIEW_RANGE;
+		final int max_z = centerChunk.z + Scene.SCENE_CHUNK_VIEW_RANGE;
 
 		// remove chunks outside display area
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
@@ -158,7 +160,6 @@ public class Scene {
 
 		for (final Chunk chunk : displayedChunks.keySet()) {
 			if (chunk.getAndResetChangedFlag()) {
-
 				final ChunkVAO oldVAO = this.displayedChunks.get(chunk);
 				oldVAO.dispose();
 				final ChunkVAO newVAO = new ChunkVAO(chunk, Veya.program);
@@ -299,7 +300,7 @@ public class Scene {
 				continue;
 			}
 
-			final int[] intersectionResult = CollisionUtil.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
+			final int[] intersectionResult = CollisionDetection.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
 				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
@@ -323,17 +324,17 @@ public class Scene {
 				continue;
 			}
 
-			final int[] intersectionResult = CollisionUtil.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
+			final int[] intersectionResult = CollisionDetection.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
 				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
 
-				final Location3D placeLocation = CollisionUtil.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
+				final Location3D placeLocation = CollisionDetection.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
 
 				final AABB blockAABB = new AABB(placeLocation);
 				final AABB cameraAABB = Veya.camera.getAABB();
 
-				if (!CollisionUtil.checkCollision(cameraAABB, blockAABB)) {
+				if (!CollisionDetection.checkCollision(cameraAABB, blockAABB)) {
 					world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST);
 				}
 

@@ -11,7 +11,7 @@ import org.lwjgl.util.vector.Vector3f;
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.util.Gravity;
 import eu.over9000.veya.collision.AABB;
-import eu.over9000.veya.collision.CollisionUtil;
+import eu.over9000.veya.collision.CollisionDetection;
 import eu.over9000.veya.util.Location3D;
 
 public class Camera {
@@ -195,7 +195,7 @@ public class Camera {
 	private boolean checkNewPositionSingleDim(final AABB newPos) {
 		final List<Location3D> blocksAround = Location3D.getBlocksAround(newPos, 1);
 		Veya.scene.filterAir(blocksAround);
-		return CollisionUtil.checkCollision(newPos, blocksAround);
+		return CollisionDetection.checkCollision(newPos, blocksAround);
 	}
 
 	public Vector3f getPosition() {

@@ -12,11 +12,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 
-import eu.over9000.veya.model.render.Camera;
-import eu.over9000.veya.model.render.Program;
-import eu.over9000.veya.model.render.Scene;
-import eu.over9000.veya.model.world.BlockType;
+import eu.over9000.veya.rendering.Camera;
+import eu.over9000.veya.rendering.Program;
+import eu.over9000.veya.rendering.Scene;
 import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.world.BlockType;
 
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
@@ -35,7 +35,7 @@ public class Veya {
 	public static Scene scene;
 
 	public static boolean colorSwitch = false;
-	public static boolean gravitySwitch = false;
+	public static boolean gravitySwitch = true;
 
 	private static float ambient = 0.75f;
 	private static float diffuse = 0.50f;
@@ -79,7 +79,7 @@ public class Veya {
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(-40, 100, -40);
+		Veya.camera = new Camera(-40, 120, -40);
 		Veya.scene = new Scene(1337);
 
 		Util.checkGLError();
@@ -175,9 +175,7 @@ public class Veya {
 			} else {
 				count++;
 			}
-
 		}
-
 	}
 
 	private static void handleOtherKeys() {
@@ -189,7 +187,8 @@ public class Veya {
 				program.use(false);
 			}
 			if (Keyboard.getEventKey() == Keyboard.KEY_SPACE && Keyboard.getEventKeyState()) {
-				if (Keyboard.getEventNanoseconds() - lastSpacePress < 500 * 1000000) {
+				final long diff = Keyboard.getEventNanoseconds() - lastSpacePress;
+				if (diff < 250 * 1000000) {
 					Veya.gravitySwitch = !Veya.gravitySwitch;
 					camera.resetVelocity();
 				}

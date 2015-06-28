@@ -3,6 +3,8 @@ package eu.over9000.veya.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.over9000.veya.collision.AABB;
+
 public class Location3D implements Comparable<Location3D> {
 
 	public final int x;

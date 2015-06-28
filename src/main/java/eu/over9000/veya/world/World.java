@@ -1,16 +1,15 @@
 package eu.over9000.veya.world;
 
 import java.math.RoundingMode;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import com.google.common.math.IntMath;
 
-import eu.over9000.veya.generation.WorldGenerator;
-import eu.over9000.veya.generation.WorldPopulator;
-import eu.over9000.veya.generation.util.ChunkMap;
 import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.world.generation.WorldGenerator;
+import eu.over9000.veya.world.generation.WorldPopulator;
+import eu.over9000.veya.world.util.ChunkMap;
 
 public class World {
 	public static final int MAX_WORLD_HEIGHT = 256;
@@ -27,8 +26,8 @@ public class World {
 		this.random = new Random(seed);
 	}
 
-	public Collection<Chunk> getLoadedChunks() {
-		return this.chunks.getChunks();
+	public BlockType getBlockAt(final Location3D location) {
+		return getBlockAt(location.x, location.y, location.z);
 	}
 
 	public BlockType getBlockAt(final int x, final int y, final int z) {
@@ -175,9 +174,5 @@ public class World {
 			}
 		}
 		return 0;
-	}
-
-	public BlockType getBlockAt(final Location3D location) {
-		return getBlockAt(location.x, location.y, location.z);
 	}
 }

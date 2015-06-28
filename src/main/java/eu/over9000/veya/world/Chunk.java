@@ -238,4 +238,18 @@ public class Chunk {
 		}
 	}
 
+	public BlockType[][][] getBlocks() {
+		return blocks;
+	}
+
+	@Override
+	public String toString() {
+		return "Chunk{" +
+				"world=" + world +
+				", chunkX=" + chunkX +
+				", chunkY=" + chunkY +
+				", chunkZ=" + chunkZ +
+				", changed=" + changed +
+				'}';
+	}
 }

@@ -2,11 +2,11 @@ package eu.over9000.veya.world.generation.populators;
 
 import java.util.Random;
 
-import eu.over9000.veya.world.generation.WorldPopulator;
+import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.world.generation.WorldPopulator;
 
 /**
  * Created by Jan on 23.06.2015.
@@ -40,28 +40,28 @@ public class TreePopulator implements IPopulator {
 					if (random.nextInt(100) < SPRUCE_TREE_CHANCE) {
 						plantSpruceTree(world, random, rootLocation);
 					} else {
-						plantLargeTree(world, random, worldX, maxY + 1, worldZ);
+						plantLargeTree(world, random, rootLocation);
 					}
 				} else {
-					plantDefaultTree(world, random, worldX, maxY + 1, worldZ);
+					plantDefaultTree(world, random, rootLocation);
 				}
 
 			}
 		}
 	}
 
-	private static void plantLargeTree(final World world, final Random random, final int xRoot, final int yRoot, final int zRoot) {
+	private static void plantLargeTree(final World world, final Random random, final Location3D rootLocation) {
 		final int numCrowns = 1 + random.nextInt(3);
 		final int height = 5 + random.nextInt(4);
 		final int trunkRadius = 4 + random.nextInt(2);
 
-		world.setBlockAt(xRoot, yRoot - 1, zRoot, BlockType.DIRT);
+		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT);
 		for (int y = 0; y < height; y++) {
-			world.setBlockAtIfAir(xRoot, yRoot + y, zRoot, BlockType.LOG_OAK);
+			world.setBlockAtIfAir(rootLocation.x, rootLocation.y + y, rootLocation.z, BlockType.LOG_OAK);
 		}
 
-		final int yTrunkTop = yRoot + height;
-		WorldPopulator.placeRndSphere(world, random, xRoot, yTrunkTop, zRoot, trunkRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
+		final int yTrunkTop = rootLocation.y + height;
+		WorldPopulator.placeRndSphere(world, random, rootLocation.x, yTrunkTop, rootLocation.z, trunkRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
 
 		for (int crown = 0; crown < numCrowns; crown++) {
 			final int crownRadius = 3 + random.nextInt(trunkRadius - 3);
@@ -70,27 +70,27 @@ public class TreePopulator implements IPopulator {
 			final int crownY = random.nextInt(5) - 1;
 			final int crownZ = random.nextInt(7) - 3;
 
-			WorldPopulator.fillLine(world, xRoot + crownX, yTrunkTop + crownY, zRoot + crownZ, xRoot, yTrunkTop, zRoot, BlockType.LOG_SPRUCE);
-			WorldPopulator.placeRndSphere(world, random, xRoot + crownX, yTrunkTop + crownY, zRoot + crownZ, crownRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
+			WorldPopulator.fillLine(world, rootLocation.x + crownX, yTrunkTop + crownY, rootLocation.z + crownZ, rootLocation.x, yTrunkTop, rootLocation.z, BlockType.LOG_SPRUCE);
+			WorldPopulator.placeRndSphere(world, random, rootLocation.x + crownX, yTrunkTop + crownY, rootLocation.z + crownZ, crownRadius, BlockType.LEAVES_DEFAULT, blockType -> blockType == null);
 		}
 
 	}
 
-	private static void plantDefaultTree(final World world, final Random random, final int xRoot, final int yRoot, final int zRoot) {
-		world.setBlockAt(xRoot, yRoot - 1, zRoot, BlockType.DIRT);
+	private static void plantDefaultTree(final World world, final Random random, final Location3D rootLocation) {
+		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT);
 
 		final int height = 5 + random.nextInt(2);
 		final BlockType logType = random.nextInt(100) < OAK_TREE_CHANCE ? BlockType.LOG_OAK : BlockType.LOG_BIRCH;
 
 		for (int i = 0; i < height; i++) {
-			world.setBlockAtIfAir(xRoot, yRoot + i, zRoot, logType);
+			world.setBlockAtIfAir(rootLocation.x, rootLocation.y + i, rootLocation.z, logType);
 		}
 		for (int l = 0; l < 2; l++) {
-			final int y = yRoot + height - 3 + l;
-			for (int x = xRoot - 2; x <= xRoot + 2; x++) {
-				for (int z = zRoot - 2; z <= zRoot + 2; z++) {
-					if (x != xRoot || z != zRoot) {
-						if (Math.abs(x - xRoot) + Math.abs(z - zRoot) == 4) {
+			final int y = rootLocation.y + height - 3 + l;
+			for (int x = rootLocation.x - 2; x <= rootLocation.x + 2; x++) {
+				for (int z = rootLocation.z - 2; z <= rootLocation.z + 2; z++) {
+					if (x != rootLocation.x || z != rootLocation.z) {
+						if (Math.abs(x - rootLocation.x) + Math.abs(z - rootLocation.z) == 4) {
 							WorldPopulator.setBlockWithChance(world, x, y, z, BlockType.LEAVES_DEFAULT, random, 0.75f);
 						} else {
 							world.setBlockAtIfAir(x, y, z, BlockType.LEAVES_DEFAULT);
@@ -99,18 +99,18 @@ public class TreePopulator implements IPopulator {
 				}
 			}
 		}
-		for (int x = xRoot - 1; x <= xRoot + 1; x++) {
-			for (int z = zRoot - 1; z <= zRoot + 1; z++) {
-				if (x != xRoot || z != zRoot) {
-					world.setBlockAtIfAir(x, yRoot + height - 1, z, BlockType.LEAVES_DEFAULT);
+		for (int x = rootLocation.x - 1; x <= rootLocation.x + 1; x++) {
+			for (int z = rootLocation.z - 1; z <= rootLocation.z + 1; z++) {
+				if (x != rootLocation.x || z != rootLocation.z) {
+					world.setBlockAtIfAir(x, rootLocation.y + height - 1, z, BlockType.LEAVES_DEFAULT);
 				}
 			}
 		}
-		world.setBlockAtIfAir(xRoot, yRoot + height, zRoot, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(xRoot - 1, yRoot + height, zRoot, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(xRoot + 1, yRoot + height, zRoot, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(xRoot, yRoot + height, zRoot - 1, BlockType.LEAVES_DEFAULT);
-		world.setBlockAtIfAir(xRoot, yRoot + height, zRoot + 1, BlockType.LEAVES_DEFAULT);
+		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT);
+		world.setBlockAtIfAir(rootLocation.x - 1, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT);
+		world.setBlockAtIfAir(rootLocation.x + 1, rootLocation.y + height, rootLocation.z, BlockType.LEAVES_DEFAULT);
+		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z - 1, BlockType.LEAVES_DEFAULT);
+		world.setBlockAtIfAir(rootLocation.x, rootLocation.y + height, rootLocation.z + 1, BlockType.LEAVES_DEFAULT);
 
 	}
 

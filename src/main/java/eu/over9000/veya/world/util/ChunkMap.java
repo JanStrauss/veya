@@ -69,6 +69,24 @@ public class ChunkMap {
 		this.chunkSet.add(chunk);
 	}
 
+	public void removeChunkAt(final int chunkX, final int chunkY, final int chunkZ) {
+		final Map<Integer, Map<Integer, Chunk>> zMap = this.xMap.get(chunkX);
+		if (zMap == null) {
+			return;
+		}
+
+		final Map<Integer, Chunk> yMap = zMap.get(chunkZ);
+
+		if (yMap == null) {
+			return;
+		}
+
+		final Chunk chunk = yMap.remove(chunkY);
+		if (chunk != null) {
+			chunkSet.remove(chunk);
+		}
+	}
+
 	public static class ChunkState {
 		public boolean generated = false;
 		public boolean populated = false;
