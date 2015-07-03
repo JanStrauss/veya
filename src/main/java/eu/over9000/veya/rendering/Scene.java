@@ -1,19 +1,5 @@
 package eu.over9000.veya.rendering;
 
-import java.nio.FloatBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.collision.AABB;
 import eu.over9000.veya.collision.CollisionDetection;
@@ -24,11 +10,24 @@ import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.storage.ChunkRequestLevel;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Scene {
 
 	private final static int SCENE_CHUNK_VIEW_RANGE = 8;
-	public final static int SCENE_CHUNK_CACHE_RANGE = SCENE_CHUNK_VIEW_RANGE + 2;
+	private final static int SCENE_CHUNK_CACHE_RANGE = SCENE_CHUNK_VIEW_RANGE + 2;
 
 	private final Object lock = new Object();
 	private boolean camPosChanged = false;
@@ -38,7 +37,6 @@ public class Scene {
 	private final Light light;
 	private final int texture_handle;
 
-	private Matrix4f modelMatrix = new Matrix4f();
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
 	private final Queue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
@@ -47,33 +45,6 @@ public class Scene {
 	private boolean alive;
 
 	private Location3D centerChunk = new Location3D(0, 0, 0);
-	;
-
-	private final Runnable displayedChunkUpdater = new Runnable() {
-
-		@Override
-		public void run() {
-			while (Scene.this.alive) {
-				synchronized (Scene.this.lock) {
-					try {
-						while (!Scene.this.camPosChanged) {
-							Scene.this.lock.wait();
-						}
-					} catch (final InterruptedException e) {
-						if (!Scene.this.alive) {
-							return;
-						}
-						e.printStackTrace();
-					}
-					Scene.this.camPosChanged = false;
-				}
-
-				Scene.this.updateDisplayedChunks();
-				world.clearCache(centerChunk, SCENE_CHUNK_CACHE_RANGE);
-			}
-
-		}
-	};
 
 	private final Thread displayedChunkUpdaterThread;
 
@@ -84,7 +55,32 @@ public class Scene {
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 
-		this.displayedChunkUpdaterThread = new Thread(this.displayedChunkUpdater, "DisplayedChunkUpdater");
+		Runnable displayedChunkUpdater = new Runnable() {
+
+			@Override
+			public void run() {
+				while (Scene.this.alive) {
+					synchronized (Scene.this.lock) {
+						try {
+							while (!Scene.this.camPosChanged) {
+								Scene.this.lock.wait();
+							}
+						} catch (final InterruptedException e) {
+							if (!Scene.this.alive) {
+								return;
+							}
+							e.printStackTrace();
+						}
+						Scene.this.camPosChanged = false;
+					}
+
+					Scene.this.updateDisplayedChunks();
+					world.clearCache(centerChunk, SCENE_CHUNK_CACHE_RANGE);
+				}
+
+			}
+		};
+		this.displayedChunkUpdaterThread = new Thread(displayedChunkUpdater, "DisplayedChunkUpdater");
 		this.displayedChunkUpdaterThread.start();
 
 	}
@@ -217,8 +213,8 @@ public class Scene {
 	}
 
 	private void updateModelMatrix() {
-		this.modelMatrix = new Matrix4f();
-		this.modelMatrix.store(this.matrixBuffer);
+		Matrix4f modelMatrix = new Matrix4f();
+		modelMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(Veya.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);
 	}
@@ -299,7 +295,7 @@ public class Scene {
 		final Vector3f position = Veya.camera.getPosition();
 		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = Location3D.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 3);
+		final List<Location3D> candidates = Location3D.geLocationsAround((int) position.x, (int) position.y, (int) position.z, 3);
 		Collections.sort(candidates);
 
 		for (final Location3D candidate : candidates) {
@@ -323,7 +319,7 @@ public class Scene {
 		final Vector3f position = Veya.camera.getPosition();
 		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = Location3D.getBlocksAround((int) position.x, (int) position.y, (int) position.z, 4);
+		final List<Location3D> candidates = Location3D.geLocationsAround((int) position.x, (int) position.y, (int) position.z, 4);
 		Collections.sort(candidates);
 
 		for (final Location3D candidate : candidates) {

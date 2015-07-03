@@ -7,7 +7,7 @@ import eu.over9000.veya.Veya;
  */
 public class Gravity {
 
-	public static void integrate(final State state, final float dt) {
+	public static void apply(final State state, final float dt) {
 		final float acceleration = Veya.getMovementMultiplier() * -9.81f;
 		final float old_v = state.v;
 		state.v = state.v + acceleration * dt;

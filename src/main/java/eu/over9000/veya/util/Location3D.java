@@ -1,9 +1,9 @@
 package eu.over9000.veya.util;
 
+import eu.over9000.veya.collision.AABB;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import eu.over9000.veya.collision.AABB;
 
 public class Location3D implements Comparable<Location3D> {
 
@@ -42,7 +42,7 @@ public class Location3D implements Comparable<Location3D> {
 		return Math.abs(coordinate1 - coordinate2);
 	}
 
-	public static List<Location3D> getBlocksAround(final int centerX, final int centerY, final int centerZ, final int radius) {
+	public static List<Location3D> geLocationsAround(final int centerX, final int centerY, final int centerZ, final int radius) {
 		final List<Location3D> result = new ArrayList<>();
 		final Location3D center = new Location3D(centerX, centerY, centerZ);
 
@@ -65,7 +65,7 @@ public class Location3D implements Comparable<Location3D> {
 		return result;
 	}
 
-	public static List<Location3D> getBlocksAround(final AABB newPos, final int radius) {
+	public static List<Location3D> geLocationsAround(final AABB newPos, final int radius) {
 		final List<Location3D> result = new ArrayList<>();
 
 		final int min_x = (int) (newPos.min[0] - radius);

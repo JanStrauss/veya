@@ -1,14 +1,14 @@
 package eu.over9000.veya.world.generation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.generation.noise.SimplexNoise;
 import eu.over9000.veya.world.storage.ChunkStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class ChunkGenerator {
 
@@ -101,18 +101,14 @@ public class ChunkGenerator {
 		}
 	}
 
-	public static boolean genElevation(final int x, final int y, final int z) {
+	private static boolean genElevation(final int x, final int y, final int z) {
 		if (y < 50) {
 			return true;
 		}
 
-		final float x_calc = x;
-		final float z_calc = z;
-		final float y_calc = y;
-
 		final float max_world_dim_size = 250F;
 
-		final float base = fbm(x_calc / max_world_dim_size, y_calc / 255F, z_calc / max_world_dim_size, 6, 2, 0.5F);
+		final float base = fbm((float) x / max_world_dim_size, (float) y / 255F, (float) z / max_world_dim_size, 6, 2, 0.5F);
 
 		float factor = 100 * 0.25F;
 

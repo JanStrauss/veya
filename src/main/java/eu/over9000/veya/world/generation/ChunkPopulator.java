@@ -1,23 +1,23 @@
 package eu.over9000.veya.world.generation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Predicate;
-
 import eu.over9000.veya.util.Location3D;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.generation.populators.*;
 import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Predicate;
+
 /**
  * Created by Jan on 22.06.2015.
  */
 public class ChunkPopulator {
 
-	static List<IPopulator> populators = new ArrayList<>();
+	private static final List<IPopulator> populators = new ArrayList<>();
 
 	static {
 		populators.add(new OrePopulator());

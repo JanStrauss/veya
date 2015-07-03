@@ -1,8 +1,8 @@
 package eu.over9000.veya.world;
 
-import java.util.Objects;
-
 import eu.over9000.veya.world.storage.ChunkRequestLevel;
+
+import java.util.Objects;
 
 public class Chunk {
 	public static final int CHUNK_SIZE = 32;
@@ -135,7 +135,7 @@ public class Chunk {
 		}
 	}
 
-	public void blockChanged() {
+	private void blockChanged() {
 		this.changed = true;
 	}
 

@@ -3,6 +3,7 @@
 
 package eu.over9000.veya.proto;
 
+@SuppressWarnings("ALL")
 public final class ProtoDefinitions {
   private ProtoDefinitions() {}
   public static void registerAllExtensions(

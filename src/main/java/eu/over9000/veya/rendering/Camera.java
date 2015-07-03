@@ -1,27 +1,25 @@
 package eu.over9000.veya.rendering;
 
-import java.nio.FloatBuffer;
-import java.util.List;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.collision.AABB;
 import eu.over9000.veya.collision.CollisionDetection;
 import eu.over9000.veya.util.Gravity;
 import eu.over9000.veya.util.Location3D;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
+
+import java.nio.FloatBuffer;
+import java.util.List;
 
 public class Camera {
 	private static final float CAMERA_OFFSET_SIDE = 0.25f;
 	private static final float CAMERA_OFFSET_BOTTOM = 1.7f;
 	private static final float CAMERA_OFFSET_TOP = 0.1f;
 
-	public static final float PITCH_LIMIT = (float) (90 * Math.PI / 180);
-	private Matrix4f projectionMatrix = new Matrix4f();
-	private Matrix4f viewMatrix = new Matrix4f();
+	private static final float PITCH_LIMIT = (float) (90 * Math.PI / 180);
+	private static final float YAW_LIMIT = 2f * (float) Math.PI;
 
 	private final Vector3f currentPosition;
 	private final Vector3f nextPosition;
@@ -34,7 +32,7 @@ public class Camera {
 	private final int viewMatrixLocation;
 	private final int projectionMatrixLocation;
 	private final int cameraPositionLocation;
-	public static final float YAW_LIMIT = 2f * (float) Math.PI;
+
 	private boolean jumping = false;
 	private boolean onGround = false;
 
@@ -54,33 +52,33 @@ public class Camera {
 	}
 
 	public void updateViewMatrix() {
-		this.viewMatrix = new Matrix4f();
+		Matrix4f viewMatrix = new Matrix4f();
 
-		this.viewMatrix.rotate(this.pitch, new Vector3f(1, 0, 0), this.viewMatrix);
-		this.viewMatrix.rotate(this.yaw, new Vector3f(0, 1, 0), this.viewMatrix);
-		this.viewMatrix.translate(this.currentPosition.negate(null), this.viewMatrix);
+		viewMatrix.rotate(this.pitch, new Vector3f(1, 0, 0), viewMatrix);
+		viewMatrix.rotate(this.yaw, new Vector3f(0, 1, 0), viewMatrix);
+		viewMatrix.translate(this.currentPosition.negate(null), viewMatrix);
 
-		this.viewMatrix.store(this.matrixBuffer);
+		viewMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(this.viewMatrixLocation, false, this.matrixBuffer);
 
 	}
 
-	public void updateProjectionMatrix(final float fieldOfView, final int width, final int height, final float nearPlane, final float farPlane) {
-		this.projectionMatrix = new Matrix4f();
+	public void updateProjectionMatrix(final int width, final int height) {
+		Matrix4f projectionMatrix = new Matrix4f();
 		final float aspectRatio = (float) width / (float) height;
 
-		final float y_scale = (float) (1.0f / Math.tan(Math.toRadians(fieldOfView / 2.0f)));
+		final float y_scale = (float) (1.0f / Math.tan(Math.toRadians(Veya.FIELD_OF_VIEW / 2.0f)));
 		final float x_scale = y_scale / aspectRatio;
-		final float frustum_length = farPlane - nearPlane;
-		this.projectionMatrix.m00 = x_scale;
-		this.projectionMatrix.m11 = y_scale;
-		this.projectionMatrix.m22 = -((farPlane + nearPlane) / frustum_length);
-		this.projectionMatrix.m23 = -1;
-		this.projectionMatrix.m32 = -(2 * nearPlane * farPlane / frustum_length);
-		this.projectionMatrix.m33 = 0;
+		final float frustum_length = Veya.FAR_CLIPPING_PLANE - Veya.NEAR_CLIPPING_PLANE;
+		projectionMatrix.m00 = x_scale;
+		projectionMatrix.m11 = y_scale;
+		projectionMatrix.m22 = -((Veya.FAR_CLIPPING_PLANE + Veya.NEAR_CLIPPING_PLANE) / frustum_length);
+		projectionMatrix.m23 = -1;
+		projectionMatrix.m32 = -(2 * Veya.NEAR_CLIPPING_PLANE * Veya.FAR_CLIPPING_PLANE / frustum_length);
+		projectionMatrix.m33 = 0;
 
-		this.projectionMatrix.store(this.matrixBuffer);
+		projectionMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(this.projectionMatrixLocation, false, this.matrixBuffer);
 
@@ -183,7 +181,7 @@ public class Camera {
 	public void applyGravity(final float dt) {
 		state.y = currentPosition.y;
 
-		Gravity.integrate(state, dt);
+		Gravity.apply(state, dt);
 
 		//System.out.println(jumping + " " + state);
 
@@ -192,7 +190,7 @@ public class Camera {
 	}
 
 	private boolean checkNewPositionSingleDim(final AABB newPos) {
-		final List<Location3D> blocksAround = Location3D.getBlocksAround(newPos, 1);
+		final List<Location3D> blocksAround = Location3D.geLocationsAround(newPos, 1);
 		Veya.scene.filterAir(blocksAround);
 		return CollisionDetection.checkCollision(newPos, blocksAround);
 	}

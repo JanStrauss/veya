@@ -1,5 +1,10 @@
 package eu.over9000.veya.rendering;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.Util;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,15 +12,10 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.Util;
-
 public class Program {
-	public final int id;
-	public final Map<String, Integer> uniformLocations;
-	public final Map<String, Integer> attribLocations;
+	private final int id;
+	private final Map<String, Integer> uniformLocations;
+	private final Map<String, Integer> attribLocations;
 	
 	public Program(final String[] attribNames, final String[] uniformNames) {
 		final int vsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/vertex.glsl"), GL20.GL_VERTEX_SHADER);

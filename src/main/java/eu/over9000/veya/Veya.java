@@ -1,22 +1,20 @@
 package eu.over9000.veya;
 
-import java.awt.*;
-import java.io.IOException;
-import java.util.EnumSet;
-
-import javax.imageio.ImageIO;
-
+import eu.over9000.veya.rendering.Camera;
+import eu.over9000.veya.rendering.Program;
+import eu.over9000.veya.rendering.Scene;
+import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.world.BlockType;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 
-import eu.over9000.veya.rendering.Camera;
-import eu.over9000.veya.rendering.Program;
-import eu.over9000.veya.rendering.Scene;
-import eu.over9000.veya.util.MathUtil;
-import eu.over9000.veya.world.BlockType;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
+import java.util.EnumSet;
 
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
@@ -28,9 +26,9 @@ public class Veya {
 
 	private static final float MOUSE_SENSITIVITY = 0.01f;
 
-	private static final float FIELD_OF_VIEW = 75.0f;
-	private static final float NEAR_CLIPPING_PLANE = 0.1f;
-	private static final float FAR_CLIPPING_PLANE = 1000.0f;
+	public static final float FIELD_OF_VIEW = 75.0f;
+	public static final float NEAR_CLIPPING_PLANE = 0.1f;
+	public static final float FAR_CLIPPING_PLANE = 1000.0f;
 
 	public static Camera camera;
 	public static Program program;
@@ -107,7 +105,7 @@ public class Veya {
 		Util.checkGLError();
 
 		Veya.program.use(true);
-		Veya.camera.updateProjectionMatrix(Veya.FIELD_OF_VIEW, Display.getWidth(), Display.getHeight(), Veya.NEAR_CLIPPING_PLANE, Veya.FAR_CLIPPING_PLANE);
+		Veya.camera.updateProjectionMatrix(Display.getWidth(), Display.getHeight());
 		Veya.camera.updateViewMatrix();
 		Veya.scene.init();
 
@@ -271,7 +269,7 @@ public class Veya {
 	private static void checkResize() {
 		if (Display.wasResized()) {
 			Veya.program.use(true);
-			Veya.camera.updateProjectionMatrix(Veya.FIELD_OF_VIEW, Display.getWidth(), Display.getHeight(), Veya.NEAR_CLIPPING_PLANE, Veya.FAR_CLIPPING_PLANE);
+			Veya.camera.updateProjectionMatrix(Display.getWidth(), Display.getHeight());
 			Veya.program.use(false);
 			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 			System.out.println("resized");
