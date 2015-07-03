@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.Location;
 import eu.over9000.veya.util.MathUtil;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
@@ -55,11 +55,11 @@ public class OrePopulator implements IPopulator {
 			final int y = MathUtil.randomBetween(random, props.height_limit_low, props.height_limit_high);
 			final int z = World.chunkToWorldCoordinate(random.nextInt(Chunk.CHUNK_SIZE), chunkZ);
 
-			populateOreInternal(world, random, new Location3D(x, y, z), MathUtil.randomBetween(random, props.size_limit_low, props.size_limit_high), oreBlock);
+			populateOreInternal(world, random, new Location(x, y, z), MathUtil.randomBetween(random, props.size_limit_low, props.size_limit_high), oreBlock);
 		}
 	}
 
-	private void populateOreInternal(final World world, final Random random, final Location3D position, final int blockCount, final BlockType oreBlock) {
+	private void populateOreInternal(final World world, final Random random, final Location position, final int blockCount, final BlockType oreBlock) {
 		final double rpi = random.nextDouble() * Math.PI;
 
 		final double x1 = position.x + 8 + Math.sin(rpi) * blockCount / 8.0F;

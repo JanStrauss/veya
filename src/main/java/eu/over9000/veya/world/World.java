@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.google.common.math.IntMath;
 
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.Location;
 import eu.over9000.veya.world.storage.ChunkProvider;
 import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
@@ -25,11 +25,11 @@ public class World {
 		this.provider = new ChunkProvider(this);
 	}
 
-	public BlockType getBlockAt(final Location3D location, final ChunkRequestLevel level, final boolean create) {
+	public BlockType getBlockAt(final Location location, final ChunkRequestLevel level, final boolean create) {
 		return getBlockAt(location.x, location.y, location.z, level, create);
 	}
 
-	public BlockType getBlockAt(final Location3D location) {
+	public BlockType getBlockAt(final Location location) {
 		return getBlockAt(location.x, location.y, location.z, ChunkRequestLevel.CACHE, false);
 	}
 
@@ -160,7 +160,7 @@ public class World {
 		provider.onExit();
 	}
 
-	public void clearCache(final Location3D center, final int cacheRange) {
+	public void clearCache(final Location center, final int cacheRange) {
 		provider.clearCache(center, cacheRange);
 
 	}

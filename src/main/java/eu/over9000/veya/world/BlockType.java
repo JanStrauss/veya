@@ -1,5 +1,7 @@
 package eu.over9000.veya.world;
 
+import eu.over9000.veya.util.Side;
+
 public enum BlockType {
 
 	STONE(3),
@@ -23,78 +25,40 @@ public enum BlockType {
 	PLANKS_SPRUCE(24),
 	PLANKS_BIRCH(26);
 
-	private final int textureIDBottom;
-	private final int textureIDTop;
-	private final int textureIDNorth;
-	private final int textureIDEast;
-	private final int textureIDSouth;
-	private final int textureIDWest;
+
+	private final int textureIDs[] = new int[Side.values().length];
 
 	BlockType(final int textureIDAll) {
-		this.textureIDBottom = textureIDAll;
-		this.textureIDTop = textureIDAll;
-		this.textureIDNorth = textureIDAll;
-		this.textureIDEast = textureIDAll;
-		this.textureIDSouth = textureIDAll;
-		this.textureIDWest = textureIDAll;
+		textureIDs[Side.TOP.ordinal()] = textureIDAll;
+		textureIDs[Side.BOTTOM.ordinal()] = textureIDAll;
+		textureIDs[Side.NORTH.ordinal()] = textureIDAll;
+		textureIDs[Side.SOUTH.ordinal()] = textureIDAll;
+		textureIDs[Side.EAST.ordinal()] = textureIDAll;
+		textureIDs[Side.WEST.ordinal()] = textureIDAll;
 	}
 
-	BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDAll) {
-		this.textureIDBottom = textureIDBottom;
-		this.textureIDTop = textureIDTop;
-		this.textureIDNorth = textureIDAll;
-		this.textureIDEast = textureIDAll;
-		this.textureIDSouth = textureIDAll;
-		this.textureIDWest = textureIDAll;
+	BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDRest) {
+		textureIDs[Side.TOP.ordinal()] = textureIDTop;
+		textureIDs[Side.BOTTOM.ordinal()] = textureIDBottom;
+		textureIDs[Side.NORTH.ordinal()] = textureIDRest;
+		textureIDs[Side.SOUTH.ordinal()] = textureIDRest;
+		textureIDs[Side.EAST.ordinal()] = textureIDRest;
+		textureIDs[Side.WEST.ordinal()] = textureIDRest;
 	}
 
 	BlockType(final int textureIDBottom, final int textureIDTop, final int textureIDNorth, final int textureIDEast, final int textureIDSouth, final int textureIDWest) {
-		this.textureIDBottom = textureIDBottom;
-		this.textureIDTop = textureIDTop;
-		this.textureIDNorth = textureIDNorth;
-		this.textureIDEast = textureIDEast;
-		this.textureIDSouth = textureIDSouth;
-		this.textureIDWest = textureIDWest;
+		textureIDs[Side.TOP.ordinal()] = textureIDTop;
+		textureIDs[Side.BOTTOM.ordinal()] = textureIDBottom;
+		textureIDs[Side.NORTH.ordinal()] = textureIDNorth;
+		textureIDs[Side.SOUTH.ordinal()] = textureIDSouth;
+		textureIDs[Side.EAST.ordinal()] = textureIDEast;
+		textureIDs[Side.WEST.ordinal()] = textureIDWest;
 	}
 
-	public static int[] getTextureLookupArray() {
-		final int[] table = new int[6 * BlockType.values().length];
-
-		for (int i = 0; i < BlockType.values().length; i++) {
-			final BlockType type = BlockType.values()[i];
-			table[i * 6 + 0] = type.textureIDBottom;
-			table[i * 6 + 1] = type.textureIDTop;
-			table[i * 6 + 2] = type.textureIDNorth;
-			table[i * 6 + 3] = type.textureIDEast;
-			table[i * 6 + 4] = type.textureIDSouth;
-			table[i * 6 + 5] = type.textureIDWest;
-		}
-		return table;
+	public int getTextureID(final Side side) {
+		return textureIDs[side.ordinal()];
 	}
 
-	public int getTextureIDBottom() {
-		return this.textureIDBottom;
-	}
-
-	public int getTextureIDTop() {
-		return this.textureIDTop;
-	}
-
-	public int getTextureIDNorth() {
-		return this.textureIDNorth;
-	}
-
-	public int getTextureIDEast() {
-		return this.textureIDEast;
-	}
-
-	public int getTextureIDSouth() {
-		return this.textureIDSouth;
-	}
-
-	public int getTextureIDWest() {
-		return this.textureIDWest;
-	}
 
 	public boolean isSolid() {
 		return !this.equals(BlockType.WATER);

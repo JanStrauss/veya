@@ -1,6 +1,6 @@
 package eu.over9000.veya.collision;
 
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.Location;
 
 /**
  * Created by Jan on 25.06.2015.
@@ -14,7 +14,7 @@ public class AABB {
 		max = new float[]{max_x, max_y, max_z};
 	}
 
-	public AABB(final Location3D location) {
+	public AABB(final Location location) {
 		min = new float[]{location.x, location.y, location.z};
 		max = new float[]{location.x + 1, location.y + 1, location.z + 1};
 	}

@@ -1,16 +1,16 @@
 package eu.over9000.veya.world.generation;
 
-import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.world.BlockType;
-import eu.over9000.veya.world.World;
-import eu.over9000.veya.world.generation.populators.*;
-import eu.over9000.veya.world.storage.ChunkRequestLevel;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+
+import eu.over9000.veya.util.Location;
+import eu.over9000.veya.world.BlockType;
+import eu.over9000.veya.world.World;
+import eu.over9000.veya.world.generation.populators.*;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 /**
  * Created by Jan on 22.06.2015.
@@ -66,13 +66,13 @@ public class ChunkPopulator {
 	public static void placeRndSphere(final World world, final Random random, final int centerX, final int centerY, final int centerZ, final int crownRadius, final BlockType block, final Predicate<BlockType> condition) {
 		final float rndOffset = random.nextFloat() * 0.25f;
 
-		final Location3D crownCenter = new Location3D(0, 0, 0);
-		final List<Location3D> locations = new ArrayList<>();
+		final Location crownCenter = new Location(0, 0, 0);
+		final List<Location> locations = new ArrayList<>();
 		for (int x = -crownRadius; x <= crownRadius; x++) {
 			for (int y = -crownRadius; y <= crownRadius; y++) {
 				for (int z = -crownRadius; z <= crownRadius; z++) {
 					if (x * x + y * y + z * z < crownRadius * crownRadius) {
-						locations.add(new Location3D(x, y, z, crownCenter));
+						locations.add(new Location(x, y, z, crownCenter));
 					}
 				}
 			}
@@ -80,7 +80,7 @@ public class ChunkPopulator {
 		Collections.sort(locations);
 
 		for (int i = 0; i < locations.size(); i++) {
-			final Location3D location = locations.get(i);
+			final Location location = locations.get(i);
 
 			final float percent = (float) i / (float) locations.size();
 

@@ -1,8 +1,9 @@
 package eu.over9000.veya.world;
 
-import eu.over9000.veya.world.storage.ChunkRequestLevel;
-
 import java.util.Objects;
+
+import eu.over9000.veya.util.Side;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 public class Chunk {
 	public static final int CHUNK_SIZE = 32;
@@ -172,75 +173,19 @@ public class Chunk {
 		return true;
 	}
 
-	public BlockType getNeighborBlockBottom(final int x, final int y, final int z) {
+	public BlockType getNeighborBlock(final int x, final int y, final int z, final Side side) {
 		try {
-			return this.getBlockAt(x, y - 1, z);
+			return this.getBlockAt(x + side.getOffsetX(), y + side.getOffsetY(), z + side.getOffsetZ());
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY - 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
+			final Chunk neighbor = this.world.getChunkAt(this.chunkX + side.getOffsetX(), this.chunkY + side.getOffsetY(), this.chunkZ + side.getOffsetZ(), ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
-			return neighbor.getBlockAt(x, Chunk.CHUNK_SIZE - 1, z);
-		}
-	}
 
-	public BlockType getNeighborBlockTop(final int x, final int y, final int z) {
-		try {
-			return this.getBlockAt(x, y + 1, z);
-		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY + 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
-			if (neighbor == null) {
-				return null;
-			}
-			return neighbor.getBlockAt(x, 0, z);
-		}
-	}
-
-	public BlockType getNeighborBlockNorth(final int x, final int y, final int z) {
-		try {
-			return this.getBlockAt(x, y, z - 1);
-		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ - 1, ChunkRequestLevel.CACHE, false);
-			if (neighbor == null) {
-				return null;
-			}
-			return neighbor.getBlockAt(x, y, Chunk.CHUNK_SIZE - 1);
-		}
-	}
-
-	public BlockType getNeighborBlockSouth(final int x, final int y, final int z) {
-		try {
-			return this.getBlockAt(x, y, z + 1);
-		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ + 1, ChunkRequestLevel.CACHE, false);
-			if (neighbor == null) {
-				return null;
-			}
-			return neighbor.getBlockAt(x, y, 0);
-		}
-	}
-
-	public BlockType getNeighborBlockWest(final int x, final int y, final int z) {
-		try {
-			return this.getBlockAt(x - 1, y, z);
-		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX - 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
-			if (neighbor == null) {
-				return null;
-			}
-			return neighbor.getBlockAt(Chunk.CHUNK_SIZE - 1, y, z);
-		}
-	}
-
-	public BlockType getNeighborBlockEast(final int x, final int y, final int z) {
-		try {
-			return this.getBlockAt(x + 1, y, z);
-		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX + 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
-			if (neighbor == null) {
-				return null;
-			}
-			return neighbor.getBlockAt(0, y, z);
+			final int neighborX = Math.floorMod(x + side.getOffsetX(), CHUNK_SIZE);
+			final int neighborY = Math.floorMod(y + side.getOffsetY(), CHUNK_SIZE);
+			final int neighborZ = Math.floorMod(z + side.getOffsetZ(), CHUNK_SIZE);
+			return neighbor.getBlockAt(neighborX, neighborY, neighborZ);
 		}
 	}
 

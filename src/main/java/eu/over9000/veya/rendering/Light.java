@@ -2,6 +2,8 @@ package eu.over9000.veya.rendering;
 
 import org.lwjgl.opengl.GL20;
 
+import eu.over9000.veya.Veya;
+
 public class Light {
 	private int lightPositionLocation;
 	private int lightColorLocation;
@@ -31,10 +33,10 @@ public class Light {
 		this.specular = specular;
 	}
 	
-	public void init(final Program program) {
-		this.lightPositionLocation = program.getUniformLocation("lightPosition");
-		this.lightColorLocation = program.getUniformLocation("lightColor");
-		this.lightFactorsLocation = program.getUniformLocation("lightFactors");
+	public void init() {
+		this.lightPositionLocation = Veya.program.getUniformLocation("lightPosition");
+		this.lightColorLocation = Veya.program.getUniformLocation("lightColor");
+		this.lightFactorsLocation = Veya.program.getUniformLocation("lightFactors");
 		
 		GL20.glUniform3f(this.lightPositionLocation, this.x, this.y, this.z);
 		GL20.glUniform3f(this.lightColorLocation, this.r, this.g, this.b);

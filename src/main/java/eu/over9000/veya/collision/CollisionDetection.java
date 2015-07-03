@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.lwjgl.util.vector.Vector3f;
 
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.Location;
 
 /**
  * Created by Jan on 22.06.2015.
@@ -16,9 +16,9 @@ public class CollisionDetection {
 	private static final int LEFT = -1;
 	private static final int MIDDLE = 0;
 
-	public static boolean checkCollision(final AABB camera, final List<Location3D> locations) {
-		for (final Location3D location3D : locations) {
-			final AABB block = new AABB(location3D);
+	public static boolean checkCollision(final AABB camera, final List<Location> locations) {
+		for (final Location location : locations) {
+			final AABB block = new AABB(location);
 			if (checkCollision(camera, block)) {
 				return true;
 			}
@@ -111,9 +111,9 @@ public class CollisionDetection {
 		return new int[]{whichPlane, quadrant[whichPlane]};		/* ray hits box */
 	}
 
-	public static Location3D getNeighborBlockFromIntersectionResult(final int x, final int y, final int z, final int[] intersectionResult) {
+	public static Location getNeighborBlockFromIntersectionResult(final int x, final int y, final int z, final int[] intersectionResult) {
 		final int[] arrayLocation = new int[]{x, y, z};
 		arrayLocation[intersectionResult[0]] = arrayLocation[intersectionResult[0]] + intersectionResult[1];
-		return new Location3D(arrayLocation[0], arrayLocation[1], arrayLocation[2]);
+		return new Location(arrayLocation[0], arrayLocation[1], arrayLocation[2]);
 	}
 }

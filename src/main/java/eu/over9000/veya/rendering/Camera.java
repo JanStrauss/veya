@@ -1,17 +1,18 @@
 package eu.over9000.veya.rendering;
 
-import eu.over9000.veya.Veya;
-import eu.over9000.veya.collision.AABB;
-import eu.over9000.veya.collision.CollisionDetection;
-import eu.over9000.veya.util.Gravity;
-import eu.over9000.veya.util.Location3D;
+import java.nio.FloatBuffer;
+import java.util.List;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.nio.FloatBuffer;
-import java.util.List;
+import eu.over9000.veya.Veya;
+import eu.over9000.veya.collision.AABB;
+import eu.over9000.veya.collision.CollisionDetection;
+import eu.over9000.veya.util.Gravity;
+import eu.over9000.veya.util.Location;
 
 public class Camera {
 	private static final float CAMERA_OFFSET_SIDE = 0.25f;
@@ -52,7 +53,7 @@ public class Camera {
 	}
 
 	public void updateViewMatrix() {
-		Matrix4f viewMatrix = new Matrix4f();
+		final Matrix4f viewMatrix = new Matrix4f();
 
 		viewMatrix.rotate(this.pitch, new Vector3f(1, 0, 0), viewMatrix);
 		viewMatrix.rotate(this.yaw, new Vector3f(0, 1, 0), viewMatrix);
@@ -65,7 +66,7 @@ public class Camera {
 	}
 
 	public void updateProjectionMatrix(final int width, final int height) {
-		Matrix4f projectionMatrix = new Matrix4f();
+		final Matrix4f projectionMatrix = new Matrix4f();
 		final float aspectRatio = (float) width / (float) height;
 
 		final float y_scale = (float) (1.0f / Math.tan(Math.toRadians(Veya.FIELD_OF_VIEW / 2.0f)));
@@ -190,7 +191,7 @@ public class Camera {
 	}
 
 	private boolean checkNewPositionSingleDim(final AABB newPos) {
-		final List<Location3D> blocksAround = Location3D.geLocationsAround(newPos, 1);
+		final List<Location> blocksAround = Location.geLocationsAround(newPos, 1);
 		Veya.scene.filterAir(blocksAround);
 		return CollisionDetection.checkCollision(newPos, blocksAround);
 	}
@@ -217,4 +218,5 @@ public class Camera {
 	public void resetVelocity() {
 		state.v = 0;
 	}
+
 }

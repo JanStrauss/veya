@@ -1,20 +1,22 @@
 package eu.over9000.veya;
 
-import eu.over9000.veya.rendering.Camera;
-import eu.over9000.veya.rendering.Program;
-import eu.over9000.veya.rendering.Scene;
-import eu.over9000.veya.util.MathUtil;
-import eu.over9000.veya.world.BlockType;
+import java.awt.*;
+import java.io.IOException;
+import java.util.EnumSet;
+
+import javax.imageio.ImageIO;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.IOException;
-import java.util.EnumSet;
+import eu.over9000.veya.rendering.Camera;
+import eu.over9000.veya.rendering.Program;
+import eu.over9000.veya.rendering.Scene;
+import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.world.BlockType;
 
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
@@ -169,7 +171,7 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				frame.setTitle("VEYA | fps: " + count + " | pos: y=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
+				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
 				count = 0;
 
 			} else {

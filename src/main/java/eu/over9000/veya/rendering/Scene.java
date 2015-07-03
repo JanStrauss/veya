@@ -1,15 +1,11 @@
 package eu.over9000.veya.rendering;
 
-import eu.over9000.veya.Veya;
-import eu.over9000.veya.collision.AABB;
-import eu.over9000.veya.collision.CollisionDetection;
-import eu.over9000.veya.util.Location3D;
-import eu.over9000.veya.util.MathUtil;
-import eu.over9000.veya.util.TextureLoader;
-import eu.over9000.veya.world.BlockType;
-import eu.over9000.veya.world.Chunk;
-import eu.over9000.veya.world.World;
-import eu.over9000.veya.world.storage.ChunkRequestLevel;
+import java.nio.FloatBuffer;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -18,11 +14,16 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.nio.FloatBuffer;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import eu.over9000.veya.Veya;
+import eu.over9000.veya.collision.AABB;
+import eu.over9000.veya.collision.CollisionDetection;
+import eu.over9000.veya.util.Location;
+import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.util.TextureLoader;
+import eu.over9000.veya.world.BlockType;
+import eu.over9000.veya.world.Chunk;
+import eu.over9000.veya.world.World;
+import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 public class Scene {
 
@@ -44,7 +45,7 @@ public class Scene {
 
 	private boolean alive;
 
-	private Location3D centerChunk = new Location3D(0, 0, 0);
+	private Location centerChunk = new Location(0, 0, 0);
 
 	private final Thread displayedChunkUpdaterThread;
 
@@ -86,7 +87,7 @@ public class Scene {
 	}
 
 	public void init() {
-		this.light.init(Veya.program);
+		this.light.init();
 		this.updateModelMatrix();
 	}
 
@@ -121,19 +122,19 @@ public class Scene {
 			}
 		}
 
-		final List<Location3D> locations = new ArrayList<>();
+		final List<Location> locations = new ArrayList<>();
 		// load chunks in display area
 		for (int x = min_x; x <= max_x; x++) {
 			for (int y = min_y; y <= max_y; y++) {
 				for (int z = min_z; z <= max_z; z++) {
-					locations.add(new Location3D(x, y, z, centerChunk));
+					locations.add(new Location(x, y, z, centerChunk));
 				}
 			}
 		}
 
 		Collections.sort(locations);
 
-		for (final Location3D chunkLocation : locations) {
+		for (final Location chunkLocation : locations) {
 			final Chunk chunk = this.world.getChunkAt(chunkLocation.x, chunkLocation.y, chunkLocation.z, ChunkRequestLevel.NEIGHBORS_LOADED, false);
 
 			if (chunk == null) {
@@ -144,7 +145,7 @@ public class Scene {
 
 			if (!isDisplayed) {
 				world.hasChunkChanged(chunk);
-				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, Veya.program)));
+				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk)));
 			}
 		}
 	}
@@ -168,7 +169,7 @@ public class Scene {
 			if (world.hasChunkChanged(chunk)) {
 				final ChunkVAO oldVAO = this.displayedChunks.get(chunk);
 				oldVAO.dispose();
-				final ChunkVAO newVAO = new ChunkVAO(chunk, Veya.program);
+				final ChunkVAO newVAO = new ChunkVAO(chunk);
 				this.displayedChunks.put(chunk, newVAO);
 				newVAO.create();
 			}
@@ -200,7 +201,7 @@ public class Scene {
 
 		if (center_x != centerChunk.x || center_y != centerChunk.y || center_z != centerChunk.z) {
 
-			centerChunk = new Location3D(center_x, center_y, center_z);
+			centerChunk = new Location(center_x, center_y, center_z);
 
 			System.out.println("Camera changed chunk: " + center_x + "," + center_y + "," + center_z);
 
@@ -295,10 +296,10 @@ public class Scene {
 		final Vector3f position = Veya.camera.getPosition();
 		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = Location3D.geLocationsAround((int) position.x, (int) position.y, (int) position.z, 3);
+		final List<Location> candidates = Location.getLocationsAround((int) position.x, (int) position.y, (int) position.z, 3);
 		Collections.sort(candidates);
 
-		for (final Location3D candidate : candidates) {
+		for (final Location candidate : candidates) {
 			final BlockType type = world.getBlockAt(candidate.x, candidate.y, candidate.z);
 
 			if (type == null || type == BlockType.BEDROCK) {
@@ -319,10 +320,10 @@ public class Scene {
 		final Vector3f position = Veya.camera.getPosition();
 		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
-		final List<Location3D> candidates = Location3D.geLocationsAround((int) position.x, (int) position.y, (int) position.z, 4);
+		final List<Location> candidates = Location.getLocationsAround((int) position.x, (int) position.y, (int) position.z, 4);
 		Collections.sort(candidates);
 
-		for (final Location3D candidate : candidates) {
+		for (final Location candidate : candidates) {
 			final BlockType type = world.getBlockAt(candidate.x, candidate.y, candidate.z);
 
 			if (type == null) {
@@ -334,7 +335,7 @@ public class Scene {
 			if (intersectionResult != null) {
 				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
 
-				final Location3D placeLocation = CollisionDetection.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
+				final Location placeLocation = CollisionDetection.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
 
 				final AABB blockAABB = new AABB(placeLocation);
 				final AABB cameraAABB = Veya.camera.getAABB();
@@ -350,7 +351,7 @@ public class Scene {
 
 	public void onNewChunk(final Chunk chunk) {
 		if (checkChunkInViewRange(chunk)) {
-			toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk, Veya.program)));
+			toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk)));
 
 		}
 	}
@@ -359,9 +360,9 @@ public class Scene {
 		return this.displayedChunks.size();
 	}
 
-	public void filterAir(final List<Location3D> locations) {
-		for (final Iterator<Location3D> iterator = locations.iterator(); iterator.hasNext(); ) {
-			final Location3D location = iterator.next();
+	public void filterAir(final List<Location> locations) {
+		for (final Iterator<Location> iterator = locations.iterator(); iterator.hasNext(); ) {
+			final Location location = iterator.next();
 			if (world.getBlockAt(location) == null || Veya.ignoreBlocks.contains(world.getBlockAt(location))) {
 				iterator.remove();
 			}

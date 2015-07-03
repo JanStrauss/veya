@@ -1,6 +1,6 @@
 package eu.over9000.veya.world.generation.populators;
 
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.Location;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
@@ -35,7 +35,7 @@ public class TreePopulator implements IPopulator {
 					continue;
 				}
 
-				final Location3D rootLocation = new Location3D(worldX, maxY + 1, worldZ);
+				final Location rootLocation = new Location(worldX, maxY + 1, worldZ);
 
 				if (random.nextInt(100) < SPECIAL_TREE_CHANGE) {
 					if (random.nextInt(100) < SPRUCE_TREE_CHANCE) {
@@ -51,7 +51,7 @@ public class TreePopulator implements IPopulator {
 		}
 	}
 
-	private static void plantLargeTree(final World world, final Random random, final Location3D rootLocation) {
+	private static void plantLargeTree(final World world, final Random random, final Location rootLocation) {
 		final int numCrowns = 1 + random.nextInt(3);
 		final int height = 5 + random.nextInt(4);
 		final int trunkRadius = 4 + random.nextInt(2);
@@ -77,7 +77,7 @@ public class TreePopulator implements IPopulator {
 
 	}
 
-	private static void plantDefaultTree(final World world, final Random random, final Location3D rootLocation) {
+	private static void plantDefaultTree(final World world, final Random random, final Location rootLocation) {
 		world.setBlockAt(rootLocation.x, rootLocation.y - 1, rootLocation.z, BlockType.DIRT, ChunkRequestLevel.GENERATOR, false);
 
 		final int height = 5 + random.nextInt(2);
@@ -115,7 +115,7 @@ public class TreePopulator implements IPopulator {
 
 	}
 
-	private static void plantSpruceTree(final World world, final Random random, final Location3D rootLocation) {
+	private static void plantSpruceTree(final World world, final Random random, final Location rootLocation) {
 		final int height = random.nextInt(4) + 6;
 		final int leavesGroundDist = 1 + random.nextInt(2);
 		final int leavesBottomLimit = height - leavesGroundDist;

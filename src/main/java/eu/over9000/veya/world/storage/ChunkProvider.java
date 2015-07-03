@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import eu.over9000.veya.Veya;
-import eu.over9000.veya.util.Location3D;
+import eu.over9000.veya.util.Location;
 import eu.over9000.veya.util.MathUtil;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
@@ -37,7 +37,7 @@ public class ChunkProvider implements Runnable {
 		storeThread.start();
 	}
 
-	public Chunk getChunkAt(final Location3D location, final ChunkRequestLevel level, final boolean create) {
+	public Chunk getChunkAt(final Location location, final ChunkRequestLevel level, final boolean create) {
 		return getChunkAt(location.x, location.y, location.z, level, create);
 	}
 
@@ -171,7 +171,7 @@ public class ChunkProvider implements Runnable {
 		}
 	}
 
-	public void clearCache(final Location3D center, final int cacheRange) {
+	public void clearCache(final Location center, final int cacheRange) {
 		final int min_x = center.x - cacheRange;
 		final int max_x = center.x + cacheRange;
 		final int min_z = center.z - cacheRange;
