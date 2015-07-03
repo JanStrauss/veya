@@ -18,6 +18,7 @@ public class ChunkCache {
 
 	public ChunkStack getChunkStackAt(final int chunkX, final int chunkZ) {
 		final Map<Integer, ChunkStack> zMap = this.xMap.get(chunkX);
+
 		if (zMap == null) {
 			return null;
 		}
@@ -26,6 +27,8 @@ public class ChunkCache {
 	}
 
 	public void setChunkStackAt(final int chunkX, final int chunkZ, final ChunkStack chunkStack) {
+		//System.out.println("CACHE SET " + chunkX + "," + chunkZ);
+
 		Map<Integer, ChunkStack> zMap = this.xMap.get(chunkX);
 		if (zMap == null) {
 			zMap = new ConcurrentHashMap<>();

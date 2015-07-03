@@ -48,8 +48,8 @@ public class Veya {
 	private static boolean shutdown = false;
 	private static long lastSpacePress = 0;
 
-	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
-	//public static final EnumSet<BlockType> ignoreBlocks = EnumSet.of(BlockType.STONE);
+	//public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
+	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.of(BlockType.STONE);
 
 	public static void main(final String[] args) throws LWJGLException {
 

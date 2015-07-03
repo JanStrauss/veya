@@ -34,12 +34,13 @@ public class Scene {
 	private boolean camPosChanged = false;
 
 	private final World world;
-	private final Map<Chunk, ChunkVAO> displayedChunks = new ConcurrentHashMap<>();
+
 	private final Light light;
 	private final int texture_handle;
 
 	private final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
+	private final Map<Chunk, ChunkVAO> displayedChunks = new ConcurrentHashMap<>();
 	private final Queue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
 	private final Queue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
 
@@ -118,7 +119,11 @@ public class Scene {
 		// remove chunks outside display area
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (!checkChunkInViewRange(entry.getKey())) {
-				this.toRemove.add(new ChunkChunkVAOPair(entry.getKey(), entry.getValue()));
+
+				final ChunkChunkVAOPair candidate = new ChunkChunkVAOPair(entry.getKey(), entry.getValue());
+				if (!toRemove.contains(candidate)) {
+					this.toRemove.add(candidate);
+				}
 			}
 		}
 
@@ -144,8 +149,10 @@ public class Scene {
 			final boolean isDisplayed = this.displayedChunks.containsKey(chunk);
 
 			if (!isDisplayed) {
-				world.hasChunkChanged(chunk);
-				this.toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk)));
+				final ChunkChunkVAOPair candidate = new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk));
+				if (!toAdd.contains(candidate)) {
+					this.toAdd.add(candidate);
+				}
 			}
 		}
 	}
@@ -234,62 +241,6 @@ public class Scene {
 
 	public World getWorld() {
 		return world;
-	}
-
-	private class ChunkChunkVAOPair {
-		private final Chunk chunk;
-		private final ChunkVAO chunkVAO;
-
-		public ChunkChunkVAOPair(final Chunk chunk, final ChunkVAO chunkVAO) {
-			this.chunk = chunk;
-			this.chunkVAO = chunkVAO;
-		}
-
-		public Chunk getChunk() {
-			return this.chunk;
-		}
-
-		public ChunkVAO getChunkVAO() {
-			return this.chunkVAO;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + (this.chunk == null ? 0 : this.chunk.hashCode());
-			result = prime * result + (this.chunkVAO == null ? 0 : this.chunkVAO.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(final Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (!(obj instanceof ChunkChunkVAOPair)) {
-				return false;
-			}
-			final ChunkChunkVAOPair other = (ChunkChunkVAOPair) obj;
-			if (this.chunk == null) {
-				if (other.chunk != null) {
-					return false;
-				}
-			} else if (!this.chunk.equals(other.chunk)) {
-				return false;
-			}
-			if (this.chunkVAO == null) {
-				if (other.chunkVAO != null) {
-					return false;
-				}
-			} else if (!this.chunkVAO.equals(other.chunkVAO)) {
-				return false;
-			}
-			return true;
-		}
 	}
 
 	public void performLeftClick() {

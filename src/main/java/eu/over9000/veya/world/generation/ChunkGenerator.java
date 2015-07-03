@@ -1,20 +1,21 @@
 package eu.over9000.veya.world.generation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.generation.noise.SimplexNoise;
 import eu.over9000.veya.world.storage.ChunkStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 public class ChunkGenerator {
 
 	public static final int SEALEVEL = 64;
 
 	public static ChunkStack genChunksAt(final World world, final Random random, final int chunkX, final int chunkZ) {
+
 		final BlockType[][][] rawChunkStack = new BlockType[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][World.MAX_WORLD_HEIGHT];
 
 		//System.out.println("GENERATOR CALLED FOR " + chunkX + "," + chunkZ);

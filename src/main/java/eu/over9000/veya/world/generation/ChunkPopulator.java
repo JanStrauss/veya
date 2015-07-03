@@ -63,15 +63,15 @@ public class ChunkPopulator {
 		}
 	}
 
-	public static void placeRndSphere(final World world, final Random random, final int centerX, final int centerY, final int centerZ, final int crownRadius, final BlockType block, final Predicate<BlockType> condition) {
+	public static void placeRndSphere(final World world, final Random random, final int centerX, final int centerY, final int centerZ, final int radius, final BlockType block, final Predicate<BlockType> condition) {
 		final float rndOffset = random.nextFloat() * 0.25f;
 
 		final Location crownCenter = new Location(0, 0, 0);
 		final List<Location> locations = new ArrayList<>();
-		for (int x = -crownRadius; x <= crownRadius; x++) {
-			for (int y = -crownRadius; y <= crownRadius; y++) {
-				for (int z = -crownRadius; z <= crownRadius; z++) {
-					if (x * x + y * y + z * z < crownRadius * crownRadius) {
+		for (int x = -radius; x <= radius; x++) {
+			for (int y = -radius; y <= radius; y++) {
+				for (int z = -radius; z <= radius; z++) {
+					if (x * x + y * y + z * z < radius * radius) {
 						locations.add(new Location(x, y, z, crownCenter));
 					}
 				}

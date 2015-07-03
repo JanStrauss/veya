@@ -141,36 +141,23 @@ public class Chunk {
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(this.world, this.chunkX, this.chunkY, this.chunkZ);
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		final Chunk chunk = (Chunk) o;
+		return Objects.equals(chunkX, chunk.chunkX) &&
+				Objects.equals(chunkY, chunk.chunkY) &&
+				Objects.equals(chunkZ, chunk.chunkZ) &&
+				Objects.equals(world, chunk.world);
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Chunk)) {
-			return false;
-		}
-		final Chunk other = (Chunk) obj;
-		if (!this.world.equals(other.world)) {
-			return false;
-		}
-
-		if (this.chunkX != other.chunkX) {
-			return false;
-		}
-
-		if (this.chunkY != other.chunkY) {
-			return false;
-		}
-
-		if (this.chunkZ != other.chunkZ) {
-			return false;
-		}
-
-		return true;
+	public int hashCode() {
+		return Objects.hash(world, chunkX, chunkY, chunkZ);
 	}
 
 	public BlockType getNeighborBlock(final int x, final int y, final int z, final Side side) {

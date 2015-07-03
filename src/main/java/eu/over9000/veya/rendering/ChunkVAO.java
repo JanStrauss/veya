@@ -11,9 +11,9 @@ import org.lwjgl.opengl.*;
 import com.google.common.primitives.Ints;
 
 import eu.over9000.veya.Veya;
+import eu.over9000.veya.util.Side;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
-import eu.over9000.veya.util.Side;
 
 public class ChunkVAO {
 	
@@ -318,39 +318,4 @@ public class ChunkVAO {
 		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.EAST), 1, 0, 0));
 		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.EAST), 1, 0, 0));
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + this.ibo_handle_solid;
-		result = prime * result + this.vao_handle_solid;
-		result = prime * result + this.vbo_handle_solid;
-		return result;
-	}
-	
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof ChunkVAO)) {
-			return false;
-		}
-		final ChunkVAO other = (ChunkVAO) obj;
-		if (this.ibo_handle_solid != other.ibo_handle_solid) {
-			return false;
-		}
-		if (this.vao_handle_solid != other.vao_handle_solid) {
-			return false;
-		}
-		if (this.vbo_handle_solid != other.vbo_handle_solid) {
-			return false;
-		}
-		return true;
-	}
-	
 }

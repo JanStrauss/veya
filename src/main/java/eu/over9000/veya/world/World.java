@@ -1,6 +1,7 @@
 package eu.over9000.veya.world;
 
 import java.math.RoundingMode;
+import java.util.Objects;
 import java.util.Random;
 
 import com.google.common.math.IntMath;
@@ -75,6 +76,10 @@ public class World {
 
 	public Chunk getChunkAt(final int chunkX, final int chunkY, final int chunkZ, final ChunkRequestLevel level, final boolean create) {
 		return this.provider.getChunkAt(chunkX, chunkY, chunkZ, level, create);
+	}
+
+	public Chunk getChunkAt(final Location location, final ChunkRequestLevel level, final boolean create) {
+		return this.provider.getChunkAt(location.x, location.y, location.z, level, create);
 	}
 
 	public long getSeed() {
@@ -162,6 +167,23 @@ public class World {
 
 	public void clearCache(final Location center, final int cacheRange) {
 		provider.clearCache(center, cacheRange);
-
 	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		final World world = (World) o;
+		return Objects.equals(name, world.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name);
+	}
+	
 }

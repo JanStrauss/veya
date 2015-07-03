@@ -44,7 +44,7 @@ public class ChunkProvider implements Runnable {
 	public Chunk getChunkAt(final int x, final int y, final int z, final ChunkRequestLevel level, final boolean create) {
 		Objects.requireNonNull(level);
 
-		ChunkStack stack = getChunkStackFromCache(x, z);
+		ChunkStack stack = cache.getChunkStackAt(x, z);
 
 		if (stack == null && level.includes(ChunkRequestLevel.DATABASE)) {
 			stack = getChunkStackFromDB(x, z);
@@ -61,7 +61,9 @@ public class ChunkProvider implements Runnable {
 
 			for (int i = -1; i <= 1; i++) {
 				for (int j = -1; j <= 1; j++) {
-					getChunkAt(x + i, y, z + j, ChunkRequestLevel.GENERATOR, false);
+					if (i != 0 && j != 0) {
+						getChunkAt(x + i, y, z + j, ChunkRequestLevel.GENERATOR, false);
+					}
 				}
 			}
 		}
@@ -84,10 +86,6 @@ public class ChunkProvider implements Runnable {
 		return chunk;
 	}
 
-	private ChunkStack getChunkStackFromCache(final int x, final int z) {
-		return cache.getChunkStackAt(x, z);
-	}
-
 	private ChunkStack getChunkStackFromDB(final int x, final int z) {
 		final ChunkStack stack = database.loadChunkStack(world, x, z);
 		if (stack != null) {
@@ -101,7 +99,7 @@ public class ChunkProvider implements Runnable {
 
 		addToQueue(stack);
 		cache.setChunkStackAt(x, z, stack);
-
+		
 		return stack;
 	}
 
@@ -124,7 +122,9 @@ public class ChunkProvider implements Runnable {
 		final boolean changed = chunk.getAndResetChangedFlag();
 		if (changed) {
 			final ChunkStack stack = cache.getChunkStackAt(chunk.getChunkX(), chunk.getChunkZ());
-			addToQueue(stack);
+			if (stack != null) {
+				addToQueue(stack);
+			}
 			//System.out.println("Chunk " + chunk + " changed");
 		}
 
@@ -156,8 +156,7 @@ public class ChunkProvider implements Runnable {
 	public void run() {
 		while (alive) {
 			try {
-				final ChunkStack stack = storeQueue.take();
-				database.storeChunkStack(world, stack);
+				database.storeChunkStack(world, storeQueue.take());
 			} catch (InterruptedException e) {
 				if (!alive) {
 					break;
@@ -187,6 +186,6 @@ public class ChunkProvider implements Runnable {
 			cache.removeChunkStackAt(chunkStack.getX(), chunkStack.getZ());
 
 		}
-		System.out.println("removed " + toRemove.size() + " chunkstacks from cache, new size: " + cache.getChunkStacks().size());
+		//System.out.println("removed " + toRemove.size() + " chunkstacks from cache, new size: " + cache.getChunkStacks().size());
 	}
 }
