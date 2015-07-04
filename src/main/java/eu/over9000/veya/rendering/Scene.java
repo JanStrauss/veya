@@ -27,6 +27,7 @@ import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 public class Scene {
 
+	public static final int MAX_CHUNK_UPDATES_PER_FRAME = 1;
 	private final static int SCENE_CHUNK_VIEW_RANGE = 8;
 	private final static int SCENE_CHUNK_CACHE_RANGE = SCENE_CHUNK_VIEW_RANGE + 2;
 
@@ -46,6 +47,8 @@ public class Scene {
 
 	private boolean alive;
 
+	public int chunkUpdateCounter = 0;
+
 	private Location centerChunk = new Location(0, 0, 0);
 
 	private final Thread displayedChunkUpdaterThread;
@@ -57,7 +60,7 @@ public class Scene {
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 
-		Runnable displayedChunkUpdater = new Runnable() {
+		final Runnable displayedChunkUpdater = new Runnable() {
 
 			@Override
 			public void run() {
@@ -149,6 +152,7 @@ public class Scene {
 			final boolean isDisplayed = this.displayedChunks.containsKey(chunk);
 
 			if (!isDisplayed) {
+				chunk.getAndResetChangedFlag();
 				final ChunkChunkVAOPair candidate = new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk));
 				if (!toAdd.contains(candidate)) {
 					this.toAdd.add(candidate);
@@ -161,24 +165,29 @@ public class Scene {
 		this.checkCameraPosition();
 
 		ChunkChunkVAOPair addEntry;
-		if ((addEntry = this.toAdd.poll()) != null) {
-			this.displayedChunks.put(addEntry.getChunk(), addEntry.getChunkVAO());
+		while ((addEntry = this.toAdd.poll()) != null) {
 			addEntry.getChunkVAO().create();
+			this.displayedChunks.put(addEntry.getChunk(), addEntry.getChunkVAO());
 		}
 
 		ChunkChunkVAOPair removeEntry;
-		if ((removeEntry = this.toRemove.poll()) != null) {
+		while ((removeEntry = this.toRemove.poll()) != null) {
 			this.displayedChunks.remove(removeEntry.getChunk());
 			removeEntry.getChunkVAO().dispose();
 		}
 
+		int updates = 0;
 		for (final Chunk chunk : displayedChunks.keySet()) {
 			if (world.hasChunkChanged(chunk)) {
-				final ChunkVAO oldVAO = this.displayedChunks.get(chunk);
-				oldVAO.dispose();
 				final ChunkVAO newVAO = new ChunkVAO(chunk);
-				this.displayedChunks.put(chunk, newVAO);
+				final ChunkVAO oldVAO = this.displayedChunks.put(chunk, newVAO);
+				oldVAO.dispose();
 				newVAO.create();
+				chunkUpdateCounter++;
+				updates++;
+				if (updates > MAX_CHUNK_UPDATES_PER_FRAME) {
+					break;
+				}
 			}
 		}
 
@@ -221,7 +230,7 @@ public class Scene {
 	}
 
 	private void updateModelMatrix() {
-		Matrix4f modelMatrix = new Matrix4f();
+		final Matrix4f modelMatrix = new Matrix4f();
 		modelMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();
 		GL20.glUniformMatrix4(Veya.program.getUniformLocation("modelMatrix"), false, this.matrixBuffer);

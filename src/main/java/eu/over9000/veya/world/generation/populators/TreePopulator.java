@@ -1,13 +1,13 @@
 package eu.over9000.veya.world.generation.populators;
 
+import java.util.Random;
+
 import eu.over9000.veya.util.Location;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.generation.ChunkPopulator;
 import eu.over9000.veya.world.storage.ChunkRequestLevel;
-
-import java.util.Random;
 
 /**
  * Created by Jan on 23.06.2015.
@@ -21,8 +21,8 @@ public class TreePopulator implements IPopulator {
 
 	public void populateChunkStack(final World world, final Random random, final int chunkX, final int chunkZ) {
 
-		final int chunkChance = BASE_TREE_CHANCE + random.nextInt(10);
-		final int chunkAttempts = BASE_TREE_ATTEMPTS + random.nextInt(16);
+		final int chunkChance = BASE_TREE_CHANCE + random.nextInt(15);
+		final int chunkAttempts = BASE_TREE_ATTEMPTS + random.nextInt(32);
 
 		for (int attempt = 0; attempt < chunkAttempts; attempt++) {
 			if (random.nextInt(100) < chunkChance) {

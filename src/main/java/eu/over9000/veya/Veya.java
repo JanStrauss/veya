@@ -48,8 +48,8 @@ public class Veya {
 	private static boolean shutdown = false;
 	private static long lastSpacePress = 0;
 
-	//public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
-	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.of(BlockType.STONE);
+	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
+	//public static final EnumSet<BlockType> ignoreBlocks = EnumSet.of(BlockType.STONE);
 
 	public static void main(final String[] args) throws LWJGLException {
 
@@ -171,8 +171,9 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular);
+				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular + " | chunk updates: " + scene.chunkUpdateCounter);
 				count = 0;
+				scene.chunkUpdateCounter = 0;
 
 			} else {
 				count++;
