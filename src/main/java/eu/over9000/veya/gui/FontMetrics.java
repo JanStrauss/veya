@@ -6,7 +6,7 @@ public class FontMetrics {
 	private static final int CHAR_DEFAULT_WIDTH = 32;
 	private static final int CHAR_DEFAULT_HEIGHT = 32;
 
-	public static float getCharHeight(final int character) {
+	public static float getCharHeight() {
 		return 1f;
 	}
 
