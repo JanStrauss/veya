@@ -16,8 +16,51 @@ public class TextureLoader {
 	
 	private static final int TEXTURE_WIDTH = 64;
 	private static final int TEXTURE_HEIGHT = 64;
+
+	public static int loadFontTexture(final int textureUnit) {
+
+		final int texId = GL11.glGenTextures();
+
+
+		try {
+			final InputStream in = TextureLoader.class.getResourceAsStream("/textures/font.png");
+			final PNGDecoder decoder = new PNGDecoder(in);
+			
+			final int sourceTexWidth = decoder.getWidth();
+			final int sourceTexHeight = decoder.getHeight();
+
+			final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+			decoder.decode(byteBuffer, decoder.getWidth() * 4, Format.RGBA);
+			byteBuffer.flip();
+
+			GL13.glActiveTexture(textureUnit);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, sourceTexWidth, sourceTexHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, byteBuffer);
+
+			// Setup the ST coordinate system
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+
+			// Setup what to do when the texture has to be scaled
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+
+			org.lwjgl.opengl.Util.checkGLError();
+
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+		} catch (final IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		
+
+		return texId;
+	}
 	
-	public static int loadPNGTexture(final String name, final InputStream in, final int textureUnit) {
+	public static int loadBlockTexture(final int textureUnit) {
+
+		final InputStream in = TextureLoader.class.getResourceAsStream("/textures/blocks.png");
 		ByteBuffer convertedBuffer = null;
 		int sourceTexWidth = 0;
 		int sourceTexHeight = 0;
@@ -70,7 +113,9 @@ public class TextureLoader {
 		
 		org.lwjgl.opengl.Util.checkGLError();
 		
-		System.out.println("loading texture " + name + ", id=" + texId + ", w=" + sourceTexWidth + ", h=" + sourceTexHeight);
+		System.out.println("loading block texture, id=" + texId + ", w=" + sourceTexWidth + ", h=" + sourceTexHeight);
+
+		GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 0);
 		
 		return texId;
 	}

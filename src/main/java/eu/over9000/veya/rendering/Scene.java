@@ -56,7 +56,7 @@ public class Scene {
 	public Scene(final long seed) {
 		this.alive = true;
 		this.world = new World(seed, "Keaysea");
-		this.texture_handle = TextureLoader.loadPNGTexture("BLOCKS", Scene.class.getResourceAsStream("/textures/blocks.png"), GL13.GL_TEXTURE0);
+		this.texture_handle = TextureLoader.loadBlockTexture(GL13.GL_TEXTURE0);
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 
