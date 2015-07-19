@@ -14,6 +14,7 @@ import eu.over9000.veya.Veya;
 import eu.over9000.veya.util.Side;
 import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
+import eu.over9000.veya.world.World;
 
 public class ChunkVAO {
 	
@@ -75,7 +76,7 @@ public class ChunkVAO {
 						final BlockType neighbor = chunk.getNeighborBlock(x, y, z, side);
 
 						if (checkBlockFace(solid, neighbor)) {
-							ChunkVAO.addSideOfBlock(indexList, vertexList, block, worldX, worldY, worldZ, side);
+							ChunkVAO.addSideOfBlock(chunk, indexList, vertexList, block, worldX, worldY, worldZ, side);
 						}
 					}
 				}
@@ -153,7 +154,10 @@ public class ChunkVAO {
 			
 			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexNormal"));
 			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
-			
+
+			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexAO"));
+			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexAO"), Vertex.aoElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.aoByteOffset);
+
 			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle_solid);
 			
 			GL30.glBindVertexArray(0);
@@ -169,8 +173,7 @@ public class ChunkVAO {
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle_transparent);
 			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, this.vbo_buffer_transparent, GL15.GL_STATIC_DRAW);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-			
-			
+
 			this.vao_handle_transparent = GL30.glGenVertexArrays();
 			GL30.glBindVertexArray(this.vao_handle_transparent);
 			
@@ -186,6 +189,9 @@ public class ChunkVAO {
 			
 			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexNormal"));
 			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
+
+			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexAO"));
+			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexAO"), Vertex.aoElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.aoByteOffset);
 			
 			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle_transparent);
 			
@@ -252,70 +258,158 @@ public class ChunkVAO {
 		indexDataList.add(Veya.RESTART);
 	}
 
-	private static void addSideOfBlock(final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ, final Side side) {
+	private static void addSideOfBlock(final Chunk chunk, final List<Integer> indexDataList, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ, final Side side) {
 		final int firstIndex = vertexDataList.size();
 		switch (side) {
 			case TOP:
-				addTopOfBlock(vertexDataList, block, worldX, worldY, worldZ);
+				addTopOfBlock(chunk, vertexDataList, block, worldX, worldY, worldZ);
 				break;
 			case BOTTOM:
-				addBottomOfBlock(vertexDataList, block, worldX, worldY, worldZ);
+				addBottomOfBlock(chunk, vertexDataList, block, worldX, worldY, worldZ);
 				break;
 			case NORTH:
-				addNorthOfBlock(vertexDataList, block, worldX, worldY, worldZ);
+				addNorthOfBlock(chunk, vertexDataList, block, worldX, worldY, worldZ);
 				break;
 			case SOUTH:
-				addSouthOfBlock(vertexDataList, block, worldX, worldY, worldZ);
+				addSouthOfBlock(chunk, vertexDataList, block, worldX, worldY, worldZ);
 				break;
 			case EAST:
-				addEastOfBlock(vertexDataList, block, worldX, worldY, worldZ);
+				addEastOfBlock(chunk, vertexDataList, block, worldX, worldY, worldZ);
 				break;
 			case WEST:
-				addWestOfBlock(vertexDataList, block, worldX, worldY, worldZ);
+				addWestOfBlock(chunk, vertexDataList, block, worldX, worldY, worldZ);
 				break;
 		}
 		addIndexEntries(indexDataList, firstIndex);
 	}
 	
-	private static void addBottomOfBlock(final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
-		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0));
-		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0));
-		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0));
-		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0));
+	private static void addBottomOfBlock(final Chunk chunk, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
+		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0, calcAOOfVertex(chunk, Side.BOTTOM, worldX, worldY, worldZ, +1, -1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0, calcAOOfVertex(chunk, Side.BOTTOM, worldX, worldY, worldZ, +1, +1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0, calcAOOfVertex(chunk, Side.BOTTOM, worldX, worldY, worldZ, -1, -1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, block.getTextureID(Side.BOTTOM), 0, -1, 0, calcAOOfVertex(chunk, Side.BOTTOM, worldX, worldY, worldZ, -1, +1)));
 	}
 
-	private static void addTopOfBlock(final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
-		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, block.getTextureID(Side.TOP), 0, 1, 0));
-		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, block.getTextureID(Side.TOP), 0, 1, 0));
-		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, block.getTextureID(Side.TOP), 0, 1, 0));
-		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, block.getTextureID(Side.TOP), 0, 1, 0));
+	private static void addTopOfBlock(final Chunk chunk, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
+		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, block.getTextureID(Side.TOP), 0, 1, 0, calcAOOfVertex(chunk, Side.TOP, worldX, worldY, worldZ, -1, +1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, block.getTextureID(Side.TOP), 0, 1, 0, calcAOOfVertex(chunk, Side.TOP, worldX, worldY, worldZ, +1, +1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, block.getTextureID(Side.TOP), 0, 1, 0, calcAOOfVertex(chunk, Side.TOP, worldX, worldY, worldZ, -1, -1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, block.getTextureID(Side.TOP), 0, 1, 0, calcAOOfVertex(chunk, Side.TOP, worldX, worldY, worldZ, +1, -1)));
 	}
 	
-	private static void addSouthOfBlock(final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
-		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, block.getTextureID(Side.SOUTH), 0, 0, 1));
-		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, block.getTextureID(Side.SOUTH), 0, 0, 1));
-		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, block.getTextureID(Side.SOUTH), 0, 0, 1));
-		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, block.getTextureID(Side.SOUTH), 0, 0, 1));
+	private static void addSouthOfBlock(final Chunk chunk, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
+		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, block.getTextureID(Side.SOUTH), 0, 0, 1, calcAOOfVertex(chunk, Side.SOUTH, worldX, worldY, worldZ, +1, -1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, block.getTextureID(Side.SOUTH), 0, 0, 1, calcAOOfVertex(chunk, Side.SOUTH, worldX, worldY, worldZ, +1, +1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, block.getTextureID(Side.SOUTH), 0, 0, 1, calcAOOfVertex(chunk, Side.SOUTH, worldX, worldY, worldZ, -1, -1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, block.getTextureID(Side.SOUTH), 0, 0, 1, calcAOOfVertex(chunk, Side.SOUTH, worldX, worldY, worldZ, -1, +1)));
 	}
 	
-	private static void addNorthOfBlock(final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
-		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, block.getTextureID(Side.NORTH), 0, 0, -1));
-		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, block.getTextureID(Side.NORTH), 0, 0, -1));
-		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.NORTH), 0, 0, -1));
-		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.NORTH), 0, 0, -1));
+	private static void addNorthOfBlock(final Chunk chunk, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
+		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, block.getTextureID(Side.NORTH), 0, 0, -1, calcAOOfVertex(chunk, Side.NORTH, worldX, worldY, worldZ, -1, +1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, block.getTextureID(Side.NORTH), 0, 0, -1, calcAOOfVertex(chunk, Side.NORTH, worldX, worldY, worldZ, +1, +1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.NORTH), 0, 0, -1, calcAOOfVertex(chunk, Side.NORTH, worldX, worldY, worldZ, -1, -1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.NORTH), 0, 0, -1, calcAOOfVertex(chunk, Side.NORTH, worldX, worldY, worldZ, +1, -1)));
 	}
 	
-	private static void addWestOfBlock(final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
-		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.WEST), -1, 0, 0));
-		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, block.getTextureID(Side.WEST), -1, 0, 0));
-		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.WEST), -1, 0, 0));
-		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, block.getTextureID(Side.WEST), -1, 0, 0));
+	private static void addWestOfBlock(final Chunk chunk, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
+		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.WEST), -1, 0, 0, calcAOOfVertex(chunk, Side.WEST, worldX, worldY, worldZ, -1, +1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, block.getTextureID(Side.WEST), -1, 0, 0, calcAOOfVertex(chunk, Side.WEST, worldX, worldY, worldZ, +1, +1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.WEST), -1, 0, 0, calcAOOfVertex(chunk, Side.WEST, worldX, worldY, worldZ, -1, -1)));
+		vertexDataList.add(new Vertex(0.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, block.getTextureID(Side.WEST), -1, 0, 0, calcAOOfVertex(chunk, Side.WEST, worldX, worldY, worldZ, +1, -1)));
 	}
 	
-	private static void addEastOfBlock(final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
-		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, block.getTextureID(Side.EAST), 1, 0, 0));
-		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, block.getTextureID(Side.EAST), 1, 0, 0));
-		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.EAST), 1, 0, 0));
-		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.EAST), 1, 0, 0));
+	private static void addEastOfBlock(final Chunk chunk, final List<Vertex> vertexDataList, final BlockType block, final int worldX, final int worldY, final int worldZ) {
+		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, block.getTextureID(Side.EAST), 1, 0, 0, calcAOOfVertex(chunk, Side.EAST, worldX, worldY, worldZ, +1, -1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 1.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, block.getTextureID(Side.EAST), 1, 0, 0, calcAOOfVertex(chunk, Side.EAST, worldX, worldY, worldZ, +1, +1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 0.0f + worldZ, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, block.getTextureID(Side.EAST), 1, 0, 0, calcAOOfVertex(chunk, Side.EAST, worldX, worldY, worldZ, -1, -1)));
+		vertexDataList.add(new Vertex(1.0f + worldX, 0.0f + worldY, 1.0f + worldZ, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, block.getTextureID(Side.EAST), 1, 0, 0, calcAOOfVertex(chunk, Side.EAST, worldX, worldY, worldZ, -1, +1)));
 	}
+
+	private static float calcAOOfVertex(final Chunk chunk, final Side side, final int worldX, final int worldY, final int worldZ, final int offsetSide0, final int offsetSide1) {
+
+		final World world = chunk.getWorld();
+
+		final int block10;
+		final int block01;
+		final int block11;
+
+		switch (side) {
+			case TOP:
+				block10 = checkIsSolid(world, worldX + offsetSide0, worldY + 1, worldZ);
+				block01 = checkIsSolid(world, worldX, worldY + 1, worldZ + offsetSide1);
+				block11 = checkIsSolid(world, worldX + offsetSide0, worldY + 1, worldZ + offsetSide1);
+				break;
+
+			case BOTTOM:
+				block10 = checkIsSolid(world, worldX + offsetSide0, worldY - 1, worldZ);
+				block01 = checkIsSolid(world, worldX, worldY - 1, worldZ + offsetSide1);
+				block11 = checkIsSolid(world, worldX + offsetSide0, worldY - 1, worldZ + offsetSide1);
+				break;
+
+			case NORTH:
+				block10 = checkIsSolid(world, worldX + offsetSide0, worldY, worldZ - 1);
+				block01 = checkIsSolid(world, worldX, worldY + offsetSide1, worldZ - 1);
+				block11 = checkIsSolid(world, worldX + offsetSide0, worldY + offsetSide1, worldZ - 1);
+				break;
+
+			case SOUTH:
+				block10 = checkIsSolid(world, worldX + offsetSide0, worldY, worldZ + 1);
+				block01 = checkIsSolid(world, worldX, worldY + offsetSide1, worldZ + 1);
+				block11 = checkIsSolid(world, worldX + offsetSide0, worldY + offsetSide1, worldZ + 1);
+				break;
+
+			case EAST:
+				block10 = checkIsSolid(world, worldX + 1, worldY + offsetSide0, worldZ);
+				block01 = checkIsSolid(world, worldX + 1, worldY, worldZ + offsetSide1);
+				block11 = checkIsSolid(world, worldX + 1, worldY + offsetSide0, worldZ + offsetSide1);
+				break;
+
+			case WEST:
+				block10 = checkIsSolid(world, worldX - 1, worldY + offsetSide0, worldZ);
+				block01 = checkIsSolid(world, worldX - 1, worldY, worldZ + offsetSide1);
+				block11 = checkIsSolid(world, worldX - 1, worldY + offsetSide0, worldZ + offsetSide1);
+				break;
+
+			default:
+				throw new IllegalStateException("unknown side: " + side);
+		}
+
+
+		int res;
+
+		if (block01 == 1 && block10 == 1) {
+			res = 0;
+		} else {
+			res = 3 - (block01 + block10 + block11);
+		}
+		
+		if (res != 3) {
+			System.out.printf("(%d %d %d %s)=%d \n", worldX, worldY, worldZ, side.toString().charAt(0), res);
+		}
+
+		return res;
+	}
+
+	private static int checkIsSolid(final World world, final int worldX, final int worldY, final int worldZ) {
+		final BlockType block = world.getBlockAt(worldX, worldY, worldZ);
+
+		int result;
+		if (block == null) {
+			result = 0;
+		} else {
+			result = block.isSolid() ? 1 : 0;
+		}
+
+		//System.out.printf("type (%d %d %d)=%s result=%d\n", worldX, worldY, worldZ, block, result);
+
+		return result;
+	}
+
+	public static void main(String[] args) {
+		World w = new World(1332, "kasds", true);
+		Chunk c = new Chunk(w, 0, 0, 0);
+
+		ChunkVAO chunkVAO = new ChunkVAO(c);
+	}
+
 }

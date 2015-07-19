@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.util.Location;
 import eu.over9000.veya.util.MathUtil;
+import eu.over9000.veya.world.BlockType;
 import eu.over9000.veya.world.Chunk;
 import eu.over9000.veya.world.World;
 import eu.over9000.veya.world.generation.ChunkGenerator;
@@ -26,15 +27,36 @@ public class ChunkProvider implements Runnable {
 	private final BlockingQueue<ChunkStack> storeQueue = new LinkedBlockingQueue<>();
 	private final Thread storeThread;
 	private boolean alive = true;
+	private boolean debug;
 
-	public ChunkProvider(final World world) {
+	public ChunkProvider(final World world, final boolean debug) {
+		this.debug = debug;
 		this.world = world;
 		this.database = new ChunkDatabase();
 		this.cache = new ChunkCache();
-		this.storeThread = new Thread(this, "StoreThread");
+		
+		if (!debug) {
+			this.storeThread = new Thread(this, "StoreThread");
+			database.start();
+			storeThread.start();
+			
+		} else {
+			storeThread = null;
 
-		database.start();
-		storeThread.start();
+			Chunk c = new Chunk(world, 0, 0, 0);
+
+			ChunkStack cs = new ChunkStack(world, c.getChunkX(), c.getChunkZ());
+			cs.setChunkAt(c.getChunkY(), c);
+			cache.setChunkStackAt(cs.getX(), cs.getZ(), cs);
+
+			for (int x = 6; x < 10; x++) {
+				for (int z = 6; z < 10; z++) {
+					c.initBlockAt(x, 0, z, BlockType.STONE);
+				}
+			}
+			c.initBlockAt(8, 1, 8, BlockType.STONE);
+		}
+
 	}
 
 	public Chunk getChunkAt(final Location location, final ChunkRequestLevel level, final boolean create) {
@@ -46,28 +68,31 @@ public class ChunkProvider implements Runnable {
 
 		ChunkStack stack = cache.getChunkStackAt(x, z);
 
-		if (stack == null && level.includes(ChunkRequestLevel.DATABASE)) {
-			stack = getChunkStackFromDB(x, z);
-			if (stack == null && level.includes(ChunkRequestLevel.GENERATOR)) {
-				stack = getChunkStackFromGenerator(x, z);
+		if (!debug) {
+
+
+			if (stack == null && level.includes(ChunkRequestLevel.DATABASE)) {
+				stack = getChunkStackFromDB(x, z);
+				if (stack == null && level.includes(ChunkRequestLevel.GENERATOR)) {
+					stack = getChunkStackFromGenerator(x, z);
+				}
 			}
-		}
 
-		if (level.includes(ChunkRequestLevel.POPULATED)) {
-			stack = getChunkStackFromPopulator(x, z);
-		}
+			if (level.includes(ChunkRequestLevel.POPULATED)) {
+				stack = getChunkStackFromPopulator(x, z);
+			}
 
-		if (level.includes(ChunkRequestLevel.NEIGHBORS_LOADED)) {
+			if (level.includes(ChunkRequestLevel.NEIGHBORS_LOADED)) {
 
-			for (int i = -1; i <= 1; i++) {
-				for (int j = -1; j <= 1; j++) {
-					if (i != 0 && j != 0) {
-						getChunkAt(x + i, y, z + j, ChunkRequestLevel.GENERATOR, false);
+				for (int i = -1; i <= 1; i++) {
+					for (int j = -1; j <= 1; j++) {
+						if (i != 0 && j != 0) {
+							getChunkAt(x + i, y, z + j, ChunkRequestLevel.GENERATOR, false);
+						}
 					}
 				}
 			}
 		}
-
 		Chunk chunk;
 
 		if (stack == null) {
@@ -142,14 +167,18 @@ public class ChunkProvider implements Runnable {
 	}
 
 	public void onExit() {
-		alive = false;
-		try {
-			storeThread.interrupt();
-			storeThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if (!debug) {
+
+			alive = false;
+			try {
+				storeThread.interrupt();
+				storeThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			database.stop();
 		}
-		database.stop();
+
 	}
 
 	@Override
@@ -188,4 +217,5 @@ public class ChunkProvider implements Runnable {
 		}
 		//System.out.println("removed " + toRemove.size() + " chunkstacks from cache, new size: " + cache.getChunkStacks().size());
 	}
+
 }

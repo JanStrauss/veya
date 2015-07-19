@@ -37,11 +37,12 @@ public class Veya {
 	public static Scene scene;
 
 	public static boolean colorSwitch = false;
-	public static boolean gravitySwitch = true;
+	public static boolean gravitySwitch = false;
 
-	private static float ambient = 0.75f;
-	private static float diffuse = 0.50f;
-	private static float specular = 0.50f;
+	private static float ambient = 1f;
+	private static float diffuse = 0.00f;
+	private static float specular = 0.00f;
+
 	private static final float df = 0.05f;
 	private static Frame frame;
 
@@ -67,7 +68,7 @@ public class Veya {
 		frame.setSize(1280, 720);
 		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
-		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		//frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		frame.setIconImage(loadIcon());
 
 		Display.setParent(canvas);
@@ -77,11 +78,11 @@ public class Veya {
 		System.out.println("Java version: " + System.getProperty("java.version"));
 		System.out.println("graphics adapter: " + Display.getAdapter());
 
-		Veya.program = new Program(new String[]{"vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal",}, new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "cameraPosition"});
+		Veya.program = new Program(new String[]{"vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "vertexAO"}, new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "cameraPosition"});
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(-40, 120, -40);
+		Veya.camera = new Camera(7, 5, 7);
 		Veya.scene = new Scene(1337);
 
 		Util.checkGLError();

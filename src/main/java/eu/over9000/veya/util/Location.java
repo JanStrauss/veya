@@ -81,6 +81,15 @@ public class Location implements Comparable<Location> {
 	}
 
 	@Override
+	public String toString() {
+		return "Location{" +
+				"x=" + x +
+				", y=" + y +
+				", z=" + z +
+				'}';
+	}
+
+	@Override
 	public int compareTo(final Location other) {
 		return Integer.compare(calcVecDistance(this, this.centerChunk), calcVecDistance(other, this.centerChunk));
 	}
