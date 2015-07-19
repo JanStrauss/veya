@@ -12,6 +12,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 
+import eu.over9000.veya.console.Console;
 import eu.over9000.veya.rendering.Camera;
 import eu.over9000.veya.rendering.Program;
 import eu.over9000.veya.rendering.Scene;
@@ -41,8 +42,8 @@ public class Veya {
 	public static boolean gravitySwitch = true;
 	public static boolean wireframeSwitch = false;
 
-	private static float ambient = 0.80f;
-	private static float diffuse = 0.20f;
+	private static float ambient = 0.60f;
+	private static float diffuse = 0.40f;
 
 	private static float specular = 0.30f;
 	private static final float df = 0.05f;
@@ -91,6 +92,7 @@ public class Veya {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glLineWidth(2.5f);
 
 		Util.checkGLError();
 
@@ -104,6 +106,7 @@ public class Veya {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
+		Console.start();
 	}
 
 	private static void run() {
@@ -182,7 +185,7 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular + " | chunk updates: " + scene.chunkUpdateCounter);
+				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular + " | chunk updates: " + scene.chunkUpdateCounter + " | selected block: " + scene.placeBlockType);
 				count = 0;
 				scene.chunkUpdateCounter = 0;
 
@@ -309,12 +312,13 @@ public class Veya {
 		}
 		while (Mouse.next()) {
 			if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
-
 				scene.performLeftClick();
 			}
 			if (Mouse.getEventButton() == 1 && Mouse.getEventButtonState()) {
 				scene.performRightClick();
-
+			}
+			if (Mouse.getEventButton() == 2 && Mouse.getEventButtonState()) {
+				scene.performMiddleClick();
 			}
 		}
 	}
@@ -324,6 +328,9 @@ public class Veya {
 		Veya.program.unload();
 		Display.destroy();
 		frame.setVisible(false);
+
+		Console.stop();
+
 		System.exit(0);
 	}
 

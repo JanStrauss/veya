@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.util.Location;
@@ -25,7 +26,7 @@ public class ChunkProvider implements Runnable {
 
 	private final BlockingQueue<ChunkStack> storeQueue = new LinkedBlockingQueue<>();
 	private final Thread storeThread;
-	private boolean alive = true;
+	private AtomicBoolean alive = new AtomicBoolean(true);
 
 	public ChunkProvider(final World world) {
 		this.world = world;
@@ -132,7 +133,7 @@ public class ChunkProvider implements Runnable {
 	}
 
 	private void addToQueue(final ChunkStack stack) {
-		if (!alive) {
+		if (!alive.get()) {
 			return;
 		}
 
@@ -142,7 +143,7 @@ public class ChunkProvider implements Runnable {
 	}
 
 	public void onExit() {
-		alive = false;
+		alive.set(false);
 		try {
 			storeThread.interrupt();
 			storeThread.join();
@@ -154,11 +155,11 @@ public class ChunkProvider implements Runnable {
 
 	@Override
 	public void run() {
-		while (alive) {
+		while (alive.get()) {
 			try {
 				database.storeChunkStack(world, storeQueue.take());
-			} catch (InterruptedException e) {
-				if (!alive) {
+			} catch (final InterruptedException e) {
+				if (!alive.get()) {
 					break;
 				}
 				e.printStackTrace();

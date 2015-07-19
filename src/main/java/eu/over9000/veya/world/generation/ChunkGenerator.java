@@ -71,7 +71,7 @@ public class ChunkGenerator {
 						final BlockType type = rawChunkStack[x][z][baseY + y];
 						if (type != null) {
 							empty = false;
-							chunk.initBlockAt(x, y, z, type);
+							chunk.setBlockAt(x, y, z, type);
 						}
 					}
 				}

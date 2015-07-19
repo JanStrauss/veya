@@ -116,7 +116,7 @@ public class ChunkDatabase {
 				for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
 					final byte value = bytes[x + y * Chunk.CHUNK_SIZE + z * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE];
 					if (value >= 0) {
-						chunk.initBlockAt(x, y, z, BlockType.values()[value]);
+						chunk.setBlockAt(x, y, z, BlockType.values()[value]);
 					}
 				}
 			}

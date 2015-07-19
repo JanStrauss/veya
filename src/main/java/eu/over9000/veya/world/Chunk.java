@@ -30,11 +30,6 @@ public class Chunk {
 		return this.blocks[x][y][z];
 	}
 
-	public void initBlockAt(final int x, final int y, final int z, final BlockType type) {
-		Chunk.checkParameters(x, y, z);
-		this.blocks[x][y][z] = type;
-	}
-
 	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
 		Chunk.checkParameters(x, y, z);
 		this.blocks[x][y][z] = type;

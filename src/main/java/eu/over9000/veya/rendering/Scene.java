@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -45,7 +46,7 @@ public class Scene {
 	private final Queue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
 	private final Queue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
 
-	private boolean alive;
+	private AtomicBoolean alive;
 
 	public int chunkUpdateCounter = 0;
 
@@ -53,37 +54,35 @@ public class Scene {
 
 	private final Thread displayedChunkUpdaterThread;
 
+	public BlockType placeBlockType = BlockType.TEST;
+	
 	public Scene(final long seed) {
-		this.alive = true;
+		this.alive = new AtomicBoolean(true);
 		this.world = new World(seed, "Keaysea");
 		this.texture_handle = TextureLoader.loadBlockTexture(GL13.GL_TEXTURE0);
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 
-		final Runnable displayedChunkUpdater = new Runnable() {
-
-			@Override
-			public void run() {
-				while (Scene.this.alive) {
-					synchronized (Scene.this.lock) {
-						try {
-							while (!Scene.this.camPosChanged) {
-								Scene.this.lock.wait();
-							}
-						} catch (final InterruptedException e) {
-							if (!Scene.this.alive) {
-								return;
-							}
-							e.printStackTrace();
+		final Runnable displayedChunkUpdater = () -> {
+			while (Scene.this.alive.get()) {
+				synchronized (Scene.this.lock) {
+					try {
+						while (!Scene.this.camPosChanged) {
+							Scene.this.lock.wait();
 						}
-						Scene.this.camPosChanged = false;
+					} catch (final InterruptedException e) {
+						if (!Scene.this.alive.get()) {
+							return;
+						}
+						e.printStackTrace();
 					}
-
-					Scene.this.updateDisplayedChunks();
-					world.clearCache(centerChunk, SCENE_CHUNK_CACHE_RANGE);
+					Scene.this.camPosChanged = false;
 				}
 
+				Scene.this.updateDisplayedChunks();
+				world.clearCache(centerChunk, SCENE_CHUNK_CACHE_RANGE);
 			}
+
 		};
 		this.displayedChunkUpdaterThread = new Thread(displayedChunkUpdater, "DisplayedChunkUpdater");
 		this.displayedChunkUpdaterThread.start();
@@ -237,7 +236,7 @@ public class Scene {
 	}
 
 	public void dispose() {
-		this.alive = false;
+		this.alive.set(false);
 		this.displayedChunkUpdaterThread.interrupt();
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
@@ -252,7 +251,7 @@ public class Scene {
 		return world;
 	}
 
-	public void performLeftClick() {
+	private LookAtResult getLookAtBlock() {
 		final Vector3f position = Veya.camera.getPosition();
 		final Vector3f viewDirection = Veya.camera.getViewDirection();
 
@@ -269,50 +268,50 @@ public class Scene {
 			final int[] intersectionResult = CollisionDetection.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
 
 			if (intersectionResult != null) {
-				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
-				world.clearBlockAt(candidate.x, candidate.y, candidate.z, ChunkRequestLevel.CACHE);
-				break;
+				return new LookAtResult(candidate, intersectionResult);
 			}
 		}
+
+		return null;
+	}
+
+	public void performLeftClick() {
+
+		final LookAtResult lookAt = getLookAtBlock();
+
+		if (lookAt != null) {
+			world.clearBlockAt(lookAt.location.x, lookAt.location.y, lookAt.location.z, ChunkRequestLevel.CACHE);
+		}
+
 	}
 
 	public void performRightClick() {
-		final Vector3f position = Veya.camera.getPosition();
-		final Vector3f viewDirection = Veya.camera.getViewDirection();
+		final LookAtResult lookAt = getLookAtBlock();
 
-		final List<Location> candidates = Location.getLocationsAround((int) position.x, (int) position.y, (int) position.z, 4);
-		Collections.sort(candidates);
+		if (lookAt != null) {
+			final Location placeLocation = CollisionDetection.getNeighborBlockFromIntersectionResult(lookAt.location.x, lookAt.location.y, lookAt.location.z, lookAt.lookAtResult);
 
-		for (final Location candidate : candidates) {
-			final BlockType type = world.getBlockAt(candidate.x, candidate.y, candidate.z);
+			final AABB blockAABB = new AABB(placeLocation);
+			final AABB cameraAABB = Veya.camera.getAABB();
 
-			if (type == null) {
-				continue;
+			if (!CollisionDetection.checkCollision(cameraAABB, blockAABB)) {
+				world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, placeBlockType, ChunkRequestLevel.CACHE, true);
 			}
 
-			final int[] intersectionResult = CollisionDetection.checkCollision(position, viewDirection, candidate.x, candidate.y, candidate.z);
+		}
+	}
 
-			if (intersectionResult != null) {
-				//System.out.println("found collision with block at " + candidate.y + " " + candidate.y + " " + candidate.z + " with type " + type);
+	public void performMiddleClick() {
+		final LookAtResult lookAt = getLookAtBlock();
 
-				final Location placeLocation = CollisionDetection.getNeighborBlockFromIntersectionResult(candidate.x, candidate.y, candidate.z, intersectionResult);
-
-				final AABB blockAABB = new AABB(placeLocation);
-				final AABB cameraAABB = Veya.camera.getAABB();
-
-				if (!CollisionDetection.checkCollision(cameraAABB, blockAABB)) {
-					world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST, ChunkRequestLevel.CACHE, true);
-				}
-
-				break;
-			}
+		if (lookAt != null) {
+			placeBlockType = world.getBlockAt(lookAt.location.x, lookAt.location.y, lookAt.location.z);
 		}
 	}
 
 	public void onNewChunk(final Chunk chunk) {
 		if (checkChunkInViewRange(chunk)) {
 			toAdd.add(new ChunkChunkVAOPair(chunk, new ChunkVAO(chunk)));
-
 		}
 	}
 
@@ -329,4 +328,17 @@ public class Scene {
 		}
 	}
 
+	public void setBlock(final BlockType type) {
+		this.placeBlockType = type;
+	}
+
+	private class LookAtResult {
+		public final int[] lookAtResult;
+		public final Location location;
+
+		public LookAtResult(final Location location, final int[] lookAtResult) {
+			this.location = location;
+			this.lookAtResult = lookAtResult;
+		}
+	}
 }
