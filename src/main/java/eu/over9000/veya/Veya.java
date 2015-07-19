@@ -82,7 +82,7 @@ public class Veya {
 
 		Util.checkGLError();
 
-		Veya.camera = new Camera(7, 5, 7);
+		Veya.camera = new Camera(-40, 120, -40);
 		Veya.scene = new Scene(1337);
 
 		Util.checkGLError();

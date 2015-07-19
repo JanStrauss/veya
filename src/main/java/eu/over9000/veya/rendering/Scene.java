@@ -55,9 +55,7 @@ public class Scene {
 
 	public Scene(final long seed) {
 		this.alive = true;
-		this.world = new World(seed, "Keaysea", true);
-		updateDisplayedChunks();
-
+		this.world = new World(seed, "Keaysea");
 		this.texture_handle = TextureLoader.loadBlockTexture(GL13.GL_TEXTURE0);
 
 		this.light = new Light(0, 200, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
@@ -304,7 +302,6 @@ public class Scene {
 
 				if (!CollisionDetection.checkCollision(cameraAABB, blockAABB)) {
 					world.setBlockAt(placeLocation.x, placeLocation.y, placeLocation.z, BlockType.TEST, ChunkRequestLevel.CACHE, true);
-					System.out.println("placed block at " + placeLocation);
 				}
 
 				break;

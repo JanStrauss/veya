@@ -23,15 +23,7 @@ public class World {
 		this.seed = seed;
 		this.name = name;
 		this.random = new Random(seed);
-		this.provider = new ChunkProvider(this, false);
-	}
-
-	public World(final long seed, final String name, boolean debug) {
-		this.seed = seed;
-		this.name = name;
-		this.random = new Random(seed);
-
-		this.provider = new ChunkProvider(this, debug);
+		this.provider = new ChunkProvider(this);
 	}
 
 	public BlockType getBlockAt(final Location location, final ChunkRequestLevel level, final boolean create) {
@@ -193,4 +185,5 @@ public class World {
 	public int hashCode() {
 		return Objects.hash(name);
 	}
+	
 }

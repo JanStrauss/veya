@@ -51,7 +51,7 @@ void main() {
 		adaptedLightFactors.z = 0;
 	}
 
-	adaptedLightFactors.x = 0.1 + 0.9*(adaptedLightFactors.x * norm(ambiantOcc));
+	adaptedLightFactors.x = 0.25 + 0.75*(adaptedLightFactors.x * norm(ambiantOcc));
 
 	fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor, adaptedLightFactors), texColor.a);
 }
