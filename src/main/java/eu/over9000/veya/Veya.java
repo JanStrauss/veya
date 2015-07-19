@@ -37,11 +37,12 @@ public class Veya {
 	public static Scene scene;
 
 	public static boolean colorSwitch = false;
-	public static boolean gravitySwitch = false;
+	public static boolean aoSwitch = true;
+	public static boolean gravitySwitch = true;
 
-	private static float ambient = 1f;
-	private static float diffuse = 0.00f;
-	private static float specular = 0.00f;
+	private static float ambient = 0.80f;
+	private static float diffuse = 0.20f;
+	private static float specular = 0.30f;
 
 	private static final float df = 0.05f;
 	private static Frame frame;
@@ -78,7 +79,7 @@ public class Veya {
 		System.out.println("Java version: " + System.getProperty("java.version"));
 		System.out.println("graphics adapter: " + Display.getAdapter());
 
-		Veya.program = new Program(new String[]{"vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "vertexAO"}, new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "cameraPosition"});
+		Veya.program = new Program(new String[]{"vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "vertexAO"}, new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "aoSwitch", "cameraPosition"});
 
 		Util.checkGLError();
 
@@ -111,6 +112,14 @@ public class Veya {
 		Veya.camera.updateProjectionMatrix(Display.getWidth(), Display.getHeight());
 		Veya.camera.updateViewMatrix();
 		Veya.scene.init();
+
+		program.use(true);
+		GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
+		program.use(false);
+
+		program.use(true);
+		GL20.glUniform1i(Veya.program.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
+		program.use(false);
 
 		Veya.program.use(false);
 
@@ -188,6 +197,12 @@ public class Veya {
 				Veya.colorSwitch = !Veya.colorSwitch;
 				program.use(true);
 				GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
+				program.use(false);
+			}
+			if (Keyboard.getEventKey() == Keyboard.KEY_Y && Keyboard.getEventKeyState()) {
+				Veya.aoSwitch = !Veya.aoSwitch;
+				program.use(true);
+				GL20.glUniform1i(Veya.program.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
 				program.use(false);
 			}
 			if (Keyboard.getEventKey() == Keyboard.KEY_SPACE && Keyboard.getEventKeyState()) {

@@ -9,6 +9,7 @@ uniform vec3 lightColor;
 uniform vec3 lightFactors;
 
 uniform bool colorSwitch;
+uniform bool aoSwitch;
 
 in vec4 passColor;
 in vec3 passTexturePosition;
@@ -51,7 +52,9 @@ void main() {
 		adaptedLightFactors.z = 0;
 	}
 
-	adaptedLightFactors.x = 0.25 + 0.75*(adaptedLightFactors.x * norm(ambiantOcc));
+	if(aoSwitch){
+		adaptedLightFactors.x = 0.15 + 0.85*(adaptedLightFactors.x * norm(ambiantOcc));
+	}
 
 	fragColor = vec4(BlinnPhong(V, N, L, baseColor, lightColor, adaptedLightFactors), texColor.a);
 }
