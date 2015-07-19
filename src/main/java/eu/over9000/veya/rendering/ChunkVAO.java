@@ -208,13 +208,21 @@ public class ChunkVAO {
 			if (solid) {
 				if (holdsSolid) {
 					GL30.glBindVertexArray(this.vao_handle_solid);
-					GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.index_length_solid, GL11.GL_UNSIGNED_INT, 0);
+					if (Veya.wireframeSwitch) {
+						GL11.glDrawElements(GL11.GL_LINE_STRIP, this.index_length_solid, GL11.GL_UNSIGNED_INT, 0);
+					} else {
+						GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.index_length_solid, GL11.GL_UNSIGNED_INT, 0);
+					}
 					GL30.glBindVertexArray(0);
 				}
 			} else {
 				if (holdsTransparent) {
 					GL30.glBindVertexArray(this.vao_handle_transparent);
-					GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.index_length_transparent, GL11.GL_UNSIGNED_INT, 0);
+					if (Veya.wireframeSwitch) {
+						GL11.glDrawElements(GL11.GL_LINE_STRIP, this.index_length_transparent, GL11.GL_UNSIGNED_INT, 0);
+					} else {
+						GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, this.index_length_transparent, GL11.GL_UNSIGNED_INT, 0);
+					}
 					GL30.glBindVertexArray(0);
 				}
 			}

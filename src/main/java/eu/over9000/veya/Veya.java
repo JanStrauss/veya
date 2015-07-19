@@ -39,17 +39,18 @@ public class Veya {
 	public static boolean colorSwitch = false;
 	public static boolean aoSwitch = true;
 	public static boolean gravitySwitch = true;
+	public static boolean wireframeSwitch = false;
 
 	private static float ambient = 0.80f;
 	private static float diffuse = 0.20f;
+
 	private static float specular = 0.30f;
-
 	private static final float df = 0.05f;
+
 	private static Frame frame;
-
 	private static boolean shutdown = false;
-	private static long lastSpacePress = 0;
 
+	private static long lastSpacePress = 0;
 	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
 	//public static final EnumSet<BlockType> ignoreBlocks = EnumSet.of(BlockType.STONE);
 
@@ -204,6 +205,9 @@ public class Veya {
 				program.use(true);
 				GL20.glUniform1i(Veya.program.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
 				program.use(false);
+			}
+			if (Keyboard.getEventKey() == Keyboard.KEY_V && Keyboard.getEventKeyState()) {
+				Veya.wireframeSwitch = !Veya.wireframeSwitch;
 			}
 			if (Keyboard.getEventKey() == Keyboard.KEY_SPACE && Keyboard.getEventKeyState()) {
 				final long diff = Keyboard.getEventNanoseconds() - lastSpacePress;
