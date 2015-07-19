@@ -70,7 +70,7 @@ public class Veya {
 		frame.setSize(1280, 720);
 		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
-		//frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		frame.setIconImage(loadIcon());
 
 		Display.setParent(canvas);
