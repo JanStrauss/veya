@@ -39,7 +39,7 @@ void main() {
 	vec3 N = normal;
 	vec3 L = normalize(lightPosition - position);
 
-	vec4 texColor = texture(textureData, vec3(passTexturePosition.xy, floor(passTexturePosition.z)));
+	vec4 texColor = texture(textureData, vec3(passTexturePosition.xy, passTexturePosition.z+0.25));
 
 	vec3 baseColor = vec3(texColor.rgb);
 	if(colorSwitch){
