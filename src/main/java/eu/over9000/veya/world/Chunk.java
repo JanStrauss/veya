@@ -1,78 +1,106 @@
 package eu.over9000.veya.world;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.StampedLock;
 
+import eu.over9000.veya.util.Location;
 import eu.over9000.veya.util.Side;
 import eu.over9000.veya.world.storage.ChunkRequestLevel;
 
 public class Chunk {
 	public static final int CHUNK_SIZE = 32;
+	public static final int DATA_LENGTH = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
 	private final World world;
 
-	private final int chunkX;
-	private final int chunkY;
-	private final int chunkZ;
+	private final Location location;
 
-	private final BlockType[][][] blocks = new BlockType[Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE][Chunk.CHUNK_SIZE];
+	private final BlockType[] blocks;
 
-	private boolean changed = true;
+	private final AtomicBoolean changed = new AtomicBoolean(true);
 
+	private final StampedLock readWriteLock = new StampedLock();
+
+	public Chunk(final World world, final int chunkX, final int chunkY, final int chunkZ, final BlockType[] data) {
+		this.world = world;
+		this.location = new Location(chunkX, chunkY, chunkZ);
+		this.blocks = data;
+		notifyNeighborChunksOfUpdate();
+	}
+	
 	public Chunk(final World world, final int chunkX, final int chunkY, final int chunkZ) {
 		this.world = world;
-		this.chunkX = chunkX;
-		this.chunkY = chunkY;
-		this.chunkZ = chunkZ;
+		this.location = new Location(chunkX, chunkY, chunkZ);
+		this.blocks = new BlockType[DATA_LENGTH];
+		notifyNeighborChunksOfUpdate();
+	}
+	
+	public static int toIndex(final int x, final int y, final int z) {
+		return x + y * Chunk.CHUNK_SIZE + z * Chunk.CHUNK_SIZE * Chunk.CHUNK_SIZE;
 	}
 
 	public BlockType getBlockAt(final int x, final int y, final int z) {
 		Chunk.checkParameters(x, y, z);
-		return this.blocks[x][y][z];
+
+		final long lock = readWriteLock.readLock();
+		final BlockType type = this.blocks[toIndex(x, y, z)];
+		readWriteLock.unlock(lock);
+
+		return type;
 	}
 
 	public void setBlockAt(final int x, final int y, final int z, final BlockType type) {
 		Chunk.checkParameters(x, y, z);
-		this.blocks[x][y][z] = type;
-		blockChanged();
+
+		final long lock = readWriteLock.writeLock();
+		this.blocks[toIndex(x, y, z)] = type;
+		readWriteLock.unlock(lock);
+
+		changed();
 		notifyNeighborChunksOfUpdate(x, y, z);
 	}
 
 	public void clearBlockAt(final int x, final int y, final int z) {
 		Chunk.checkParameters(x, y, z);
-		this.blocks[x][y][z] = null;
-		this.blockChanged();
+
+		final long lock = readWriteLock.writeLock();
+		this.blocks[toIndex(x, y, z)] = null;
+		readWriteLock.unlock(lock);
+
+		this.changed();
 		notifyNeighborChunksOfUpdate(x, y, z);
 	}
 
 	public boolean getAndResetChangedFlag() {
-		final boolean value = this.changed;
-		this.changed = false;
-		return value;
+		return this.changed.getAndSet(false);
 	}
 
 	public boolean isEmpty() {
+		final long lock = readWriteLock.readLock();
 		for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
 			for (int y = 0; y < Chunk.CHUNK_SIZE; y++) {
 				for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
-					if (this.blocks[x][y][z] != null) {
+					if (this.blocks[toIndex(x, y, z)] != null) {
 						return false;
 					}
 				}
 			}
 		}
+		readWriteLock.unlock(lock);
 		return true;
 	}
 
 	public int getChunkX() {
-		return this.chunkX;
+		return this.location.x;
 	}
 
 	public int getChunkY() {
-		return this.chunkY;
+		return this.location.y;
 	}
 
 	public int getChunkZ() {
-		return this.chunkZ;
+		return this.location.z;
 	}
 
 	public World getWorld() {
@@ -94,45 +122,51 @@ public class Chunk {
 	}
 
 	private void notifyNeighborChunksOfUpdate(final int x, final int y, final int z) {
+		final ChunkRequestLevel requestLevel = ChunkRequestLevel.CACHE;
 		if (x == 0) {
-			final Chunk west = this.world.getChunkAt(this.chunkX - 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
+			final Chunk west = this.world.getChunkAt(location.x - 1, location.y, location.z, requestLevel, false);
 			if (west != null) {
-				west.blockChanged();
+				west.changed();
 			}
 		} else if (x == Chunk.CHUNK_SIZE - 1) {
-			final Chunk east = this.world.getChunkAt(this.chunkX + 1, this.chunkY, this.chunkZ, ChunkRequestLevel.CACHE, false);
+			final Chunk east = this.world.getChunkAt(location.x + 1, location.y, location.z, requestLevel, false);
 			if (east != null) {
-				east.blockChanged();
+				east.changed();
 			}
 		}
 
 		if (y == 0) {
-			final Chunk bottom = this.world.getChunkAt(this.chunkX, this.chunkY - 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
+			final Chunk bottom = this.world.getChunkAt(location.x, location.y - 1, location.z, requestLevel, false);
 			if (bottom != null) {
-				bottom.blockChanged();
+				bottom.changed();
 			}
 		} else if (y == Chunk.CHUNK_SIZE - 1) {
-			final Chunk top = this.world.getChunkAt(this.chunkX, this.chunkY + 1, this.chunkZ, ChunkRequestLevel.CACHE, false);
+			final Chunk top = this.world.getChunkAt(location.x, location.y + 1, location.z, requestLevel, false);
 			if (top != null) {
-				top.blockChanged();
+				top.changed();
 			}
 		}
 
 		if (z == 0) {
-			final Chunk north = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ - 1, ChunkRequestLevel.CACHE, false);
+			final Chunk north = this.world.getChunkAt(location.x, location.y, location.z - 1, requestLevel, false);
 			if (north != null) {
-				north.blockChanged();
+				north.changed();
 			}
 		} else if (z == Chunk.CHUNK_SIZE - 1) {
-			final Chunk south = this.world.getChunkAt(this.chunkX, this.chunkY, this.chunkZ + 1, ChunkRequestLevel.CACHE, false);
+			final Chunk south = this.world.getChunkAt(location.x, location.y, location.z + 1, requestLevel, false);
 			if (south != null) {
-				south.blockChanged();
+				south.changed();
 			}
 		}
 	}
 
-	private void blockChanged() {
-		this.changed = true;
+	private void notifyNeighborChunksOfUpdate() {
+		notifyNeighborChunksOfUpdate(0, 0, 0);
+		notifyNeighborChunksOfUpdate(CHUNK_SIZE - 1, CHUNK_SIZE - 1, CHUNK_SIZE - 1);
+	}
+
+	private void changed() {
+		this.changed.set(true);
 	}
 
 	@Override
@@ -143,23 +177,20 @@ public class Chunk {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		final Chunk chunk = (Chunk) o;
-		return Objects.equals(chunkX, chunk.chunkX) &&
-				Objects.equals(chunkY, chunk.chunkY) &&
-				Objects.equals(chunkZ, chunk.chunkZ) &&
-				Objects.equals(world, chunk.world);
+		final Chunk other = (Chunk) o;
+		return Objects.equals(world, other.world) && Objects.equals(location, other.location);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(world, chunkX, chunkY, chunkZ);
+		return Objects.hash(world, location);
 	}
 
 	public BlockType getNeighborBlock(final int x, final int y, final int z, final Side side) {
 		try {
 			return this.getBlockAt(x + side.getOffsetX(), y + side.getOffsetY(), z + side.getOffsetZ());
 		} catch (final IllegalArgumentException e) {
-			final Chunk neighbor = this.world.getChunkAt(this.chunkX + side.getOffsetX(), this.chunkY + side.getOffsetY(), this.chunkZ + side.getOffsetZ(), ChunkRequestLevel.CACHE, false);
+			final Chunk neighbor = this.world.getChunkAt(this.location.x + side.getOffsetX(), this.location.y + side.getOffsetY(), this.location.z + side.getOffsetZ(), ChunkRequestLevel.CACHE, false);
 			if (neighbor == null) {
 				return null;
 			}
@@ -174,11 +205,20 @@ public class Chunk {
 	@Override
 	public String toString() {
 		return "Chunk{" +
-				"world=" + world.getName() +
-				", X=" + chunkX +
-				", Y=" + chunkY +
-				", Z=" + chunkZ +
+				"world=" + world +
+				", location=" + location +
 				'}';
 	}
 
+	public BlockType[] copyRaw() {
+		final BlockType[] copy = new BlockType[DATA_LENGTH];
+		final long lock = readWriteLock.readLock();
+		System.arraycopy(blocks, 0, copy, 0, DATA_LENGTH);
+		readWriteLock.unlock(lock);
+		return copy;
+	}
+	
+	public Location getLocation() {
+		return location;
+	}
 }

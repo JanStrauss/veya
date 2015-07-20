@@ -14,5 +14,8 @@ public class MathUtil {
 	public static float scale(final float valueIn, final float baseMin, final float baseMax, final float limitMin, final float limitMax) {
 		return ((limitMax - limitMin) * (valueIn - baseMin) / (baseMax - baseMin)) + limitMin;
 	}
-
+	
+	public static boolean nextTo(final int a, final int b) {
+		return a == b || a - 1 == b || a + 1 == b;
+	}
 }

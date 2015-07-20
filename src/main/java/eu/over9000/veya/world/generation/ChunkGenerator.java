@@ -62,7 +62,7 @@ public class ChunkGenerator {
 		final ChunkStack chunks = new ChunkStack(world, chunkX, chunkZ);
 
 		for (int chunkY = 0; chunkY < World.MAX_WORLD_HEIGHT_IN_CHUNKS; chunkY++) {
-			final Chunk chunk = new Chunk(world, chunkX, chunkY, chunkZ);
+			final BlockType[] chunk_data = new BlockType[Chunk.DATA_LENGTH];
 			boolean empty = true;
 			for (int x = 0; x < Chunk.CHUNK_SIZE; x++) {
 				for (int z = 0; z < Chunk.CHUNK_SIZE; z++) {
@@ -71,11 +71,12 @@ public class ChunkGenerator {
 						final BlockType type = rawChunkStack[x][z][baseY + y];
 						if (type != null) {
 							empty = false;
-							chunk.setBlockAt(x, y, z, type);
+							chunk_data[Chunk.toIndex(x, y, z)] = type;
 						}
 					}
 				}
 			}
+			final Chunk chunk = new Chunk(world, chunkX, chunkY, chunkZ, chunk_data);
 			if (!empty) {
 				chunks.setChunkAt(chunkY, chunk);
 			}

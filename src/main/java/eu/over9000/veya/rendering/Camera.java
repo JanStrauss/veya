@@ -155,11 +155,11 @@ public class Camera {
 		final boolean checkY = checkNewPositionSingleDim(buildAABB(currentPosition.x, nextPosition.y, currentPosition.z));
 		final boolean checkZ = checkNewPositionSingleDim(buildAABB(currentPosition.x, currentPosition.y, nextPosition.z));
 
-		if (!checkX || !Veya.ENABLE_COLLISION) {
+		if (!checkX || !Veya.collisionSwitch) {
 			this.currentPosition.x = nextPosition.x;
 		}
 
-		if (!checkY || !Veya.ENABLE_COLLISION) { // no collision
+		if (!checkY || !Veya.collisionSwitch) { // no collision
 			this.currentPosition.y = nextPosition.y;
 			onGround = false;
 		} else { // collision
@@ -170,7 +170,7 @@ public class Camera {
 				Veya.gravitySwitch = true;
 			}
 		}
-		if (!checkZ || !Veya.ENABLE_COLLISION) {
+		if (!checkZ || !Veya.collisionSwitch) {
 			this.currentPosition.z = nextPosition.z;
 		}
 

@@ -80,5 +80,23 @@ public class Console {
 			Veya.scene.setBlock(type);
 			System.out.println("set place block type to " + type);
 		});
+		commands.put("collision", args -> {
+			if (!args.isEmpty()) {
+				return;
+			}
+
+			Veya.collisionSwitch = !Veya.collisionSwitch;
+
+			System.out.println("collision changed to " + Veya.collisionSwitch);
+		});
+		commands.put("gravity", args -> {
+			if (!args.isEmpty()) {
+				return;
+			}
+
+			Veya.gravitySwitch = !Veya.gravitySwitch;
+
+			System.out.println("gravity changed to " + Veya.gravitySwitch);
+		});
 	}
 }

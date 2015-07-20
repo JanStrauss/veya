@@ -3,9 +3,12 @@ package eu.over9000.veya.rendering;
 import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -46,13 +49,18 @@ public class Scene {
 	private final Queue<ChunkChunkVAOPair> toAdd = new ConcurrentLinkedQueue<>();
 	private final Queue<ChunkChunkVAOPair> toRemove = new ConcurrentLinkedQueue<>();
 
+	private final BlockingQueue<Chunk> toUpdateOffRender = new LinkedBlockingQueue<>();
+	private final Queue<ChunkChunkVAOPair> updatedUpdateOffRender = new ConcurrentLinkedQueue<>();
+
 	private AtomicBoolean alive;
 
-	public int chunkUpdateCounter = 0;
+	public AtomicInteger chunkUpdateCounterInRender = new AtomicInteger(0);
+	public AtomicInteger chunkUpdateCounterOffRender = new AtomicInteger(0);
 
 	private Location centerChunk = new Location(0, 0, 0);
 
 	private final Thread displayedChunkUpdaterThread;
+	private final Thread chunkVAOUpdateOffRenderThread;
 
 	public BlockType placeBlockType = BlockType.TEST;
 	
@@ -82,10 +90,31 @@ public class Scene {
 				Scene.this.updateDisplayedChunks();
 				world.clearCache(centerChunk, SCENE_CHUNK_CACHE_RANGE);
 			}
-
 		};
+
+		final Runnable offRenderChunkUpdater = () -> {
+			while (Scene.this.alive.get()) {
+				try {
+					final Chunk toUpdate = toUpdateOffRender.take();
+					ChunkVAO chunkVAO = new ChunkVAO(toUpdate);
+					updatedUpdateOffRender.add(new ChunkChunkVAOPair(toUpdate, chunkVAO));
+					chunkUpdateCounterOffRender.incrementAndGet();
+				} catch (InterruptedException e) {
+					if (!Scene.this.alive.get()) {
+						return;
+					}
+					e.printStackTrace();
+				}
+
+			}
+		};
+
+
 		this.displayedChunkUpdaterThread = new Thread(displayedChunkUpdater, "DisplayedChunkUpdater");
 		this.displayedChunkUpdaterThread.start();
+
+		this.chunkVAOUpdateOffRenderThread = new Thread(offRenderChunkUpdater, "OffRenderChunkUpdater");
+		this.chunkVAOUpdateOffRenderThread.start();
 
 	}
 
@@ -175,17 +204,31 @@ public class Scene {
 			removeEntry.getChunkVAO().dispose();
 		}
 
+		ChunkChunkVAOPair updatedEntry;
+		while ((updatedEntry = this.updatedUpdateOffRender.poll()) != null) {
+			updatedEntry.getChunkVAO().create();
+			final ChunkVAO oldVAO = this.displayedChunks.put(updatedEntry.getChunk(), updatedEntry.getChunkVAO());
+			if (oldVAO != null) {
+				oldVAO.dispose();
+			}
+		}
+
 		int updates = 0;
 		for (final Chunk chunk : displayedChunks.keySet()) {
 			if (world.hasChunkChanged(chunk)) {
-				final ChunkVAO newVAO = new ChunkVAO(chunk);
-				final ChunkVAO oldVAO = this.displayedChunks.put(chunk, newVAO);
-				oldVAO.dispose();
-				newVAO.create();
-				chunkUpdateCounter++;
-				updates++;
-				if (updates > MAX_CHUNK_UPDATES_PER_FRAME) {
-					break;
+				if (chunk.getLocation().nextTo(centerChunk)) {
+
+					final ChunkVAO newVAO = new ChunkVAO(chunk);
+					final ChunkVAO oldVAO = this.displayedChunks.put(chunk, newVAO);
+					oldVAO.dispose();
+					newVAO.create();
+					chunkUpdateCounterInRender.incrementAndGet();
+					updates++;
+					if (updates > MAX_CHUNK_UPDATES_PER_FRAME) {
+						break;
+					}
+				} else {
+					toUpdateOffRender.add(chunk);
 				}
 			}
 		}
@@ -238,6 +281,7 @@ public class Scene {
 	public void dispose() {
 		this.alive.set(false);
 		this.displayedChunkUpdaterThread.interrupt();
+		this.chunkVAOUpdateOffRenderThread.interrupt();
 		for (final Entry<Chunk, ChunkVAO> entry : this.displayedChunks.entrySet()) {
 			if (entry.getValue() != null) {
 				entry.getValue().dispose();

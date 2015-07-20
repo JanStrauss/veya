@@ -21,12 +21,11 @@ import eu.over9000.veya.world.BlockType;
 
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
-	public static final boolean ENABLE_DAY_NIGHT = false;
-	public static final boolean ENABLE_COLLISION = true;
 
+	public static boolean ENABLE_DAY_NIGHT = false;
 	public static final float MOVEMENT_MULTIPLIER_WALK = 4.5f;
-	public static final float MOVEMENT_MULTIPLIER_FLY = 25f;
 
+	public static final float MOVEMENT_MULTIPLIER_FLY = 25f;
 	private static final float MOUSE_SENSITIVITY = 0.01f;
 
 	public static final float FIELD_OF_VIEW = 75.0f;
@@ -34,12 +33,14 @@ public class Veya {
 	public static final float FAR_CLIPPING_PLANE = 1000.0f;
 
 	public static Camera camera;
+
 	public static Program program;
 	public static Scene scene;
-
 	public static boolean colorSwitch = false;
+
 	public static boolean aoSwitch = true;
 	public static boolean gravitySwitch = true;
+	public static boolean collisionSwitch = true;
 	public static boolean wireframeSwitch = false;
 
 	private static float ambient = 0.60f;
@@ -185,9 +186,10 @@ public class Veya {
 			final long end = Sys.getTime();
 			if (end - start > 1000) {
 				start = end;
-				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular + " | chunk updates: " + scene.chunkUpdateCounter + " | selected block: " + scene.placeBlockType);
+				frame.setTitle("VEYA | fps: " + count + " | pos: x=" + Veya.camera.getPosition().x + ", y=" + Veya.camera.getPosition().y + ", z=" + Veya.camera.getPosition().z + " | #chunks displayed: " + Veya.scene.getChunkCount() + " | lightFactors: A=" + Veya.ambient + ", D=" + Veya.diffuse + ", S=" + Veya.specular + " | chunk updates: " + scene.chunkUpdateCounterInRender.get() + "/" + scene.chunkUpdateCounterOffRender.get() + " | selected block: " + scene.placeBlockType);
 				count = 0;
-				scene.chunkUpdateCounter = 0;
+				scene.chunkUpdateCounterInRender.set(0);
+				scene.chunkUpdateCounterOffRender.set(0);
 
 			} else {
 				count++;

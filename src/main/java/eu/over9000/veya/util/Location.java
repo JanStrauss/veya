@@ -93,4 +93,8 @@ public class Location implements Comparable<Location> {
 	public int compareTo(final Location other) {
 		return Integer.compare(calcVecDistance(this, this.centerChunk), calcVecDistance(other, this.centerChunk));
 	}
+
+	public boolean nextTo(final Location other) {
+		return MathUtil.nextTo(x, other.x) || MathUtil.nextTo(y, other.y) || MathUtil.nextTo(z, other.z);
+	}
 }
