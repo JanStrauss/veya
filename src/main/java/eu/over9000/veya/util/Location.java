@@ -95,6 +95,6 @@ public class Location implements Comparable<Location> {
 	}
 
 	public boolean nextTo(final Location other) {
-		return MathUtil.nextTo(x, other.x) || MathUtil.nextTo(y, other.y) || MathUtil.nextTo(z, other.z);
+		return MathUtil.nextTo(x, other.x) && MathUtil.nextTo(y, other.y) && MathUtil.nextTo(z, other.z);
 	}
 }
