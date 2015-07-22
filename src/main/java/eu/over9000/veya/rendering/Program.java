@@ -1,10 +1,5 @@
 package eu.over9000.veya.rendering;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.OpenGLException;
-import org.lwjgl.opengl.Util;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,14 +7,18 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.OpenGLException;
+import org.lwjgl.opengl.Util;
+
 public class Program {
 	private final int id;
 	private final Map<String, Integer> uniformLocations;
-	private final Map<String, Integer> attribLocations;
-	
-	public Program(final String[] attribNames, final String[] uniformNames) {
-		final int vsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/vertex.glsl"), GL20.GL_VERTEX_SHADER);
-		final int fsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/fragment.glsl"), GL20.GL_FRAGMENT_SHADER);
+
+	public Program(final String shaderName, final String[] uniformNames) {
+		final int vsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/" + shaderName + "/vertex.glsl"), GL20.GL_VERTEX_SHADER);
+		final int fsID = Program.loadShader(Program.class.getResourceAsStream("/shaders/" + shaderName + "/fragment.glsl"), GL20.GL_FRAGMENT_SHADER);
 		
 		this.id = GL20.glCreateProgram();
 		GL20.glAttachShader(this.id, vsID);
@@ -28,29 +27,22 @@ public class Program {
 		GL20.glLinkProgram(this.id);
 		Program.checkLinkage(this.id);
 		
-		GL20.glValidateProgram(this.id);
-		Program.checkValidation(this.id);
+		//GL20.glValidateProgram(this.id);
+		//Program.checkValidation(this.id);
 		
 		GL20.glDetachShader(this.id, vsID);
 		GL20.glDetachShader(this.id, fsID);
 		
 		GL20.glDeleteShader(vsID);
 		GL20.glDeleteShader(fsID);
-		
-		this.attribLocations = new HashMap<>(attribNames.length + 1, 1);
-		for (final String name : attribNames) {
-			final int loc = GL20.glGetAttribLocation(this.id, name);
-			this.attribLocations.put(name, loc);
-			System.out.println("AttributeLoc for " + name + "=" + loc);
-		}
-		
+
 		this.uniformLocations = new HashMap<>(uniformNames.length + 1, 1);
 		for (final String name : uniformNames) {
 			final int loc = GL20.glGetUniformLocation(this.id, name);
 			this.uniformLocations.put(name, loc);
 			System.out.println("UniformLoc for " + name + "=" + loc);
 		}
-		
+
 		Util.checkGLError();
 	}
 	
@@ -65,25 +57,9 @@ public class Program {
 	public void unload() {
 		GL20.glDeleteProgram(this.id);
 	}
-	
-	public int getAttribLocation(final String name) {
-		return this.attribLocations.get(name);
-	}
-	
+
 	public int getUniformLocation(final String name) {
 		return this.uniformLocations.get(name);
-	}
-	
-	public void enableVAttributes() {
-		for (final String s : this.attribLocations.keySet()) {
-			GL20.glEnableVertexAttribArray(this.attribLocations.get(s));
-		}
-	}
-	
-	public void disableVAttributes() {
-		for (final String s : this.attribLocations.keySet()) {
-			GL20.glDisableVertexAttribArray(this.attribLocations.get(s));
-		}
 	}
 	
 	private static int loadShader(final InputStream inputStream, final int type) {

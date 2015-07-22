@@ -143,20 +143,20 @@ public class ChunkVAO {
 			GL30.glBindVertexArray(this.vao_handle_solid);
 
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle_solid);
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexPosition"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexPosition"), Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
+			GL20.glEnableVertexAttribArray(0);
+			GL20.glVertexAttribPointer(0, Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexColor"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexColor"), Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
+			GL20.glEnableVertexAttribArray(1);
+			GL20.glVertexAttribPointer(1, Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexTexturePosition"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexTexturePosition"), Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
+			GL20.glEnableVertexAttribArray(2);
+			GL20.glVertexAttribPointer(2, Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexNormal"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
+			GL20.glEnableVertexAttribArray(3);
+			GL20.glVertexAttribPointer(3, Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexAO"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexAO"), Vertex.aoElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.aoByteOffset);
+			GL20.glEnableVertexAttribArray(4);
+			GL20.glVertexAttribPointer(4, Vertex.aoElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.aoByteOffset);
 
 			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle_solid);
 
@@ -178,20 +178,20 @@ public class ChunkVAO {
 			GL30.glBindVertexArray(this.vao_handle_transparent);
 
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, this.vbo_handle_transparent);
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexPosition"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexPosition"), Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
+			GL20.glEnableVertexAttribArray(0);
+			GL20.glVertexAttribPointer(0, Vertex.positionElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.positionByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexColor"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexColor"), Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteCount);
+			GL20.glEnableVertexAttribArray(1);
+			GL20.glVertexAttribPointer(1, Vertex.colorElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.colorByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexTexturePosition"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexTexturePosition"), Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
+			GL20.glEnableVertexAttribArray(2);
+			GL20.glVertexAttribPointer(2, Vertex.textureElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.textureByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexNormal"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexNormal"), Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
+			GL20.glEnableVertexAttribArray(3);
+			GL20.glVertexAttribPointer(3, Vertex.normalElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.normalByteOffset);
 
-			GL20.glEnableVertexAttribArray(Veya.program.getAttribLocation("vertexAO"));
-			GL20.glVertexAttribPointer(Veya.program.getAttribLocation("vertexAO"), Vertex.aoElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.aoByteOffset);
+			GL20.glEnableVertexAttribArray(4);
+			GL20.glVertexAttribPointer(4, Vertex.aoElementCount, GL11.GL_FLOAT, false, Vertex.stride, Vertex.aoByteOffset);
 
 			GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, this.ibo_handle_transparent);
 

@@ -22,7 +22,7 @@ import eu.over9000.veya.world.BlockType;
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
 
-	public static boolean ENABLE_DAY_NIGHT = false;
+	public static boolean ENABLE_DAY_NIGHT = true;
 	public static final float MOVEMENT_MULTIPLIER_WALK = 4.5f;
 
 	public static final float MOVEMENT_MULTIPLIER_FLY = 25f;
@@ -34,7 +34,10 @@ public class Veya {
 
 	public static Camera camera;
 
-	public static Program program;
+	public static Program program_normal;
+	public static Program program_shadow;
+	public static Program program_debug;
+
 	public static Scene scene;
 	public static boolean colorSwitch = false;
 
@@ -52,8 +55,11 @@ public class Veya {
 	private static Frame frame;
 	private static boolean shutdown = false;
 
+	public static boolean debugShadow = true;
+
 	private static long lastSpacePress = 0;
 	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
+
 	//public static final EnumSet<BlockType> ignoreBlocks = EnumSet.of(BlockType.STONE);
 
 	public static void main(final String[] args) throws LWJGLException {
@@ -82,7 +88,9 @@ public class Veya {
 		System.out.println("Java version: " + System.getProperty("java.version"));
 		System.out.println("graphics adapter: " + Display.getAdapter());
 
-		Veya.program = new Program(new String[]{"vertexPosition", "vertexColor", "vertexTexturePosition", "vertexNormal", "vertexAO"}, new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "aoSwitch", "cameraPosition"});
+		Veya.program_normal = new Program("normal", new String[]{"modelMatrix", "viewMatrix", "projectionMatrix", "lightPosition", "lightColor", "lightFactors", "colorSwitch", "aoSwitch", "cameraPosition", "lightSpaceMatrix", "textureData", "shadowMap"});
+		Veya.program_shadow = new Program("shadow", new String[]{"modelMatrix", "lightSpaceMatrix"});
+		Veya.program_debug = new Program("debug", new String[]{"near_plane", "far_plane"});
 
 		Util.checkGLError();
 
@@ -113,20 +121,22 @@ public class Veya {
 	private static void run() {
 		Util.checkGLError();
 
-		Veya.program.use(true);
+		Veya.program_normal.use(true);
 		Veya.camera.updateProjectionMatrix(Display.getWidth(), Display.getHeight());
 		Veya.camera.updateViewMatrix();
 		Veya.scene.init();
 
-		program.use(true);
-		GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
-		program.use(false);
 
-		program.use(true);
-		GL20.glUniform1i(Veya.program.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
-		program.use(false);
+		Veya.program_normal.use(false);
 
-		Veya.program.use(false);
+		program_normal.use(true);
+		GL20.glUniform1i(Veya.program_normal.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
+		program_normal.use(false);
+
+		program_normal.use(true);
+		GL20.glUniform1i(Veya.program_normal.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
+		program_normal.use(false);
+
 
 		Util.checkGLError();
 
@@ -154,12 +164,12 @@ public class Veya {
 
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-			Veya.program.use(true);
+			Veya.program_normal.use(true);
 
 
 			if (ENABLE_DAY_NIGHT) {
-				final float posX = (float) Math.sin(System.currentTimeMillis() / 10000.0) * 1024;
-				final float posY = (float) Math.cos(System.currentTimeMillis() / 10000.0) * 1024;
+				final float posX = (float) Math.sin(System.currentTimeMillis() / 10000.0) * 512;
+				final float posY = (float) Math.cos(System.currentTimeMillis() / 10000.0) * 512;
 				// final float posZ = (float) Math.cos(System.currentTimeMillis() / 1500.0) * 20f;
 				ambient = 0.25f + MathUtil.scale(posY, -1024, 1024, 0, 0.55f);
 				diffuse = MathUtil.scale(posY, -1024, 1024, 0, 0.5f);
@@ -167,8 +177,10 @@ public class Veya {
 				final float kek = (posY / 1024f + 1) / 2;
 
 				GL11.glClearColor(kek * 124f / 255f, kek * 169f / 255f, kek * 255f / 255f, 1.0f);
-				Veya.scene.getLight().updateLightPosition(posX + Veya.camera.getPosition().getX(), posY, 0 + Veya.camera.getPosition().getZ());
+				Veya.scene.getLight().updateLightPosition(posX + Veya.camera.getPosition().getX(), posY, 1 + Veya.camera.getPosition().getZ());
 			}
+
+			//Veya.scene.getLight().updateLightPosition(Veya.camera.getPosition().getX() + 1, 250, Veya.camera.getPosition().getZ() + 400);
 
 			Veya.camera.updateViewMatrix();
 			Veya.camera.updateCameraPosition();
@@ -177,7 +189,7 @@ public class Veya {
 
 			Util.checkGLError();
 
-			Veya.program.use(false);
+			Veya.program_normal.use(false);
 
 			Display.update();
 			// Display.sync(60);
@@ -201,18 +213,21 @@ public class Veya {
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKey() == Keyboard.KEY_C && Keyboard.getEventKeyState()) {
 				Veya.colorSwitch = !Veya.colorSwitch;
-				program.use(true);
-				GL20.glUniform1i(Veya.program.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
-				program.use(false);
+				program_normal.use(true);
+				GL20.glUniform1i(Veya.program_normal.getUniformLocation("colorSwitch"), Veya.colorSwitch ? 1 : 0);
+				program_normal.use(false);
 			}
 			if (Keyboard.getEventKey() == Keyboard.KEY_Y && Keyboard.getEventKeyState()) {
 				Veya.aoSwitch = !Veya.aoSwitch;
-				program.use(true);
-				GL20.glUniform1i(Veya.program.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
-				program.use(false);
+				program_normal.use(true);
+				GL20.glUniform1i(Veya.program_normal.getUniformLocation("aoSwitch"), Veya.aoSwitch ? 1 : 0);
+				program_normal.use(false);
 			}
 			if (Keyboard.getEventKey() == Keyboard.KEY_V && Keyboard.getEventKeyState()) {
 				Veya.wireframeSwitch = !Veya.wireframeSwitch;
+			}
+			if (Keyboard.getEventKey() == Keyboard.KEY_Q && Keyboard.getEventKeyState()) {
+				Veya.debugShadow = !Veya.debugShadow;
 			}
 			if (Keyboard.getEventKey() == Keyboard.KEY_SPACE && Keyboard.getEventKeyState()) {
 				final long diff = Keyboard.getEventNanoseconds() - lastSpacePress;
@@ -296,9 +311,9 @@ public class Veya {
 
 	private static void checkResize() {
 		if (Display.wasResized()) {
-			Veya.program.use(true);
+			Veya.program_normal.use(true);
 			Veya.camera.updateProjectionMatrix(Display.getWidth(), Display.getHeight());
-			Veya.program.use(false);
+			Veya.program_normal.use(false);
 			GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
 			System.out.println("resized");
 		}
@@ -327,7 +342,7 @@ public class Veya {
 
 	private static void end() {
 		Veya.scene.dispose();
-		Veya.program.unload();
+		Veya.program_normal.unload();
 		Display.destroy();
 		frame.setVisible(false);
 

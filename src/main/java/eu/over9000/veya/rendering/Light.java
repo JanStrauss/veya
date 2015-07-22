@@ -1,6 +1,7 @@
 package eu.over9000.veya.rendering;
 
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
 
@@ -16,11 +17,11 @@ public class Light {
 	private float r;
 	private float g;
 	private float b;
-	
+
 	private float ambient;
 	private float diffuse;
 	private float specular;
-	
+
 	public Light(final float posX, final float posY, final float posZ, final float r, final float g, final float b, final float ambient, final float diffuse, final float specular) {
 		this.x = posX;
 		this.y = posY;
@@ -34,9 +35,9 @@ public class Light {
 	}
 	
 	public void init() {
-		this.lightPositionLocation = Veya.program.getUniformLocation("lightPosition");
-		this.lightColorLocation = Veya.program.getUniformLocation("lightColor");
-		this.lightFactorsLocation = Veya.program.getUniformLocation("lightFactors");
+		this.lightPositionLocation = Veya.program_normal.getUniformLocation("lightPosition");
+		this.lightColorLocation = Veya.program_normal.getUniformLocation("lightColor");
+		this.lightFactorsLocation = Veya.program_normal.getUniformLocation("lightFactors");
 		
 		GL20.glUniform3f(this.lightPositionLocation, this.x, this.y, this.z);
 		GL20.glUniform3f(this.lightColorLocation, this.r, this.g, this.b);
@@ -47,7 +48,7 @@ public class Light {
 		this.ambient = ambient;
 		this.diffuse = diffuse;
 		this.specular = specular;
-		
+
 		GL20.glUniform3f(this.lightFactorsLocation, this.ambient, this.diffuse, this.specular);
 	}
 	
@@ -67,4 +68,19 @@ public class Light {
 		GL20.glUniform3f(this.lightColorLocation, this.r, this.g, this.b);
 	}
 	
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public float getZ() {
+		return z;
+	}
+	
+	public Vector3f getPosition() {
+		return new Vector3f(x, y, z);
+	}
 }

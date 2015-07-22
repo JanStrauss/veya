@@ -13,6 +13,7 @@ import eu.over9000.veya.collision.AABB;
 import eu.over9000.veya.collision.CollisionDetection;
 import eu.over9000.veya.util.Gravity;
 import eu.over9000.veya.util.Location;
+import eu.over9000.veya.util.MatrixUtil;
 
 public class Camera {
 	private static final float CAMERA_OFFSET_SIDE = 0.25f;
@@ -38,9 +39,9 @@ public class Camera {
 	private boolean onGround = false;
 
 	public Camera(final float posX, final float posY, final float posZ) {
-		this.viewMatrixLocation = Veya.program.getUniformLocation("viewMatrix");
-		this.projectionMatrixLocation = Veya.program.getUniformLocation("projectionMatrix");
-		this.cameraPositionLocation = Veya.program.getUniformLocation("cameraPosition");
+		this.viewMatrixLocation = Veya.program_normal.getUniformLocation("viewMatrix");
+		this.projectionMatrixLocation = Veya.program_normal.getUniformLocation("projectionMatrix");
+		this.cameraPositionLocation = Veya.program_normal.getUniformLocation("cameraPosition");
 		this.currentPosition = new Vector3f(posX, posY, posZ);
 		this.nextPosition = new Vector3f(posX, posY, posZ);
 		this.state = new Gravity.State();
@@ -66,18 +67,7 @@ public class Camera {
 	}
 
 	public void updateProjectionMatrix(final int width, final int height) {
-		final Matrix4f projectionMatrix = new Matrix4f();
-		final float aspectRatio = (float) width / (float) height;
-
-		final float y_scale = (float) (1.0f / Math.tan(Math.toRadians(Veya.FIELD_OF_VIEW / 2.0f)));
-		final float x_scale = y_scale / aspectRatio;
-		final float frustum_length = Veya.FAR_CLIPPING_PLANE - Veya.NEAR_CLIPPING_PLANE;
-		projectionMatrix.m00 = x_scale;
-		projectionMatrix.m11 = y_scale;
-		projectionMatrix.m22 = -((Veya.FAR_CLIPPING_PLANE + Veya.NEAR_CLIPPING_PLANE) / frustum_length);
-		projectionMatrix.m23 = -1;
-		projectionMatrix.m32 = -(2 * Veya.NEAR_CLIPPING_PLANE * Veya.FAR_CLIPPING_PLANE / frustum_length);
-		projectionMatrix.m33 = 0;
+		final Matrix4f projectionMatrix = MatrixUtil.projection(Veya.FIELD_OF_VIEW, width, height, Veya.FAR_CLIPPING_PLANE, Veya.NEAR_CLIPPING_PLANE);
 
 		projectionMatrix.store(this.matrixBuffer);
 		this.matrixBuffer.flip();

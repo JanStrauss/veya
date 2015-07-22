@@ -7,7 +7,7 @@ import eu.over9000.veya.world.Chunk;
 /**
  * Created by Jan on 03.07.2015.
  */
-class ChunkChunkVAOPair {
+public class ChunkChunkVAOPair {
 	private final Chunk chunk;
 	private final ChunkVAO chunkVAO;
 
