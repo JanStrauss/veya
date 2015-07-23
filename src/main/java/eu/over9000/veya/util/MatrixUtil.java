@@ -40,13 +40,13 @@ public class MatrixUtil {
 	public static Matrix4f lookAtCenter(final Vector3f eye, final Vector3f center) {
 		final Matrix4f matrix = new Matrix4f();
 
-		center.setY(64);
+		center.setY(0);
 
-		final Vector3f up = new Vector3f(.0f, 1.0f, .0f).normalise(null);
+		final Vector3f up = new Vector3f(0.0f, -1.0f, 0.0f).normalise(null);
 
-		final Vector3f front = Vector3f.sub(center, eye, null).normalise(null); // front
-		final Vector3f side = Vector3f.cross(front, up, null).normalise(null); // side
-		final Vector3f upCam = Vector3f.cross(front, side, null); // up in cam
+		final Vector3f front = Vector3f.sub(center, eye, null).normalise(null);
+		final Vector3f side = Vector3f.cross(front, up, null).normalise(null);
+		final Vector3f upCam = Vector3f.cross(front, side, null);
 
 		matrix.m00 = side.x;
 		matrix.m10 = side.y;

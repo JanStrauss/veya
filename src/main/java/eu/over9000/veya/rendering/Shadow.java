@@ -6,6 +6,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import eu.over9000.veya.Veya;
 import eu.over9000.veya.util.MatrixUtil;
@@ -28,8 +29,8 @@ public class Shadow {
 		depthMap = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, depthMap);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer) null);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_BORDER);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_BORDER);
 
@@ -47,7 +48,7 @@ public class Shadow {
 
 		final Matrix4f lightProjection = MatrixUtil.orthographic(-SHADOW_RANGE, +SHADOW_RANGE, -SHADOW_RANGE, +SHADOW_RANGE, SHADOW_NEAR, SHADOW_FAR);
 		//final Matrix4f lightProjection = MatrixUtil.projection(75, SHADOW_WIDTH, SHADOW_HEIGHT, SHADOW_NEAR, SHADOW_FAR);
-		final Matrix4f lightView = MatrixUtil.lookAtCenter(Veya.scene.getLight().getPosition(), Veya.camera.getPosition());
+		final Matrix4f lightView = MatrixUtil.lookAtCenter(Veya.scene.getLight().getPosition(), new Vector3f(0, 0, 0));
 		final Matrix4f lightSpaceMatrix = Matrix4f.mul(lightProjection, lightView, null);
 
 		lightSpaceMatrix.store(matrixBufferShadow);

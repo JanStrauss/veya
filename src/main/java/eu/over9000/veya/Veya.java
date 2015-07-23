@@ -22,7 +22,7 @@ import eu.over9000.veya.world.BlockType;
 public class Veya {
 	public static final int RESTART = 0xFFFFFFFF;
 
-	public static boolean ENABLE_DAY_NIGHT = true;
+	public static boolean ENABLE_DAY_NIGHT = false;
 	public static final float MOVEMENT_MULTIPLIER_WALK = 4.5f;
 
 	public static final float MOVEMENT_MULTIPLIER_FLY = 25f;
@@ -180,7 +180,7 @@ public class Veya {
 				Veya.scene.getLight().updateLightPosition(posX + Veya.camera.getPosition().getX(), posY, 1 + Veya.camera.getPosition().getZ());
 			}
 
-			//Veya.scene.getLight().updateLightPosition(Veya.camera.getPosition().getX() + 1, 250, Veya.camera.getPosition().getZ() + 400);
+			//Veya.scene.getLight().updateLightPosition(Veya.camera.getPosition().getX() + 1, 500, Veya.camera.getPosition().getZ() + 250);
 
 			Veya.camera.updateViewMatrix();
 			Veya.camera.updateCameraPosition();
