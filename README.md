@@ -1,4 +1,14 @@
 veya
 ====
+voxel based openGL/lwjgl experiments. Ended up as some sort of minecraft clone..
 
-openGL/lwjgl experiments
+* 'infinite' terrain/chunk generation
+* save/load chunks from disk
+* opengl 3.2 core
+* Player-world collision, gravity
+* Block editing
+* ambient occlusion
+* shadow mapping WIP
+
+![](https://i.imgur.com/ba9SYLt.jpg)
+![](https://i.imgur.com/vK0FWkQ.png)
