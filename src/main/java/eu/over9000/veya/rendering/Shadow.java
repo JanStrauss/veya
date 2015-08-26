@@ -18,9 +18,9 @@ public class Shadow {
 	public static final int SHADOW_WIDTH = 1024;
 	public static final int SHADOW_HEIGHT = 1024;
 
-	public static final float SHADOW_RANGE = 275.0f;
-	public static final float SHADOW_NEAR = 1f;
-	public static final float SHADOW_FAR = 750.0f;
+	public static final float SHADOW_RANGE = 256f;
+	public static final float SHADOW_NEAR = 200f;
+	public static final float SHADOW_FAR = 600f;
 
 	private int shadowFBO;
 	private int depthMap;
@@ -47,7 +47,7 @@ public class Shadow {
 		final FloatBuffer matrixBufferNormal = BufferUtils.createFloatBuffer(16);
 
 		final Matrix4f lightProjection = MatrixUtil.orthographic(-SHADOW_RANGE, +SHADOW_RANGE, -SHADOW_RANGE, +SHADOW_RANGE, SHADOW_NEAR, SHADOW_FAR);
-		//final Matrix4f lightProjection = MatrixUtil.projection(75, SHADOW_WIDTH, SHADOW_HEIGHT, SHADOW_NEAR, SHADOW_FAR);
+		//final Matrix4f lightProjection = MatrixUtil.perspectiveRH(140, SHADOW_WIDTH, SHADOW_HEIGHT, SHADOW_NEAR, SHADOW_FAR);
 		final Matrix4f lightView = MatrixUtil.lookAtCenter(Veya.scene.getLight().getPosition(), new Vector3f(0, 0, 0));
 		final Matrix4f lightSpaceMatrix = Matrix4f.mul(lightProjection, lightView, null);
 

@@ -69,7 +69,7 @@ public class Scene {
 
 		this.shadow = new Shadow();
 		
-		this.light = new Light(200, 500, 0, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
+		this.light = new Light(-200, 400, -40, 0.9f, 0.9f, 0.45f, 0.33f, 0.33f, 0.33f);
 		
 		final Runnable displayedChunkUpdater = () -> {
 			while (Scene.this.alive.get()) {

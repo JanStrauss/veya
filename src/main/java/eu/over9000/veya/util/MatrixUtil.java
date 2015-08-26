@@ -37,6 +37,23 @@ public class MatrixUtil {
 		return projectionMatrix;
 	}
 
+	public static Matrix4f perspectiveRH(final float fovy, final float width, final float height, final float zNear, final float zFar) {
+		final float aspect = width / height;
+
+		final float tanHalfFovy = (float) Math.tan(fovy / (2.0f));
+
+		final Matrix4f result = new Matrix4f();
+		Matrix4f.setZero(result);
+
+		result.m00 = (1.0f) / (aspect * tanHalfFovy);
+		result.m11 = (1.0f) / (tanHalfFovy);
+		result.m22 = -(zFar + zNear) / (zFar - zNear);
+		result.m23 = -1.0f;
+		result.m32 = -((2.0f) * zFar * zNear) / (zFar - zNear);
+
+		return result;
+	}
+
 	public static Matrix4f lookAtCenter(final Vector3f eye, final Vector3f center) {
 		final Matrix4f matrix = new Matrix4f();
 
