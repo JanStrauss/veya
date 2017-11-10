@@ -48,7 +48,7 @@ public class Veya {
 	private static final float MOUSE_SENSITIVITY = 0.01f;
 
 	public static final float FIELD_OF_VIEW = 75.0f;
-	public static final float NEAR_CLIPPING_PLANE = 0.1f;
+	public static final float NEAR_CLIPPING_PLANE = 0.5f;
 	public static final float FAR_CLIPPING_PLANE = 1000.0f;
 
 	public static Camera camera;
@@ -74,7 +74,7 @@ public class Veya {
 	private static Frame frame;
 	private static boolean shutdown = false;
 
-	public static boolean debugShadow = true;
+	public static boolean debugShadow = false;
 
 	private static long lastSpacePress = 0;
 	public static final EnumSet<BlockType> ignoreBlocks = EnumSet.noneOf(BlockType.class);
@@ -94,14 +94,13 @@ public class Veya {
 		final Canvas canvas = new Canvas();
 		frame = new Frame();
 		frame.add(canvas);
-		frame.setSize(1280, 720);
+		frame.setSize(1440, 900);
 		frame.setLocationByPlatform(true);
 		frame.setVisible(true);
 		frame.setExtendedState(Frame.MAXIMIZED_BOTH);
 		frame.setIconImage(loadIcon());
 
-		Display.setParent(canvas);
-		Display.create(new PixelFormat().withSamples(4).withDepthBits(24), new ContextAttribs(3, 3));
+		Display.create(new PixelFormat(), new ContextAttribs(3, 3).withProfileCore(true));
 
 		System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		System.out.println("Java version: " + System.getProperty("java.version"));
@@ -120,7 +119,6 @@ public class Veya {
 
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glLineWidth(2.5f);
 
 		Util.checkGLError();
 
@@ -211,7 +209,7 @@ public class Veya {
 			Veya.program_normal.use(false);
 
 			Display.update();
-			// Display.sync(60);
+			Display.sync(60);
 			Util.checkGLError();
 
 			final long end = Sys.getTime();
